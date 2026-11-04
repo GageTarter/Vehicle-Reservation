@@ -1,6 +1,6 @@
 # API Reference
 
-**Status:** Feature 1 on `features/1-google-auth`.
+**Status:** Feature 2 on `features/2-user-management`. Feature 1 auth routes remain.
 
 Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/health`.
 
@@ -10,6 +10,9 @@ Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/
 |--------|------|------|---------|------------|
 | `POST` | `/vehicles/auth/google` | No | Verify a Google ID token, create or reuse the user, return the session payload | Feature 1 |
 | `POST` | `/vehicles/logout` | Yes | Invalidate the current session token | Feature 1 |
+| `GET` | `/vehicles/me` | Yes | Return the signed-in user's account | Feature 2 |
+| `PUT` | `/vehicles/me` | Yes | Update `fName` and `lName` for the signed-in user | Feature 2 |
+| `DELETE` | `/vehicles/me` | Yes | Delete the signed-in user and that user's sessions | Feature 2 |
 | `GET` | `/api/health` | No | Process health check | Starter |
 
 ### `POST /vehicles/auth/google`
@@ -49,6 +52,52 @@ Header: `Authorization: Bearer <token>`.
 |--------|------|
 | `200` | Session row for that token was deleted. Body: `{ "message": "Signed out." }` |
 | `401` | Missing token: `{ "message": "Unauthorized! No token provided." }`. Expired or unknown token: `{ "message": "Unauthorized! Invalid or expired token." }` |
+
+### `GET /vehicles/me`
+
+Header: `Authorization: Bearer <token>`. The user id comes from the session, not from the URL.
+
+Success (`200`):
+
+```json
+{
+  "userId": 1,
+  "email": "jane@example.com",
+  "fName": "Jane",
+  "lName": "Doe",
+  "role": "user"
+}
+```
+
+The body does not include `token` or `googleId`.
+
+### `PUT /vehicles/me`
+
+Header: `Authorization: Bearer <token>`.
+
+Request:
+
+```json
+{ "fName": "Janet", "lName": "Doe" }
+```
+
+`email`, `googleId`, and `role` in the body are ignored. `fName` and `lName` must be strings and may be empty.
+
+Success (`200`): the same shape as `GET /vehicles/me`, with the stored names.
+
+| Status | When |
+|--------|------|
+| `400` | `fName` or `lName` is missing or not a string. Body: `{ "message": "First and last name must be text." }` |
+| `401` | Missing token: `{ "message": "Unauthorized! No token provided." }`. Expired or unknown token: `{ "message": "Unauthorized! Invalid or expired token." }` |
+
+### `DELETE /vehicles/me`
+
+Header: `Authorization: Bearer <token>`.
+
+| Status | When |
+|--------|------|
+| `200` | That user and every session for that user are deleted. Body: `{ "message": "Account deleted." }` |
+| `401` | Missing, expired, or unknown token, using the same messages as `GET /vehicles/me` |
 
 ## Conventions
 
