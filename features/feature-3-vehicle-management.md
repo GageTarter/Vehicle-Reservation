@@ -1,4 +1,4 @@
-# Feature: Vehicle Management //IN PROGRESS
+# Feature: Vehicle Management
 
 **Feature ID:** 3
 **Branch pattern:** `feature/3-vehicle-management`
@@ -9,7 +9,7 @@
 **Related:** [features/reference/api.md](./reference/api.md), [features/reference/data-model.md](./reference/data-model.md), [features/reference/behavior.md](./reference/behavior.md)
 
 
---- //STOPPED HERE
+---
 
   
 
@@ -17,57 +17,57 @@
 
   
 
-### US-3.1: View created semesters
+### US-3.1: View created vehicles
 
 **As a** Authorized User  
-**I want to** view the list of created semesters  
-**So that** I can keep track of which semesters the software knows about
+**I want to** view the list of created vehicles  
+**So that** I can keep track of which vehicles the software knows about
 
 
 **Priority:** P1  
-**Independent test:** Display all created semesters  
+**Independent test:** Display all created vehicles  
 **Acceptance scenarios:** see ### US-3.1 under Acceptance Criteria
 
   
 
-### US-3.2: Edit existing semesters
+### US-3.2: Edit existing vehicles
 
 **As a** Authorized User
-**I want to** be able to edit the values of any created semester  
-**So that** I can change the values, such as the semester name and start/end dates, of any created semester, to be different than what was inputted on creation
+**I want to** be able to edit the values of any created vehicle  
+**So that** I can change the values, such as the vehicle make, model, and year, of any created vehicle, to be different than what was inputted on creation
 
   
 
 **Priority:** P1  
-**Independent test:** Edit the existing semesters  
+**Independent test:** Edit the existing vehicles  
 **Acceptance scenarios:** see ### US-3.2 under Acceptance Criteria
 
   
 
-### US-3.3: Delete existing semesters
+### US-3.3: Delete existing vehicles
 
 **As a** Authorized User  
-**I want to** delete any of the existing semesters
-**So that** I can no longer see or include them in the semester list
+**I want to** delete any of the existing vehicles
+**So that** I can no longer see or include them in the vehicle list
 
   
 
 **Priority:** P1  
-**Independent test:** Delete any existing semester and clear its data  
+**Independent test:** Delete any existing vehicle and clear its data  
 **Acceptance scenarios:** see ### US-3.3 under Acceptance Criteria
 
 
 
-### US-3.4: Add new semesters
+### US-3.4: Add new vehicles
 
 **As a** Authorized user
-**I want to** add a new semester
-**So that** I can create a new semester and change its values
+**I want to** add a new vehicle
+**So that** I can create a new vehicle and change its values
 
 
 
 **Priority:** P1
-**Indepentent test:** Create a new semester
+**Indepentent test:** Create a new vehicle
 **Acceptance scenarios:** see ### US-3.4 under Acceptance Criteria
   
 
@@ -83,13 +83,13 @@
 
   
 
--- **FR-001:** User must fill all fields, including the name, start date, and end date.
--- **FR-002:** Created semesters must be stored for each university so that users can view and manage semesters whenever they are signed in.
--- **FR-003:** Created semesters must be accessible only to and by all authorized users.
--- **FR-004:** User must fill all fields when making edits to an existing semester.
--- **FR-005:** Edited information must be updated in the affected semester when a user makes a change.
--- **FR-006:** semester must be completely erased when the delete option is selected by the user.
--- **FR-007:** Created semesters must be listed in reverse chronological order.
+-- **FR-001:** User must fill all fields, including the make, model, year, vin, purchase date, color, passenger capacity, license plate number, license plate expiration, and area.
+-- **FR-002:** Created vehicles must be stored for each fleet so that users can view and manage vehicles whenever they are signed in.
+-- **FR-003:** Created vehicles must be accessible only to and by all authorized users.
+-- **FR-004:** User must fill all fields when making edits to an existing vehicle.
+-- **FR-005:** Edited information must be updated in the affected vehicle when a user makes a change.
+-- **FR-006:** vehicle must be completely erased when the delete option is selected by the user.
+-- **FR-007:** Created vehicles must be listed in added order.
 
   
 
@@ -102,26 +102,27 @@
   
 
 - Feature 1 auth and session handling MUST be merged to `dev` before implementing this feature.
-
-- Feature 4 semester catalogue management MUST be merged to `dev` before implementing this feature.
-
   
 
 ## Edge Cases
 
-- Empty or whitespace-only semester data fields → `400`.
-- Name or unit longer than 100 characters → `400`.
-- `semesterStartDate` that is not a valid date → `400`.
-- `semesterEndDate` that is not a valid date → `400`.
-- Invalid `semesterId` → `400`.
+- Empty or whitespace-only vehicle data fields → `400`.
+- `make`, `model`, `color`, or `area` longer than 100 characters → `400`.
+- `year` longer than 4 digits → `400`.
+- `vin` longer than 17 characters → `400`.
+- `purchaseDate` or `licensePlateExpiration` that is not a valid date → `400`.
+- `passengerCapacity` that is longer than 4 digits → `400`.
+- `licensePlateNo` that is longer than 7 digits → `400`.
+- Invalid `vin` → `400`.
 
-  
+
+
 
 ## Success Criteria
 
 - **SC-001**: Every Gherkin scenario has at least one automated test before merge.
-- **SC-002**: Signed-in user can create, view, edit, and delete semesters on one screen without being able to access other users' private courses and semesters.
-- **SC-003**: `npm test` passes for semester API and dashboard semesters-view behavior.
+- **SC-002**: Signed-in user can create, view, edit, and delete vehicles on one screen without being able to access other fleets' private vehicles.
+- **SC-003**: `npm test` passes for vehicle API and dashboard vehicles-view behavior.
 
   
 
@@ -133,8 +134,9 @@
 
   
 
--- **semester** named group belonging to one user (from Feature 4).
--- **User** owns many semesters (from Feature 1).
+-- **Vehicle** named group belonging to one fleet (from Feature 4).
+-- **Fleet** owns many vehicles (from Feature 1).
+-- **User** able to log in to fleet and manage vehicles (from Feature 6).
 
   
 
@@ -146,177 +148,370 @@
 
   
 
-### US-3.4 — Add a catalogue semester
+### US-3.4 — Add a vehicle
 
   
 
-#### Scenario: User creates a new semester
+#### Scenario: User creates a new vehicle
 
 *   **Given** I am signed in on the dashboard
-*   **When** I click **+ New semester**
-*   **And** I enter semester name `Fall 2026`
-*   **And** I enter start date `2026-8-14`
-*   **And** I enter end date `2026-12-11`
-*   **Then** the API returns `201` with an semester object containing `id`, `name`, `startDate`, `endDate`, and `userId`
-*   **And** `Fall 2026` appears in the semesters view
-*   **And** the add-semester dialog closes
+*   **When** I click **+ New vehicle**
+*   **And** I enter vehicle make `Nissan`
+*   **And** I enter vehicle model `Pathfinder`
+*   **And** I enter vehicle year `2014`
+*   **And** I enter vehicle vin `1M2AR13Y8HM088054`
+*   **And** I enter vehicle purchase date `07/11/24`
+*   **And** I enter vehicle color `White`
+*   **And** I enter vehicle passenger capacity `6`
+*   **And** I enter vehicle license plate number `DWD947`
+*   **And** I enter vehicle license plate expiration `2026-8-14`
+*   **And** I enter vehicle area `Athletics`
+*   **Then** the API returns `201` with an vehicle object containing `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passengerCapacity`, `licensePlateNo`, `licensePlateExp`, and `area`
+*   **And** `2014 Nissan Pathfinder` appears in the vehicles view
+*   **And** the add-vehicle dialog closes
 
-  
 
-#### Scenario: User creates a semester with an empty name
+
+#### Scenario: User creates a vehicle with an empty make
 
 *   **Given** I am signed in on the dashboard
-*   **When** I open the new semester dialog
-*   **And** I leave the name field empty or whitespace only
+*   **When** I open the new vehicle dialog
+*   **And** I leave the make field empty or whitespace only
 *   **And** I attempt to confirm
 *   **Then** inline validation blocks the request
-*   **And** I see the message **"semester name is required."**
+*   **And** I see the message **"vehicle make is required."**
 *   **And** no API request is sent
   
 
-#### Scenario: User creates an semester with an empty start date
+#### Scenario: User creates a vehicle with an empty model
 
 *   **Given** I am signed in on the dashboard
-*   **When** I open the new semester dialog
-*   **And** I leave the unit field empty or whitespace only
+*   **When** I open the new vehicle dialog
+*   **And** I leave the model field empty or whitespace only
 *   **And** I attempt to confirm
 *   **Then** inline validation blocks the request
-*   **And** I see the message **"semester start date is required."**
+*   **And** I see the message **"vehicle model is required."**
 *   **And** no API request is sent
   
 
-#### Scenario: User creates an semester with an empty end date unit
+#### Scenario: User creates a vehicle with an empty year
 
 *   **Given** I am signed in on the dashboard
-*   **When** I open the new semester dialog
-*   **And** I leave the price per unit field empty or whitespace only
+*   **When** I open the new vehicle dialog
+*   **And** I leave the year field empty or whitespace only
 *   **And** I attempt to confirm
 *   **Then** inline validation blocks the request
-*   **And** I see the message **"semester end date is required."**
+*   **And** I see the message **"vehicle year is required."**
 *   **And** no API request is sent
   
 
-#### Scenario: User creates an semester with a name that is too long
+#### Scenario: User creates a vehicle with an empty vin
 
 *   **Given** I am signed in on the dashboard
-*   **When** I submit an semester name longer than 11 characters
-*   **Then** the API returns `400` with `{ "message": "semester name must be 11 characters or fewer." }`
+*   **When** I open the new vehicle dialog
+*   **And** I leave the vin field empty or whitespace only
+*   **And** I attempt to confirm
+*   **Then** inline validation blocks the request
+*   **And** I see the message **"vehicle vin is required."**
+*   **And** no API request is sent
+  
+
+#### Scenario: User creates a vehicle with an empty purchase date
+
+*   **Given** I am signed in on the dashboard
+*   **When** I open the new vehicle dialog
+*   **And** I leave the purchase date field empty or whitespace only
+*   **And** I attempt to confirm
+*   **Then** inline validation blocks the request
+*   **And** I see the message **"vehicle purchase date is required."**
+*   **And** no API request is sent
+  
+
+#### Scenario: User creates a vehicle with an empty color
+
+*   **Given** I am signed in on the dashboard
+*   **When** I open the new vehicle dialog
+*   **And** I leave the color field empty or whitespace only
+*   **And** I attempt to confirm
+*   **Then** inline validation blocks the request
+*   **And** I see the message **"vehicle color is required."**
+*   **And** no API request is sent
+  
+
+#### Scenario: User creates a vehicle with an empty passenger capacity
+
+*   **Given** I am signed in on the dashboard
+*   **When** I open the new vehicle dialog
+*   **And** I leave the passenger capacity field empty or whitespace only
+*   **And** I attempt to confirm
+*   **Then** inline validation blocks the request
+*   **And** I see the message **"vehicle passenger capacity is required."**
+*   **And** no API request is sent
+  
+
+#### Scenario: User creates a vehicle with an empty license plate number
+
+*   **Given** I am signed in on the dashboard
+*   **When** I open the new vehicle dialog
+*   **And** I leave the license plate number field empty or whitespace only
+*   **And** I attempt to confirm
+*   **Then** inline validation blocks the request
+*   **And** I see the message **"vehicle license plate number is required."**
+*   **And** no API request is sent
+  
+
+#### Scenario: User creates a vehicle with an empty license plate expiration
+
+*   **Given** I am signed in on the dashboard
+*   **When** I open the new vehicle dialog
+*   **And** I leave the license plate expiration field empty or whitespace only
+*   **And** I attempt to confirm
+*   **Then** inline validation blocks the request
+*   **And** I see the message **"vehicle license plate expiration is required."**
+*   **And** no API request is sent
+  
+
+#### Scenario: User creates a vehicle with an empty area
+
+*   **Given** I am signed in on the dashboard
+*   **When** I open the new vehicle dialog
+*   **And** I leave the area field empty or whitespace only
+*   **And** I attempt to confirm
+*   **Then** inline validation blocks the request
+*   **And** I see the message **"vehicle area is required."**
+*   **And** no API request is sent
+  
+
+#### Scenario: User creates an vehicle with a make that is too long
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle make longer than 100 characters
+*   **Then** the API returns `400` with `{ "message": "vehicle make must be 100 characters or fewer." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+  
+
+#### Scenario: User creates an vehicle with a model that is too long
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle model longer than 100 characters
+*   **Then** the API returns `400` with `{ "message": "vehicle model must be 100 characters or fewer." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+  
+
+#### Scenario: User creates an vehicle with a year that is too long
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle year longer than 4 digits
+*   **Then** the API returns `400` with `{ "message": "vehicle year must be 4 digits or fewer." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+  
+
+#### Scenario: User creates an vehicle with a vin that is too long
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle vin longer than 17 characters
+*   **Then** the API returns `400` with `{ "message": "vehicle vin must be 17 characters or fewer." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+  
+
+#### Scenario: User creates an vehicle with an invalid vin
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle vin that is invalid
+*   **Then** the API returns `400` with `{ "message": "vehicle vin is invalid." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+  
+
+#### Scenario: User creates an vehicle with a purchase date that is not a valid date
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle purchase date that is not a valid date
+*   **Then** the API returns `400` with `{ "message": "vehicle purchase date must be a valid date." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+  
+
+#### Scenario: User creates an vehicle with a color that is too long
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle color longer than 100 characters
+*   **Then** the API returns `400` with `{ "message": "vehicle color must be 100 characters or fewer." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+  
+
+#### Scenario: User creates an vehicle with a passenger capacity that is too long
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle passenger capacity longer than 4 digits
+*   **Then** the API returns `400` with `{ "message": "vehicle passenger capacity must be 4 digits or fewer." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+  
+
+#### Scenario: User creates an vehicle with a license plate number that is too long
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle license plate number longer than 7 digits
+*   **Then** the API returns `400` with `{ "message": "vehicle license plate number must be 7 digits or fewer." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+  
+
+#### Scenario: User creates an vehicle with a license plate expiration that is not a valid date
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle license plate expiration that is not a valid date
+*   **Then** the API returns `400` with `{ "message": "vehicle license plate expiration must be a valid date." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+  
+
+#### Scenario: User creates an vehicle with an area that is too long
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle area longer than 100 characters
+*   **Then** the API returns `400` with `{ "message": "vehicle area must be 100 characters or fewer." }`
 *   **And** the error is displayed in a `<v-alert type="error">`
 
 
 ---
+  
+
+### US-3.1: — Browse the vehicle list
 
   
 
-### US-3.1: — Browse the semester list
-
-  
-
-#### Scenario: User views existing semesters
+#### Scenario: User views existing vehicles
 
 *   **Given** I am signed in on the dashboard as an authorized user
-*   **When** I open the semesters list
-*   **Then** semesters are displayed in alphabetical order
+*   **When** I open the vehicles list
+*   **Then** vehicles are displayed in created order
   
 
-#### Scenario: User has no existing semesters
+#### Scenario: User has no existing vehicles
 
 *   **Given** I am signed in on the dashboard
-*   **When** I open the semesters list
-*   **Then** no semesters should be displayed
+*   **When** I open the vehicles list
+*   **Then** no vehicles should be displayed
 
   
 
-### US-3.2: — Correct an semester's start date or end date
+### US-3.2: — Correct a vehicle's information
 
   
 
-#### Scenario: User edits an semester's information
+#### Scenario: User edits a vehicle's information
 *   **Given** I am signed in on the dashboard
-*   **When** I click **Edit semester** on an existing semester
+*   **When** I click **Edit vehicle** on an existing vehicle
 *   **And** I change any of the original values
 *   **And** I confirm the dialog
-*   **Then** the API returns `200` with `{ "message": "semester was updated successfully." }`
-*   **And** the semester is visible with updated information in the semesters view
-*   **And** the edit-semester dialog closes
+*   **Then** the API returns `200` with `{ "message": "vehicle was updated successfully." }`
+*   **And** the vehicle is visible with updated information in the vehicles view
+*   **And** the edit-vehicle dialog closes
 
   
 
-#### Scenario: User edits an semester with an empty name
+#### Scenario: User edits a vehicle with any empty information area
 
 *   **Given** I am signed in on the dashboard
-*   **When** I open the edit semester dialog
-*   **And** I leave the name field empty or whitespace only
+*   **When** I open the edit vehicle dialog
+*   **And** I leave a field empty or whitespace only
 *   **And** I attempt to confirm
 *   **Then** inline validation blocks the request
-*   **And** I see the message **"semester name is required."**
+*   **And** I see the message **"All fields must be filled."**
 *   **And** no API request is sent
 
   
 
-#### Scenario: User edits an semester with an empty start date
+#### Scenario: User edits a vehicle with a name that is too long
 
 *   **Given** I am signed in on the dashboard
-*   **When** I open the edit semester dialog
-*   **And** I leave the start date field empty or whitespace only
-*   **And** I attempt to confirm
-*   **Then** inline validation blocks the request
-*   **And** I see the message **"semester start date is required."**
-*   **And** no API request is sent
-
-  
-
-#### Scenario: User edits an semester with an empty end date
-
-*   **Given** I am signed in on the dashboard
-*   **When** I open the edit semester dialog
-*   **And** I leave the end date field empty or whitespace only
-*   **And** I attempt to confirm
-*   **Then** inline validation blocks the request
-*   **And** I see the message **"semester end date is required."**
-*   **And** no API request is sent
-
-  
-
-#### Scenario: User edits an semester with a name that is too long
-
-*   **Given** I am signed in on the dashboard
-*   **When** I submit an semester name longer than 11 characters
-*   **Then** the API returns `400` with `{ "message": "semester name must be 11 characters or fewer." }`
-*   **And** the error is displayed in a `<v-alert type="error">`
-
-  
-
-#### Scenario: User edits an semester with a non-date start date
-
-*   **Given** I am signed in on the dashboard
-*   **When** I submit a semester start date that is not a valid date
-*   **Then** the API returns `400` with `{ "message": "semester start date must be a chronological date value." }`
+*   **When** I submit an vehicle name longer than 100 characters
+*   **Then** the API returns `400` with `{ "message": "vehicle name must be 100 characters or fewer." }`
 *   **And** the error is displayed in a `<v-alert type="error">`
 
 
 
-#### Scenario: User edits an semester with a non-date end date
+#### Scenario: User edits a vehicle with a model that is too long
 
 *   **Given** I am signed in on the dashboard
-*   **When** I submit a semester end date that is not a number
-*   **Then** the API returns `400` with `{ "message": "semester start date must be a chronological date value." }`
+*   **When** I submit an vehicle model longer than 100 characters
+*   **Then** the API returns `400` with `{ "message": "vehicle model must be 100 characters or fewer." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+
+  
+
+#### Scenario: User edits a vehicle with a year that is too long or too short
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle year longer or shorter than 4 digits
+*   **Then** the API returns `400` with `{ "message": "vehicle year must be 4 digits." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+
+  
+
+#### Scenario: User edits a vehicle with a vin that is too long or too short
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle vin longer or shorter than 17 characters
+*   **Then** the API returns `400` with `{ "message": "vehicle vin must be 17 characters exactly." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+
+  
+
+#### Scenario: User edits a vehicle with a purchase date that is not a valid date
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle purchase date that is not a valid date
+*   **Then** the API returns `400` with `{ "message": "vehicle purchase date must be a valid date." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+
+  
+
+#### Scenario: User edits a vehicle with a color that is too long
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle color longer than 100 characters
+*   **Then** the API returns `400` with `{ "message": "vehicle color must be 100 characters or fewer." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+
+  
+
+#### Scenario: User edits a vehicle with a passenger capacity that is too long
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle passenger capacity longer than 4 digits
+*   **Then** the API returns `400` with `{ "message": "vehicle passenger capacity must be 4 digits or fewer." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+
+  
+
+#### Scenario: User edits a vehicle with a license plate number that is too long
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle license plate number longer than 7 digits
+*   **Then** the API returns `400` with `{ "message": "vehicle license plate number must be 7 digits or fewer." }`
+*   **And** the error is displayed in a `<v-alert type="error">`
+
+  
+
+#### Scenario: User edits a vehicle with a license plate expiration that is not a valid date
+
+*   **Given** I am signed in on the dashboard
+*   **When** I submit an vehicle license plate expiration that is not a valid date
+*   **Then** the API returns `400` with `{ "message": "vehicle license plate expiration must be a valid date." }`
 *   **And** the error is displayed in a `<v-alert type="error">`
   
 
 
-### US-3.3: Remove a semester
+### US-3.3: Remove a vehicle
 
   
 
-#### Scenario: User removes an semester
+#### Scenario: User removes an vehicle
 
 *   **Given** I am signed in
-*   **And** there exists a semester named `Fall 2026`
-*   **When** I click the delete icon on the `Fall 2026` row
+*   **And** there exists a vehicle named `2014 Nissan Pathfinder`
+*   **When** I click the delete icon on the `2014 Nissan Pathfinder` row
 *   **And** I confirm the delete dialog
 *   **Then** the API returns `200` or `204`
-*   **And** the semester is removed from the semesters view
+*   **And** the vehicle is removed from the vehicles view
 
   
 
@@ -326,9 +521,9 @@
 
 ## Data Model Requirements
 
-  
 
-### `semesters` table
+
+### `vehicles` table
 
 | Field | Type | Rules |
 
@@ -338,11 +533,25 @@
 
 | `userId` | INTEGER | Required, FK → `users.id`, `ON DELETE CASCADE` |
 
-| `name` | STRING(11) | Required; unique per (`userId`, `name`); stored and displayed as typed |
+| `name` | STRING(100) | Required; unique per (`userId`, `name`); stored and displayed as typed |
 
-| `startDate` | DATE(100) | Required; stored and displayed as typed |
+| `make` | STRING(100) | Required; stored and displayed as typed |
 
-| `endDate` | DATE(100) | Required; stored and displayed as typed |
+| `model` | STRING(100) | Required; stored and displayed as typed |
+
+| `year` | STRING(100) | Required; stored and displayed as typed |
+
+| `vin` | STRING(17) | Required; stored and displayed as typed |
+
+| `purchaseDate` | DATE(10) | Required; stored and displayed as typed |
+
+| `color` | STRING(100) | Required; stored and displayed as typed |
+
+| `passengerCapacity` | INT(4) | Required; stored and displayed as typed |
+
+| `licensePlateNo` | STRING(7) | Required; stored and displayed as typed |
+
+| `licensePlateExp` | DATE(10) | Required; stored and displayed as typed |
 
 | `createdAt` | DATE | Sequelize timestamp |
 
@@ -358,15 +567,15 @@
 
 |-------------|------|
 
-| `User` hasMany `semester` | `foreignKey` `userId` required; `ON DELETE CASCADE` |
+| `User` hasMany `vehicle` | `foreignKey` `userId` required; `ON DELETE CASCADE` |
 
-| `semester` belongsTo `User` | `userId` set from `req.user.id` on create — never from the client body |
+| `vehicle` belongsTo `User` | `userId` set from `req.user.id` on create — never from the client body |
 
 | Unique | Composite unique (`userId`, `name`) as specified in the table above |
 
   
 
-JSON property names match these columns (`name`, `startDate`, `endDate`, `userId`). Sequelize may also return `createdAt` / `updatedAt`; Gherkin does not require the client to display them.
+JSON property names match these columns (`make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passengerCapacity`, `licensePlateNo`, `licensePlateExp`, `userId`). Sequelize may also return `createdAt` / `updatedAt`; Gherkin does not require the client to display them.
 
   
 
@@ -380,7 +589,7 @@ JSON property names match these columns (`name`, `startDate`, `endDate`, `userId
 
   
 
-Each user owns their catalogue `semesters` exclusively. List, create, update, and delete are scoped to the signed-in user (Feature 1 session). Feature 4 owns the catalogue entity; this feature enforces the same owner isolation on the shared `/courses/semesters` resource.
+Each user owns their catalogue `vehicles` exclusively. List, create, update, and delete are scoped to the signed-in user (Feature 1 session).
 
   
 
@@ -388,17 +597,17 @@ Each user owns their catalogue `semesters` exclusively. List, create, update, an
 
 |------|-------------|
 
-| **Read scope** | `GET /courses/semesters` returns only rows where `userId = req.user.id`, ordered by `name` ASC (**FR-007**) |
+| **Read scope** | `GET fleets/vehicles` returns only rows where `userId = req.user.id`, ordered by `createdAt` ASC (**FR-007**) |
 
-| **Write scope** | `PUT` / `DELETE /courses/semesters/:id` succeed only when the row matches `id` **and** `userId = req.user.id` |
+| **Write scope** | `PUT` / `DELETE fleets/vehicles/:id` succeed only when the row matches `id` **and** `userId = req.user.id` |
 
-| **Create scope** | `POST /courses/semesters` sets `userId` from `req.user.id`; ignore any client-supplied `userId` |
+| **Create scope** | `POST fleets/vehicles` sets `userId` from `req.user.id`; ignore any client-supplied `userId` |
 
-| **Cross-user access** | Another user’s semester (or unknown `id`) → `404` with `{ "message": "…" }` (not `403`) |
+| **Cross-user access** | Another user’s vehicle (or unknown `id`) → `404` with `{ "message": "…" }` (not `403`) |
 
-| **UI scope** | `semesterList.vue` renders only the array returned for the signed-in user; do not mix in other users’ rows |
+| **UI scope** | `vehicleList.vue` renders only the array returned for the signed-in user; do not mix in other users’ rows |
 
-| **Implementation** | Shared owner lookup in `backend/app/authorization/` (for example `getAccessiblesemesterOrNull`); do not copy `userId` filters by hand in every controller action |
+| **Implementation** | Shared owner lookup in `backend/app/authorization/` (for example `getAccessiblevehicleOrNull`); do not copy `userId` filters by hand in every controller action |
 
   
 
@@ -414,7 +623,7 @@ Unauthenticated requests to these endpoints → `401`.
 
   
 
-Mount prefix is `/courses` (existing `semester.routes.js`). Paths and JSON fields match the running course app (`name`, `startDate`, `endDate`). Auth is **Yes** on every row this feature uses (**FR-003**). Do not add query filters, extra fields, or a `{ success, data }` envelope.
+Mount prefix is `/fleets` (existing `vehicle.routes.js`). Paths and JSON fields match the running course app (`make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passengerCapacity`, `licensePlateNo`, `licensePlateExp`). Auth is **Yes** on every row this feature uses (**FR-003**). Do not add query filters, extra fields, or a `{ success, data }` envelope.
 
   
 
@@ -422,13 +631,13 @@ Mount prefix is `/courses` (existing `semester.routes.js`). Paths and JSON field
 
 |--------|----------|------|---------|
 
-| `GET` | `/courses/semesters` | Yes | List the caller’s semesters, `name` ASC |
+| `GET` | `/fleets/vehicles` | Yes | List the user's vehicles, `name` ASC |
 
-| `POST` | `/courses/semesters` | Yes | Create a semester owned by the caller |
+| `POST` | `/fleets/vehicles` | Yes | Create a vehicle owned by the user |
 
-| `PUT` | `/courses/semesters/:id` | Yes | Update a semester |
+| `PUT` | `/fleets/vehicles/:id` | Yes | Update a vehicle |
 
-| `DELETE` | `/courses/semesters/:id` | Yes | Delete a semester |
+| `DELETE` | `/fleets/vehicles/:id` | Yes | Delete a vehicle |
 
   
 
@@ -442,12 +651,24 @@ Trailing slashes already present on some Express routes are equivalent to the pa
 
 {
 
-  "name": "Fall 2026",
+  "make": "Nissan",
 
-  "startDate": "2026-8-14",
-
-  "endDate": "2026-12-11"
-
+  "model": "Pathfinder",
+  
+  "year": "2014",
+  
+  "vin": "1M2AR13Y8HM088054",
+  
+  "purchaseDate": "07/11/24",
+  
+  "color": "White",
+  
+  "passengerCapacity": 6,
+  
+  "licensePlateNo": "DWD947",
+  
+  "licensePlateExp": "2026-8-14",
+  
 }
 
 ```
@@ -460,25 +681,35 @@ Trailing slashes already present on some Express routes are equivalent to the pa
 
 {
 
-  "name": "Fall 2026",
+  "make": "Nissan",
 
-  "startDate": "2026-8-14",
-
-  "endDate": "2026-12-11"
-  
-  "userId": 42
-
+  "model": "Pathfinder",
+  
+  "year": "2014",
+  
+  "vin": "1M2AR13Y8HM088054",
+  
+  "purchaseDate": "07/11/24",
+  
+  "color": "White",
+  
+  "passengerCapacity": 6,
+  
+  "licensePlateNo": "DWD947",
+  
+  "licensePlateExp": "2026-8-14",
+  
 }
 
 ```
 
   
 
-`name`, `startDate`, and `endDate` are stored and returned as typed.
+`make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passengerCapacity`, `licensePlateNo` and `licensePlateExp` are stored and returned as typed.
 
   
 
-**Update request body:** same three fields (`name`, `startDate`, `endDate`).
+**Update request body:** same nine fields (`make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passengerCapacity`, `licensePlateNo` `licensePlateExp`).
 
   
 
@@ -486,7 +717,7 @@ Trailing slashes already present on some Express routes are equivalent to the pa
 
 ```json
 
-{ "message": "semester was updated successfully." }
+{ "message": "vehicle was updated successfully." }
 
 ```
 
@@ -496,7 +727,7 @@ Trailing slashes already present on some Express routes are equivalent to the pa
 
   
 
-**List success** (`200`): JSON array of semester objects (same fields as create). Empty catalogue → `[]`.
+**List success** (`200`): JSON array of vehicle objects (same fields as create). Empty catalogue → `[]`.
 
   
 
@@ -512,11 +743,25 @@ Trailing slashes already present on some Express routes are equivalent to the pa
 
 |-----------|-----------|
 
-| Name longer than 11 characters | `semester name must be 11 characters or fewer.` |
+| `make` longer than 100 characters | `vehicle make must be 100 characters or fewer.` |
 
-| `startDate` is not a valid date | `semester start date must be a valid date.` |
+| `model` longer than 100 characters | `vehicle model must be 100 characters or fewer.` |
 
-| `endDate` is not a valid date | `semester end date must be a valid date.` |
+| `year` longer than 4 digits | `vehicle year must be 4 digits or fewer.` |
+
+| `vin` longer than 17 characters | `vehicle vin must be 17 characters or fewer.` |
+
+| Invalid `vin` | `vehicle vin is invalid.` |
+
+| `purchaseDate` is not a valid date | `vehicle purchase date must be a valid date.` |
+
+| `color` longer than 100 characters | `vehicle color must be 100 characters or fewer.` |
+
+| `passengerCapacity` longer than 4 digits | `vehicle passenger capacity must be 4 digits or fewer.` |
+
+| `licensePlateNo` longer than 7 digits | `vehicle license plate number must be 7 digits or fewer.` |
+
+| `licensePlateExp` is not a valid date | `vehicle license plate expiration must be a valid date.` |
 
   
 
@@ -524,13 +769,13 @@ Trailing slashes already present on some Express routes are equivalent to the pa
 
 **Not found / not owned:** `404` (do not use `403`).  
 
-**Invalid `semesterId`:** `400` (Edge Cases).  
+**Invalid `vehicleId`:** `400` (Edge Cases).  
 
 **Unauthenticated:** `401`.
 
   
 
-`GET /courses/semesters/:id` and `DELETE /courses/semesters` (delete-all) exist in the starter routes; this feature does not specify or test them.
+`GET /fleets/vehicles/:id` and `DELETE /fleets/vehicles` (delete-all) exist in the starter routes; this feature does not specify or test them.
 
   
 
@@ -542,29 +787,29 @@ Trailing slashes already present on some Express routes are equivalent to the pa
 
   
 
-### [View: semesters] — route name `semesters` (`/semesters`)
+### [View: vehicles] — route name `vehicles` (`/vehicles`)
 
   
 
-Existing view: `frontend/src/views/semesterList.vue`. Client calls: `frontend/src/services/semesterServices.js` (`GET`/`POST`/`PUT`/`DELETE` `semesters`). Align labels and validation with Gherkin; keep this route, view, and service.
+Existing view: `frontend/src/views/vehicleList.vue`. Client calls: `frontend/src/services/vehicleServices.js` (`GET`/`POST`/`PUT`/`DELETE` `vehicles`). Align labels and validation with Gherkin; keep this route, view, and service.
 
   
 
-*   Heading: **semesters**
+*   Heading: **vehicles**
 
-*   Purpose: signed-in user creates, lists reverse chronologically, edits, and deletes the semesters on this one screen (**SC-002**)
+*   Purpose: signed-in user creates, lists chronologically, edits, and deletes the vehicles on this one screen (**SC-002**)
 
-*   Primary action: **+ New semester** (`oc-cta`) — opens the add dialog (US-3.4)
+*   Primary action: **+ New vehicle** (`oc-cta`) — opens the add dialog (US-3.4)
 
-*   Table columns: **Name**, **Start Date**, **End Date**, plus row actions
+*   Table columns: **Make**, **Model**, **Year**, **VIN**, **Purchase Date**, **Color**, **Passenger Capacity**, **License Plate Number**, **License Plate Expiration**, plus row actions
 
-*   Rows show `name`, `startDate`, and `endDate` as stored (unit is a text field, not a fixed unit list)
+*   Rows show `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passengerCapacity`, `licensePlateNo`, and `licensePlateExp` as stored
 
-*   Row action **Edit semester** — opens the edit dialog with that row’s values (US-3.2)
+*   Row action **Edit vehicle** — opens the edit dialog with that row’s values (US-3.2)
 
-*   Row action: delete icon — opens a confirm-delete dialog (US-3.3). Icon-only control needs an accessible name (for example `aria-label="Delete semester"`)
+*   Row action: delete icon — opens a confirm-delete dialog (US-3.3). Icon-only control needs an accessible name (for example `aria-label="Delete vehicle"`)
 
-*   **Empty state:** no semester rows (US-3.1 “User has no existing semesters”)
+*   **Empty state:** no vehicle rows (US-3.1 “User has no existing vehicles”)
 
 *   **Loading:** in-progress list request (`:loading` or equivalent); do not treat loading as an empty catalogue
 
@@ -574,11 +819,11 @@ Existing view: `frontend/src/views/semesterList.vue`. Client calls: `frontend/sr
 
 **Add dialog**
 
-*   Opened by **+ New semester**
+*   Opened by **+ New vehicle**
 
-*   Fields: name, start date, and end date (all required — **FR-001**)
+*   Fields: make, model, year, vin, purchase date, color, passengerCapacity, license plate number, and license plate expiration (all required — **FR-001**)
 
-*   Confirm creates via `POST`; on `201` the dialog closes and `Fall 2026` (or the typed name) appears in the table
+*   Confirm creates via `POST`; on `201` the dialog closes and `2014 Nissan Pathfinder` (or the typed name) appears in the table
 
 *   Cancel / dismiss closes without a request
 
@@ -586,9 +831,9 @@ Existing view: `frontend/src/views/semesterList.vue`. Client calls: `frontend/sr
 
 **Edit dialog**
 
-*   Opened by **Edit semester**
+*   Opened by **Edit vehicle**
 
-*   Same three fields, prefilled (**FR-004**)
+*   Same nine fields, prefilled (**FR-004**)
 
 *   Confirm updates via `PUT`; on `200` the dialog closes and the table shows the new values (**FR-005**)
 
@@ -610,17 +855,31 @@ Existing view: `frontend/src/views/semesterList.vue`. Client calls: `frontend/sr
 
 |---------------------------|---------|
 
-| Name | `semester name is required.` |
+| `make` longer than 100 characters | `vehicle make must be 100 characters or fewer.` |
 
-| Start date | `semester start date is required.` |
+| `model` longer than 100 characters | `vehicle model must be 100 characters or fewer.` |
 
-| End date | `semester end date is required.` |
+| `year` longer than 4 digits | `vehicle year must be 4 digits or fewer.` |
+
+| `vin` longer than 17 characters | `vehicle vin must be 17 characters or fewer.` |
+
+| Invalid `vin` | `vehicle vin is invalid.` |
+
+| `purchaseDate` is not a valid date | `vehicle purchase date must be a valid date.` |
+
+| `color` longer than 100 characters | `vehicle color must be 100 characters or fewer.` |
+
+| `passengerCapacity` longer than 4 digits | `vehicle passenger capacity must be 4 digits or fewer.` |
+
+| `licensePlateNo` longer than 7 digits | `vehicle license plate number must be 7 digits or fewer.` |
+
+| `licensePlateExp` is not a valid date | `vehicle license plate expiration must be a valid date.` |
 
   
 
 **App chrome**
 
-*   `MenuBar` already has **semesters** (`:to="{ name: 'semesters' }"`) when a user is signed in — keep it. Gherkin “open the semesters menu” is this control.
+*   `MenuBar` already has **vehicles** (`:to="{ name: 'vehicles' }"`) when a user is signed in — keep it. Gherkin “open the vehicles menu” is this control.
 
 *   This feature does not add or change Login / courses / profile chrome.
 
@@ -646,57 +905,101 @@ If another Feature already added the same scenario titles in these files, extend
 
 |-------|----------|-----------|-----------|
 
-| US-3.4 | User creates a new semester | `backend/tests/semesters.test.js` | `User creates a new semester` |
+| US-3.4 | User creates a new vehicle | `backend/tests/vehicles.test.js` | `User creates a new vehicle` |
 
-| US-3.4 | User creates a new semester | `frontend/tests/semesterList.test.js` | `User creates a new semester` |
+| US-3.4 | User creates a new vehicle | `frontend/tests/vehicleList.test.js` | `User creates a new vehicle` |
 
-| US-3.4 | User creates a semester with an empty name | `frontend/tests/semesterList.test.js` | `User creates a semester with an empty name` |
+|| US-3.4 | User creates a vehicle with an empty make | `frontend/tests/vehicleList.test.js` | `User creates a vehicle with an empty make` |
 
-| US-3.4 | User creates a semester with an empty start date | `frontend/tests/semesterList.test.js` | `User creates a semester with an empty start date` |
+| US-3.4 | User creates a vehicle with an empty model | `frontend/tests/vehicleList.test.js` | `User creates a vehicle with an empty model` |
 
-| US-3.4 | User creates a semester with an empty end date | `frontend/tests/semesterList.test.js` | `User creates a semester with an empty end date` |
+| US-3.4 | User creates a vehicle with an empty year | `frontend/tests/vehicleList.test.js` | `User creates a vehicle with an empty year` |
 
-| US-3.4 | User creates a semester with a name that is too long | `backend/tests/semesters.test.js` | `User creates a semester with a name that is too long` |
+| US-3.4 | User creates a vehicle with an empty vin | `frontend/tests/vehicleList.test.js` | `User creates a vehicle with an empty vin` |
 
-| US-3.4 | User creates a semester with a name that is too long | `frontend/tests/semesterList.test.js` | `User creates a semester with a name that is too long` |
+| US-3.4 | User creates a vehicle with an empty purchase date | `frontend/tests/vehicleList.test.js` | `User creates a vehicle with an empty purchase date` |
 
-| US-3.4 | User creates a semester with a non-date start date | `backend/tests/semesters.test.js` | `User creates a semester with a non-date start date` |
+| US-3.4 | User creates a vehicle with an empty color | `frontend/tests/vehicleList.test.js` | `User creates a vehicle with an empty color` |
 
-| US-3.4 | User creates a semester with a non-date start date | `frontend/tests/semesterList.test.js` | `User creates a semester with a non-date start date` |
+| US-3.4 | User creates a vehicle with an empty passenger capacity | `frontend/tests/vehicleList.test.js` | `User creates a vehicle with an empty passenger capacity` |
 
-| US-3.1 | User views existing semesters | `backend/tests/semesters.test.js` | `User views existing semesters` |
+| US-3.4 | User creates a vehicle with an empty license plate number | `frontend/tests/vehicleList.test.js` | `User creates a vehicle with an empty license plate number` |
 
-| US-3.1 | User views existing semesters | `frontend/tests/semesterList.test.js` | `User views existing semesters` |
+| US-3.4 | User creates a vehicle with an empty license plate expiration | `frontend/tests/vehicleList.test.js` | `User creates a vehicle with an empty license plate expiration` |
 
-| US-3.1 | User has no existing semesters | `backend/tests/semesters.test.js` | `User has no existing semesters` |
+| US-3.4 | User creates an vehicle with a make that is too long | `backend/tests/vehicles.test.js` | `User creates an vehicle with a make that is too long` |
 
-| US-3.1 | User has no existing semesters | `frontend/tests/semesterList.test.js` | `User has no existing semesters` |
+| US-3.4 | User creates an vehicle with a make that is too long | `frontend/tests/vehicleList.test.js` | `User creates an vehicle with a make that is too long` |
 
-| US-3.2 | User edits an semester's information | `backend/tests/semesters.test.js` | `User edits an semester's information` |
+| US-3.4 | User creates an vehicle with a model that is too long | `backend/tests/vehicles.test.js` | `User creates an vehicle with a model that is too long` |
 
-| US-3.2 | User edits an semester's information | `frontend/tests/semesterList.test.js` | `User edits an semester's information` |
+| US-3.4 | User creates an vehicle with a model that is too long | `frontend/tests/vehicleList.test.js` | `User creates an vehicle with a model that is too long` |
 
-| US-3.2 | User edits an semester with an empty name | `frontend/tests/semesterList.test.js` | `User edits an semester with an empty name` |
+| US-3.4 | User creates an vehicle with a year that is too long | `backend/tests/vehicles.test.js` | `User creates an vehicle with a year that is too long` |
 
-| US-3.2 | User edits an semester with an empty start date | `frontend/tests/semesterList.test.js` | `User edits an semester with an empty start date` |
+| US-3.4 | User creates an vehicle with a year that is too long | `frontend/tests/vehicleList.test.js` | `User creates an vehicle with a year that is too long` |
 
-| US-3.2 | User edits an semester with an empty end date | `frontend/tests/semesterList.test.js` | `User edits an semester with an empty end date` |
+| US-3.4 | User creates an vehicle with a vin that is too long | `backend/tests/vehicles.test.js` | `User creates an vehicle with a vin that is too long` |
 
-| US-3.2 | User edits an semester with a name that is too long | `backend/tests/semesters.test.js` | `User edits an semester with a name that is too long` |
+| US-3.4 | User creates an vehicle with a vin that is too long | `frontend/tests/vehicleList.test.js` | `User creates an vehicle with a vin that is too long` |
 
-| US-3.2 | User edits an semester with a name that is too long | `frontend/tests/semesterList.test.js` | `User edits an semester with a name that is too long` |
+| US-3.4 | User creates an vehicle with an invalid vin | `backend/tests/vehicles.test.js` | `User creates an vehicle with an invalid vin` |
 
-| US-3.2 | User edits an semester with a non-date start date | `backend/tests/semesters.test.js` | `User edits an semester with a non-date start date` |
+| US-3.4 | User creates an vehicle with an invalid vin | `frontend/tests/vehicleList.test.js` | `User creates an vehicle with an invalid vin` |
 
-| US-3.2 | User edits an semester with a non-date start date | `frontend/tests/semesterList.test.js` | `User edits an semester with a non-date start date` |
+| US-3.4 | User creates an vehicle with a purchase date that is not a valid date | `backend/tests/vehicles.test.js` | `User creates an vehicle with a purchase date that is not a valid date` |
 
-| US-3.2 | User edits an semester with a non-date end date | `backend/tests/semesters.test.js` | `User edits an semester with a non-date end date` |
+| US-3.4 | User creates an vehicle with a purchase date that is not a valid date | `frontend/tests/vehicleList.test.js` | `User creates an vehicle with a purchase date that is not a valid date` |
 
-| US-3.2 | User edits an semester with a non-date end date | `frontend/tests/semesterList.test.js` | `User edits an semester with a non-date end date` |
+| US-3.4 | User creates an vehicle with a color that is too long | `backend/tests/vehicles.test.js` | `User creates an vehicle with a color that is too long` |
 
-| US-3.3 | User removes an semester | `backend/tests/semesters.test.js` | `User removes an semester` |
+| US-3.4 | User creates an vehicle with a color that is too long | `frontend/tests/vehicleList.test.js` | `User creates an vehicle with a color that is too long` |
 
-| US-3.3 | User removes an semester | `frontend/tests/semesterList.test.js` | `User removes an semester` |
+| US-3.4 | User creates an vehicle with a passenger capacity that is too long | `backend/tests/vehicles.test.js` | `User creates an vehicle with a passenger capacity that is too long` |
+
+| US-3.4 | User creates an vehicle with a passenger capacity that is too long | `frontend/tests/vehicleList.test.js` | `User creates an vehicle with a passenger capacity that is too long` |
+
+| US-3.4 | User creates an vehicle with a license plate number that is too long | `backend/tests/vehicles.test.js` | `User creates an vehicle with a license plate number that is too long` |
+
+| US-3.4 | User creates an vehicle with a license plate number that is too long | `frontend/tests/vehicleList.test.js` | `User creates an vehicle with a license plate number that is too long` |
+
+| US-3.4 | User creates an vehicle with a license plate expiration that is not a valid date | `backend/tests/vehicles.test.js` | `User creates an vehicle with a license plate expiration that is not a valid date` |
+
+| US-3.4 | User creates an vehicle with a license plate expiration that is not a valid date | `frontend/tests/vehicleList.test.js` | `User creates an vehicle with a license plate expiration that is not a valid date` |
+
+| US-3.1 | User views existing vehicles | `backend/tests/vehicles.test.js` | `User views existing vehicles` |
+
+| US-3.1 | User views existing vehicles | `frontend/tests/vehicleList.test.js` | `User views existing vehicles` |
+
+| US-3.1 | User has no existing vehicles | `backend/tests/vehicles.test.js` | `User has no existing vehicles` |
+
+| US-3.1 | User has no existing vehicles | `frontend/tests/vehicleList.test.js` | `User has no existing vehicles` |
+
+| US-3.2 | User edits an vehicle's information | `backend/tests/vehicles.test.js` | `User edits an vehicle's information` |
+
+| US-3.2 | User edits an vehicle's information | `frontend/tests/vehicleList.test.js` | `User edits an vehicle's information` |
+
+| US-3.2 | User edits an vehicle with an empty name | `frontend/tests/vehicleList.test.js` | `User edits an vehicle with an empty name` |
+
+| US-3.2 | User edits an vehicle with an empty start date | `frontend/tests/vehicleList.test.js` | `User edits an vehicle with an empty start date` |
+
+| US-3.2 | User edits an vehicle with an empty end date | `frontend/tests/vehicleList.test.js` | `User edits an vehicle with an empty end date` |
+
+| US-3.2 | User edits an vehicle with a name that is too long | `backend/tests/vehicles.test.js` | `User edits an vehicle with a name that is too long` |
+
+| US-3.2 | User edits an vehicle with a name that is too long | `frontend/tests/vehicleList.test.js` | `User edits an vehicle with a name that is too long` |
+
+| US-3.2 | User edits an vehicle with a non-date start date | `backend/tests/vehicles.test.js` | `User edits an vehicle with a non-date start date` |
+
+| US-3.2 | User edits an vehicle with a non-date start date | `frontend/tests/vehicleList.test.js` | `User edits an vehicle with a non-date start date` |
+
+| US-3.2 | User edits an vehicle with a non-date end date | `backend/tests/vehicles.test.js` | `User edits an vehicle with a non-date end date` |
+
+| US-3.2 | User edits an vehicle with a non-date end date | `frontend/tests/vehicleList.test.js` | `User edits an vehicle with a non-date end date` |
+
+| US-3.3 | User removes an vehicle | `backend/tests/vehicles.test.js` | `User removes an vehicle` |
+
+| US-3.3 | User removes an vehicle | `frontend/tests/vehicleList.test.js` | `User removes an vehicle` |
 
   
   
@@ -735,9 +1038,9 @@ If another Feature already added the same scenario titles in these files, extend
 
 *   Sign-in, registration, and session issuance ([Feature 1](./feature-1-user-authentification.md))
 
-*   Attaching semesters to courses, course steps, or `coursesemester` quantity/unit on a course ([later course features](./feature-list.md))
+*   Attaching vehicles to courses, course steps, or `fleetvehicle` quantity/unit on a course ([later course features](./feature-list.md))
 
-*   `GET /courses/semesters/:id` and `DELETE /courses/semesters` (delete-all) — starter routes; not in this feature’s Gherkin
+*   `GET /fleets/vehicles/:id` and `DELETE /fleets/vehicles` (delete-all) — starter routes; not in this feature’s Gherkin
 
 *   Profile / log out ([Feature 6](./feature-list.md))
 
