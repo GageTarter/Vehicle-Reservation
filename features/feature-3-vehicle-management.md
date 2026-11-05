@@ -18,7 +18,6 @@
   
 
 ### US-3.1: View created vehicles
-
 **As a** Authorized User  
 **I want to** view the list of created vehicles  
 **So that** I can keep track of which vehicles the software knows about
@@ -31,7 +30,6 @@
   
 
 ### US-3.2: Edit existing vehicles
-
 **As a** Authorized User
 **I want to** be able to edit the values of any created vehicle  
 **So that** I can change the values, such as the vehicle make, model, and year, of any created vehicle, to be different than what was inputted on creation
@@ -45,7 +43,6 @@
   
 
 ### US-3.3: Delete existing vehicles
-
 **As a** Authorized User  
 **I want to** delete any of the existing vehicles
 **So that** I can no longer see or include them in the vehicle list
@@ -53,13 +50,12 @@
   
 
 **Priority:** P1  
-**Independent test:** Delete any existing vehicle and clear its data  
+**Independent test:** Delete any existing vehicle and clear its data 
 **Acceptance scenarios:** see ### US-3.3 under Acceptance Criteria
 
 
 
 ### US-3.4: Add new vehicles
-
 **As a** Authorized user
 **I want to** add a new vehicle
 **So that** I can create a new vehicle and change its values
@@ -530,31 +526,18 @@
 |-------|------|-------|
 
 | `id` | INTEGER | PK, auto-increment |
-
 | `userId` | INTEGER | Required, FK → `users.id`, `ON DELETE CASCADE` |
-
 | `name` | STRING(100) | Required; unique per (`userId`, `name`); stored and displayed as typed |
-
 | `make` | STRING(100) | Required; stored and displayed as typed |
-
 | `model` | STRING(100) | Required; stored and displayed as typed |
-
 | `year` | STRING(100) | Required; stored and displayed as typed |
-
 | `vin` | STRING(17) | Required; stored and displayed as typed |
-
 | `purchaseDate` | DATE(10) | Required; stored and displayed as typed |
-
 | `color` | STRING(100) | Required; stored and displayed as typed |
-
 | `passengerCapacity` | INT(4) | Required; stored and displayed as typed |
-
 | `licensePlateNo` | STRING(7) | Required; stored and displayed as typed |
-
 | `licensePlateExp` | DATE(10) | Required; stored and displayed as typed |
-
 | `createdAt` | DATE | Sequelize timestamp |
-
 | `updatedAt` | DATE | Sequelize timestamp |
 
   
@@ -598,17 +581,11 @@ Each user owns their catalogue `vehicles` exclusively. List, create, update, and
 |------|-------------|
 
 | **Read scope** | `GET fleets/vehicles` returns only rows where `userId = req.user.id`, ordered by `createdAt` ASC (**FR-007**) |
-
 | **Write scope** | `PUT` / `DELETE fleets/vehicles/:id` succeed only when the row matches `id` **and** `userId = req.user.id` |
-
 | **Create scope** | `POST fleets/vehicles` sets `userId` from `req.user.id`; ignore any client-supplied `userId` |
-
 | **Cross-user access** | Another user’s vehicle (or unknown `id`) → `404` with `{ "message": "…" }` (not `403`) |
-
 | **UI scope** | `vehicleList.vue` renders only the array returned for the signed-in user; do not mix in other users’ rows |
-
 | **Implementation** | Shared owner lookup in `backend/app/authorization/` (for example `getAccessiblevehicleOrNull`); do not copy `userId` filters by hand in every controller action |
-
   
 
 Unauthenticated requests to these endpoints → `401`.
@@ -632,13 +609,9 @@ Mount prefix is `/fleets` (existing `vehicle.routes.js`). Paths and JSON fields 
 |--------|----------|------|---------|
 
 | `GET` | `/fleets/vehicles` | Yes | List the user's vehicles, `name` ASC |
-
 | `POST` | `/fleets/vehicles` | Yes | Create a vehicle owned by the user |
-
 | `PUT` | `/fleets/vehicles/:id` | Yes | Update a vehicle |
-
 | `DELETE` | `/fleets/vehicles/:id` | Yes | Delete a vehicle |
-
   
 
 Trailing slashes already present on some Express routes are equivalent to the paths above.
