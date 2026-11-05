@@ -1,4 +1,5 @@
 import routes from "./app/routes/index.js";
+import authRoutes from "./app/routes/auth.routes.js";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -40,6 +41,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/vehicles", authRoutes);
 app.use("/api", routes);
 
 const PORT = process.env.PORT || 3200;

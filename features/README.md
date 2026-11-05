@@ -16,7 +16,7 @@ No application code may be written unless it maps to a requirement in one of the
 
 | ID | File | Branch | Depends on |
 |----|------|--------|------------|
-| — | *Add `feature-1-….md` before implementation* | `feature/1-…` | — |
+| 1 | [feature-1-google-auth.md](./feature-1-google-auth.md) | `features/1-google-auth` | — |
 
 New features: follow [framework.md](./framework.md#feature-spec-template) — **Status**, **Input**, **FR-00N**, **SC-00N**, **Key Entities**, Gherkin, **Agent implementation request**, **Definition of Done**.
 
