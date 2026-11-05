@@ -1,6 +1,6 @@
 # Behavior & Rules Reference
 
-**Living snapshot** of product rules currently implemented on `features/1-google-auth`.
+**Living snapshot** of product rules currently implemented on `features/2-user-management`.
 
 These files answer: *"What rules does the app enforce right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.
@@ -23,8 +23,13 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | Missing bearer token | `401` `{ "message": "Unauthorized! No token provided." }` | Feature 1 |
 | Expired or unknown bearer token | `401` `{ "message": "Unauthorized! Invalid or expired token." }` | Feature 1 |
 | Non-admin on `requireAdmin` | `403` `{ "message": "Forbidden! Admin access required." }` | Feature 1 |
-| Sign-out deletes the server session, then the browser removes `localStorage` key `user` and opens `login`. | `POST /vehicles/logout`, then `Utils.removeItem("user")`. | Feature 1 |
+| Sign-out deletes the server session, then the browser removes `localStorage` key `user` and opens `login`. The **Sign out** button is on the account page. | `POST /vehicles/logout`, then `Utils.removeItem("user")`. | Feature 1, Feature 2 |
 | The browser keeps one session under `localStorage` key `user`. | Login writes the success payload with `Utils.setStore`. Axios sends `Authorization: Bearer <token>`. A `401` clears `user` and redirects to `login`. | Feature 1 |
 | Anonymous visitors cannot open protected screens. A signed-in visitor cannot stay on `login`. | `router.beforeEach` | Feature 1 |
 | Dismissing the Google prompt stays on `login` and does not call the API. | Login catches cancellation before `authServices.googleSignIn`. | Feature 1 |
-| Home shows the first name and the role, and offers **Sign out**. Feature 1 has no `MenuBar`. | `Home.vue`, `Login.vue` | Feature 1 |
+| Home shows the first name and the role, and offers **My account**. There is no `MenuBar`. | `Home.vue` | Feature 1, Feature 2 |
+| The account page shows email, first name, last name, and role from `GET /vehicles/me`. | `Account.vue` | Feature 2 |
+| A signed-in user can change only `fName` and `lName`. `email`, `googleId`, and `role` in the body are ignored. A successful save updates `localStorage` key `user`. | `PUT /vehicles/me` | Feature 2 |
+| `fName` and `lName` must be strings. Empty strings are allowed. A missing or non-string name is rejected. | `400` `{ "message": "First and last name must be text." }` | Feature 2 |
+| Canceling edit or delete stays on the account page and does not call the API. | `Account.vue` | Feature 2 |
+| Deleting the account removes that user and their sessions. The browser then removes `localStorage` key `user` and opens `login`. | `DELETE /vehicles/me` returns `{ "message": "Account deleted." }` | Feature 2 |

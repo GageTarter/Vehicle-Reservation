@@ -1,6 +1,6 @@
 # Data Model Reference
 
-**Status:** Feature 1 tables `users` and `sessions`.
+**Status:** Feature 1 tables `users` and `sessions`. Feature 2 adds no columns.
 
 ## Tables
 
@@ -10,8 +10,8 @@
 |-------|------|-------|
 | `id` | INTEGER PK | Auto-increment |
 | `googleId` | STRING | Required, unique; Google `sub` |
-| `fName` | STRING | Required; from `given_name`; may be `""` |
-| `lName` | STRING | Required; from `family_name`; may be `""` |
+| `fName` | STRING | Required; from `given_name` at sign-in; may be `""`. Feature 2 may replace it |
+| `lName` | STRING | Required; from `family_name` at sign-in; may be `""`. Feature 2 may replace it |
 | `email` | STRING | Required, unique; from the verified token |
 | `role` | STRING(20) | Required; `user` or `admin`; default `user` |
 
@@ -33,3 +33,5 @@ No password column.
 - `Session belongsTo User` on `userId`
 
 Wired in `backend/app/models/index.js`.
+
+Deleting a user in Feature 2 also deletes every `sessions` row for that user. `googleId`, `email`, and `role` are not updated by Feature 2.

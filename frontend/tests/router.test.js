@@ -1,6 +1,9 @@
 /**
  * Feature 1 — Google Authentication
  * Spec: features/feature-1-google-auth.md
+ *
+ * Feature 2 — User Management
+ * Spec: features/feature-2-user-management.md
  */
 import { describe, it, expect, beforeEach } from "vitest";
 import router from "../src/router.js";
@@ -36,6 +39,24 @@ describe("Feature 1 — Google Authentication", () => {
   describe("US-1.5 — Block unauthenticated access", () => {
     it("Unauthenticated user accesses a protected route", async () => {
       await router.push({ name: "home" });
+
+      expect(router.currentRoute.value.name).toBe("login");
+    });
+  });
+});
+
+describe("Feature 2 — User Management", () => {
+  beforeEach(async () => {
+    localStorage.clear();
+
+    if (router.currentRoute.value.name !== "login") {
+      await router.push({ name: "login" });
+    }
+  });
+
+  describe("US-2.1 — View my account", () => {
+    it("Signed-out user opens account", async () => {
+      await router.push({ name: "account" });
 
       expect(router.currentRoute.value.name).toBe("login");
     });
