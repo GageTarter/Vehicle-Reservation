@@ -1,6 +1,6 @@
 # API Reference
 
-**Status:** Feature 2 on `features/2-user-management`. Feature 1 auth routes remain.
+**Status:** Feature 8 on `feature/8-vehicle-reservation-requests`. Feature 1 and 2 routes remain.
 
 Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/health`.
 
@@ -13,6 +13,12 @@ Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/
 | `GET` | `/vehicles/me` | Yes | Return the signed-in user's account | Feature 2 |
 | `PUT` | `/vehicles/me` | Yes | Update `fName` and `lName` for the signed-in user | Feature 2 |
 | `DELETE` | `/vehicles/me` | Yes | Delete the signed-in user and that user's sessions | Feature 2 |
+| `GET` | `/vehicles/reservations` | Yes | List own reservations, or every reservation when `role` is `admin` | Feature 8 |
+| `POST` | `/vehicles/reservations` | Yes | Create a request with `status` `requested` and `vehicleId` null | Feature 8 |
+| `GET` | `/vehicles/reservations/:id` | Yes | Fetch one reservation the caller may read | Feature 8 |
+| `PUT` | `/vehicles/reservations/:id` | Yes | Update a `requested` reservation owned by the caller | Feature 8 |
+| `GET` | `/vehicles/drivers` | Yes | Approved drivers (`status` `approved`) | Feature 8 |
+| `GET` | `/vehicles/destinations` | Yes | Destinations for the request form | Feature 8 |
 | `GET` | `/api/health` | No | Process health check | Starter |
 
 ### `POST /vehicles/auth/google`
@@ -98,6 +104,33 @@ Header: `Authorization: Bearer <token>`.
 |--------|------|
 | `200` | That user and every session for that user are deleted. Body: `{ "message": "Account deleted." }` |
 | `401` | Missing, expired, or unknown token, using the same messages as `GET /vehicles/me` |
+
+### `POST /vehicles/reservations` and `PUT /vehicles/reservations/:id`
+
+Header: `Authorization: Bearer <token>`. Create ignores `status`, `requestorUserId`, and `vehicleId`. Update is allowed only for the owner while `status` is `requested`.
+
+Request:
+
+```json
+{
+  "driverId": 4,
+  "destinationId": 2,
+  "startAt": "2026-11-20T14:00:00.000Z",
+  "endAt": "2026-11-22T18:00:00.000Z",
+  "passengerCount": 12,
+  "partyName": "Women's Soccer",
+  "noteType": "general",
+  "noteText": "Need a 15-passenger van"
+}
+```
+
+| Status | When |
+|--------|------|
+| `201` | Created. `status` is `requested` and `vehicleId` is null. |
+| `200` | Updated owned `requested` row. |
+| `400` | Driver is missing or not approved, destination is missing, end is not after start, passenger count is below 1, or the row is no longer `requested`. |
+| `401` | Missing or invalid session. |
+| `404` | Update target is missing or belongs to someone else. `{ "message": "Reservation with id=<id> not found." }` |
 
 ## Conventions
 

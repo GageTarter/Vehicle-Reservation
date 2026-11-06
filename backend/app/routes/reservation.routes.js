@@ -1,0 +1,14 @@
+import { Router } from "express";
+import reservation from "../controllers/reservation.controller.js";
+import { authenticate } from "../authorization/authorization.js";
+
+const router = Router();
+
+router.get("/drivers", [authenticate], reservation.listDrivers);
+router.get("/destinations", [authenticate], reservation.listDestinations);
+router.get("/reservations", [authenticate], reservation.findAll);
+router.post("/reservations", [authenticate], reservation.create);
+router.get("/reservations/:id", [authenticate], reservation.findOne);
+router.put("/reservations/:id", [authenticate], reservation.update);
+
+export default router;
