@@ -1,0 +1,523 @@
+# Feature: Vehicle Mileage and Service Log Management
+
+**Feature ID:** 15  
+**Branch pattern:** `feature/15-vehicle-mileage-and-service-log-management`  
+**Status:** Draft  
+**Created:** 2026-10-30  
+**Input:** OC Vehicle Scheduling System requirements  
+**Depends on:** Feature 1 — User Authentication, Vehicle Management, Vehicle Maintenance Management  
+**Related:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`
+
+---
+
+## User Stories
+
+### US-15.1: View vehicle mileage records
+**As a** maintenance user  
+**I want to** view mileage records for vehicles in my assigned area  
+**So that** I can monitor how much each vehicle is being used  
+**Priority:** P1  
+**Independent test:** Open a vehicle's mileage records and confirm that saved mileage information is displayed  
+**Acceptance scenarios:** See US-15.1 under Acceptance Criteria
+
+### US-15.2: Record vehicle mileage
+**As a** maintenance user  
+**I want to** record the current mileage of a vehicle  
+**So that** the system keeps an updated record of vehicle mileage  
+**Priority:** P1  
+**Independent test:** Enter a vehicle's current mileage and confirm that the mileage record is saved  
+**Acceptance scenarios:** See US-15.2 under Acceptance Criteria
+
+### US-15.3: View vehicle service records
+**As a** maintenance user  
+**I want to** view service records for a vehicle  
+**So that** I can review maintenance and service work previously performed  
+**Priority:** P1  
+**Independent test:** Open a vehicle's service records and confirm that its saved service information is displayed  
+**Acceptance scenarios:** See US-15.3 under Acceptance Criteria
+
+### US-15.4: Record vehicle service
+**As a** maintenance user  
+**I want to** record service performed on a vehicle  
+**So that** the system maintains a history of completed vehicle services  
+**Priority:** P1  
+**Independent test:** Enter a service date and description and confirm that the service record is saved  
+**Acceptance scenarios:** See US-15.4 under Acceptance Criteria
+
+---
+
+## Requirements
+
+## Functional Requirements
+
+-- **FR-001:** A user must be signed in to access vehicle mileage and service log features.
+-- **FR-002:** An authorized maintenance user must be able to view mileage records for vehicles they are permitted to manage.
+-- **FR-003:** An authorized maintenance user must be able to record the current mileage of an existing vehicle.
+-- **FR-004:** Every mileage record must be associated with one vehicle.
+-- **FR-005:** Each mileage record must include the date recorded and current mileage.
+-- **FR-006:** The system must validate that the selected vehicle exists before saving a mileage record.
+-- **FR-007:** The system must validate that mileage is a valid non-negative numeric value.
+-- **FR-008:** The system must allow authorized users to view service records associated with a vehicle.
+-- **FR-009:** An authorized maintenance user must be able to record a service performed on an existing vehicle.
+-- **FR-010:** Every service record must be associated with one vehicle.
+-- **FR-011:** Each service record must include the service date and a description of the service performed.
+-- **FR-012:** The system must validate that the selected vehicle exists before saving a service record.
+-- **FR-013:** An area administrator must be able to view and manage mileage and service records for vehicles in their area.
+-- **FR-014:** A system administrator must be able to view and manage mileage and service records across all areas.
+-- **FR-015:** The system must display mileage and service information associated with the selected vehicle.
+-- **FR-016:** The system must prevent unauthorized users from viewing or creating mileage and service records outside their permitted access.
+
+---
+
+## Assumptions
+
+- Feature 1 authentication and session handling MUST be implemented before this feature.
+- Vehicle Management provides the existing vehicle information.
+- Vehicle Maintenance Management provides the maintenance management functionality.
+- Maintenance users are authorized to record mileage and service information.
+- Area administrators can access records for vehicles belonging to their area.
+- System administrators can access records across all areas.
+- Each mileage record belongs to one vehicle.
+- Each service record belongs to one vehicle.
+- Mileage records and service records are stored separately.
+- Each new mileage or service entry creates a record in its respective table.
+- Existing mileage and service records are retained as vehicle history.
+- Detailed maintenance requests and their statuses are handled by Vehicle Maintenance Management (Feature 14).
+
+## Edge Cases
+
+- Mileage record created without a vehicle ID → `400`.
+- Mileage value is missing → `400`.
+- Mileage value is negative or invalid → `400`.
+- Vehicle ID does not exist → `404`.
+- Service record created without a vehicle ID → `400`.
+- Service date is missing → `400`.
+- Service description is missing → `400`.
+- Service date is invalid → `400`.
+- Mileage or service record ID does not exist → `404`.
+- Unauthenticated caller → `401`.
+- User attempts to access records outside their permitted area → `403`.
+- User attempts to create a record without permission → `403`.
+- Mileage or service record creation fails → no partial changes should be saved.
+- A vehicle has no mileage records → display an appropriate empty state.
+- A vehicle has no service records → display an appropriate empty state.
+- Multiple mileage or service records exist for a vehicle → display the records in an organized order, with the most recent record first.
+
+## Success Criteria
+
+- **SC-001:** An authorized maintenance user can view mileage records for permitted vehicles.
+- **SC-002:** An authorized maintenance user can record vehicle mileage.
+- **SC-003:** Mileage records are saved with the correct vehicle, date, and mileage value.
+- **SC-004:** An authorized maintenance user can view service records for permitted vehicles.
+- **SC-005:** An authorized maintenance user can record vehicle service information.
+- **SC-006:** Service records are saved with the correct vehicle, date, and description.
+- **SC-007:** Area-based and system administrator permissions are enforced.
+- **SC-008:** Every acceptance scenario has at least one automated test before merge.
+
+---
+
+## Data Ownership & Isolation
+
+Mileage and service records belong to the vehicle they are associated with.
+
+| Rule | Requirement |
+|------|-------------|
+| **Maintenance user access** | An authorized maintenance user can view and create mileage and service records for permitted vehicles |
+| **Area administrator access** | An area administrator can view and manage records for vehicles in their area |
+| **System administrator access** | A system administrator can manage mileage and service records across all areas |
+| **Mileage association** | Every mileage record must belong to an existing vehicle |
+| **Service association** | Every service record must belong to an existing vehicle |
+| **Record history** | Existing mileage and service records must be retained |
+| **Unauthenticated access** | Unauthenticated callers receive `401` |
+
+A user must not be allowed to access vehicle mileage or service records outside their permitted area by changing a vehicle ID or record ID in an API request.
+
+## Key Entities
+
+- **Mileage Log:** A record of a vehicle's mileage on a specific date.
+- **Service Log:** A record of service or maintenance work performed on a vehicle.
+- **Vehicle:** The vehicle associated with the mileage and service records.
+- **User:** The maintenance user or administrator recording or viewing the information.
+- **Area:** The department responsible for managing the vehicle and its records.
+
+## API Requirements
+
+The proposed mount prefix is `/vehicleapi`. Final paths must follow the existing project conventions.
+
+All endpoints require authentication.
+
+| Method | Endpoint | Auth | Purpose |
+|--------|----------|------|---------|
+| `GET` | `/vehicleapi/vehicles/:id/mileage` | Maintenance User/Admin | View mileage records for a vehicle |
+| `POST` | `/vehicleapi/vehicles/:id/mileage` | Maintenance User/Admin | Record vehicle mileage |
+| `GET` | `/vehicleapi/vehicles/:id/service-logs` | Maintenance User/Admin | View service records for a vehicle |
+| `POST` | `/vehicleapi/vehicles/:id/service-logs` | Maintenance User/Admin | Record a vehicle service |
+| `GET` | `/vehicleapi/mileage-logs/:id` | Maintenance User/Admin | View a specific mileage record |
+| `GET` | `/vehicleapi/service-logs/:id` | Maintenance User/Admin | View a specific service record |
+
+### Mileage record creation
+
+The system must validate the vehicle ID, date recorded, and mileage value before saving the record.
+
+**Example request:**
+```json
+{
+  "date_recorded": "2026-11-05",
+  "current_mileage": 45200
+}
+```
+
+**Example success response (`201`):**
+```json
+{
+  "message": "Mileage record created successfully.",
+  "mileage_log": {
+    "mileage_log_id": 1,
+    "vehicle_id": 4,
+    "date_recorded": "2026-11-05",
+    "current_mileage": 45200
+  }
+}
+```
+
+### Service record creation
+
+The system must validate the vehicle ID, service date, and service description before saving the record.
+
+**Example request:**
+```json
+{
+  "service_date": "2026-11-05",
+  "service_performed": "Oil change and tire rotation"
+}
+```
+
+**Example success response (`201`):**
+```json
+{
+  "message": "Service record created successfully.",
+  "service_log": {
+    "service_log_id": 1,
+    "vehicle_id": 4,
+    "service_date": "2026-11-05",
+    "service_performed": "Oil change and tire rotation"
+  }
+}
+```
+
+### Error responses
+
+Error response format:
+```json
+{
+  "message": "Human-readable explanation."
+}
+```
+
+- Missing or invalid required fields → `400`.
+- Unauthenticated caller → `401`.
+- Insufficient permissions → `403`.
+- Vehicle or mileage/service record not found → `404`.
+- Invalid or conflicting operation → `409`.
+- Unexpected server error → `500`.
+
+---
+
+## Screen Requirements
+
+Follow the existing project's UI style and navigation conventions.
+
+### [View: Vehicle Mileage and Service Logs]
+
+- **Purpose:** Allow authorized maintenance users and administrators to view and record vehicle mileage and service information.
+- **Vehicle selection:** Allow users to select a vehicle they are authorized to manage.
+- **Mileage records:** Display the mileage record date and current mileage for the selected vehicle.
+- **Record mileage:** Provide a form to enter the date recorded and current mileage.
+- **Service records:** Display the service date and description of service performed for the selected vehicle.
+- **Record service:** Provide a form to enter the service date and service description.
+- **Record history:** Display existing mileage and service records, with the most recent records first.
+- **Loading:** Display a loading indicator while mileage or service information is retrieved.
+- **Success:** Display a confirmation when a mileage or service record is saved.
+- **Error:** Display API errors in the project's standard error component.
+- **Empty state:** Display an appropriate message when a vehicle has no mileage or service records.
+- **Refresh:** Refresh the displayed records after a successful entry.
+
+---
+
+## Data Model Requirements
+
+This feature uses the existing `mileage_logs` and `service_logs` tables. It must not create duplicate mileage or service tables.
+
+### `mileage_logs` table
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `mileage_log_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | Foreign key referencing `vehicles.vehicle_id`; NOT NULL |
+| `date_recorded` | DATE | NOT NULL |
+| `current_mileage` | INTEGER | NOT NULL; must be non-negative |
+
+### `service_logs` table
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `service_log_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | Foreign key referencing `vehicles.vehicle_id`; NOT NULL |
+| `service_date` | DATE | NOT NULL |
+| `service_performed` | TEXT | NOT NULL |
+
+The existing `vehicles` table remains part of the shared data model.
+
+### Associations
+
+- A vehicle can have multiple mileage records.
+- Each mileage record belongs to one vehicle.
+- A vehicle can have multiple service records.
+- Each service record belongs to one vehicle.
+- Mileage and service records must be accessible according to the area associated with their vehicle.
+
+---
+
+## Acceptance Criteria (Gherkin)
+
+### US-15.1 — View vehicle mileage records
+
+#### Scenario: Maintenance user views mileage records
+
+- **Given** I am signed in as an authorized maintenance user
+- **And** a vehicle has mileage records
+- **When** I open the vehicle's mileage information
+- **Then** I can see the mileage records associated with that vehicle
+- **And** each record displays its date and current mileage
+
+#### Scenario: Vehicle has no mileage records
+
+- **Given** I am signed in as an authorized maintenance user
+- **And** a vehicle has no mileage records
+- **When** I open the vehicle's mileage information
+- **Then** the system displays an appropriate empty state
+
+#### Scenario: User attempts to view mileage records outside their area
+
+- **Given** I am signed in as an area administrator
+- **And** a vehicle belongs to another area
+- **When** I attempt to view its mileage records
+- **Then** the system denies access
+- **And** mileage information is not displayed
+
+### US-15.2 — Record vehicle mileage
+
+#### Scenario: Maintenance user records vehicle mileage
+
+- **Given** I am signed in as an authorized maintenance user
+- **And** I select an existing vehicle
+- **And** I enter a valid date and current mileage
+- **When** I submit the mileage record
+- **Then** the system saves the mileage record
+- **And** the record is associated with the selected vehicle
+- **And** the new record is displayed in the vehicle's mileage history
+
+#### Scenario: Maintenance user submits a negative mileage value
+
+- **Given** I am signed in as an authorized maintenance user
+- **And** I select an existing vehicle
+- **And** I enter a negative mileage value
+- **When** I submit the mileage record
+- **Then** the system rejects the record
+- **And** no mileage record is created
+
+#### Scenario: Maintenance user submits mileage without a value
+
+- **Given** I am signed in as an authorized maintenance user
+- **And** I select an existing vehicle
+- **And** I leave the mileage value empty
+- **When** I submit the mileage record
+- **Then** the system rejects the record
+- **And** no mileage record is created
+
+#### Scenario: Maintenance user selects a vehicle that does not exist
+
+- **Given** I am signed in as an authorized maintenance user
+- **And** the selected vehicle does not exist
+- **When** I submit the mileage record
+- **Then** the system rejects the record
+- **And** no mileage record is created
+
+#### Scenario: Unauthorized user attempts to record mileage
+
+- **Given** I am signed in as a user without maintenance permissions
+- **When** I attempt to record mileage for a vehicle
+- **Then** the system returns `403`
+- **And** no mileage record is created
+
+### US-15.3 — View vehicle service records
+
+#### Scenario: Maintenance user views service records
+
+- **Given** I am signed in as an authorized maintenance user
+- **And** a vehicle has service records
+- **When** I open the vehicle's service information
+- **Then** I can see the service records associated with that vehicle
+- **And** each record displays its service date and description
+
+#### Scenario: Vehicle has no service records
+
+- **Given** I am signed in as an authorized maintenance user
+- **And** a vehicle has no service records
+- **When** I open the vehicle's service information
+- **Then** the system displays an appropriate empty state
+
+#### Scenario: Area administrator views service records
+
+- **Given** I am signed in as an area administrator
+- **And** a vehicle belongs to my area
+- **When** I open the vehicle's service information
+- **Then** I can see its service records
+- **And** I cannot view service records for vehicles outside my area
+
+### US-15.4 — Record vehicle service
+
+#### Scenario: Maintenance user records a vehicle service
+
+- **Given** I am signed in as an authorized maintenance user
+- **And** I select an existing vehicle
+- **And** I enter a valid service date
+- **And** I enter a service description
+- **When** I submit the service record
+- **Then** the system saves the service record
+- **And** the record is associated with the selected vehicle
+- **And** the new service record is displayed in the vehicle's service history
+
+#### Scenario: Maintenance user submits a service record without a description
+
+- **Given** I am signed in as an authorized maintenance user
+- **And** I select an existing vehicle
+- **And** I enter a service date
+- **And** I leave the service description empty
+- **When** I submit the service record
+- **Then** the system rejects the record
+- **And** no service record is created
+
+#### Scenario: Maintenance user submits a service record without a date
+
+- **Given** I am signed in as an authorized maintenance user
+- **And** I select an existing vehicle
+- **And** I enter a service description
+- **And** I leave the service date empty
+- **When** I submit the service record
+- **Then** the system rejects the record
+- **And** no service record is created
+
+#### Scenario: Maintenance user selects a vehicle that does not exist
+
+- **Given** I am signed in as an authorized maintenance user
+- **And** the selected vehicle does not exist
+- **When** I submit the service record
+- **Then** the system rejects the record
+- **And** no service record is created
+
+#### Scenario: Unauthorized user attempts to record a service
+
+- **Given** I am signed in as a user without maintenance permissions
+- **When** I attempt to record a service for a vehicle
+- **Then** the system returns `403`
+- **And** no service record is created
+
+---
+
+## Test Coverage Map
+
+Each scenario above must map to at least one automated test.
+
+| Story | Scenario | Expected Test |
+|-------|----------|---------------|
+| US-15.1 | Maintenance user views mileage records | `backend/tests/mileageService.test.js` · `frontend/tests/VehicleMileageService.test.js` — `it("Maintenance user views mileage records")` |
+| US-15.1 | Vehicle has no mileage records | `it("Vehicle has no mileage records")` in the same files |
+| US-15.1 | User attempts to view mileage records outside their area | `it("User attempts to view mileage records outside their area")` |
+| US-15.2 | Maintenance user records vehicle mileage | `it("Maintenance user records vehicle mileage")` |
+| US-15.2 | Maintenance user submits a negative mileage value | `it("Maintenance user submits a negative mileage value")` |
+| US-15.2 | Maintenance user submits mileage without a value | `it("Maintenance user submits mileage without a value")` |
+| US-15.2 | Maintenance user selects a vehicle that does not exist | `it("Maintenance user selects a vehicle that does not exist")` (mileage) |
+| US-15.2 | Unauthorized user attempts to record mileage | `it("Unauthorized user attempts to record mileage")` |
+| US-15.3 | Maintenance user views service records | `it("Maintenance user views service records")` |
+| US-15.3 | Vehicle has no service records | `it("Vehicle has no service records")` |
+| US-15.3 | Area administrator views service records | `it("Area administrator views service records")` |
+| US-15.4 | Maintenance user records a vehicle service | `it("Maintenance user records a vehicle service")` |
+| US-15.4 | Maintenance user submits a service record without a description | `it("Maintenance user submits a service record without a description")` |
+| US-15.4 | Maintenance user submits a service record without a date | `it("Maintenance user submits a service record without a date")` |
+| US-15.4 | Maintenance user selects a vehicle that does not exist | `it("Maintenance user selects a vehicle that does not exist")` (service) |
+| US-15.4 | Unauthorized user attempts to record a service | `it("Unauthorized user attempts to record a service")` |
+
+---
+
+## Agent Implementation Request
+
+Copy when asking Cursor to implement this feature:
+
+```text
+Implement Feature 15 from @features/feature-15-vehicle-mileage-and-service-log-management.md.
+
+Before coding, inspect the existing project structure and shared feature references.
+
+Follow the layer order in @features/framework.md:
+models → routes → backend tests → frontend → frontend tests.
+
+Reuse the existing authentication, vehicle, mileage log, and service log models.
+Do not create duplicate vehicle, mileage log, or service log tables.
+
+Implement mileage record listing and creation, service record listing and creation, and vehicle mileage and service history views.
+
+Validate required fields, mileage values, dates, and vehicle associations. Enforce maintenance user permissions and area-based access restrictions.
+
+Retain existing mileage and service records. New entries must be saved as separate records.
+
+Map every Gherkin scenario in the Test Coverage Map to at least one automated test.
+
+Run the project's test suite before finishing.
+
+If API routes, payloads, schema, or product rules change, update the relevant shared reference files in the same branch.
+
+Confirm any proposed schema changes with the shared data model before implementing them.
+
+Complete the Definition of Done and merge checklist in @features/framework.md.
+
+Do not implement behavior outside this specification.
+```
+
+---
+
+## Definition of Done
+
+- [ ] Backend and frontend implemented according to this specification.
+- [ ] Authorized maintenance users can view vehicle mileage records.
+- [ ] Authorized maintenance users can create mileage records.
+- [ ] Mileage records are saved with the correct vehicle, date, and mileage value.
+- [ ] Authorized maintenance users can view vehicle service records.
+- [ ] Authorized maintenance users can create service records.
+- [ ] Service records are saved with the correct vehicle, date, and description.
+- [ ] Existing mileage and service records are retained.
+- [ ] Area-based and system administrator permissions are enforced.
+- [ ] Vehicle mileage and service history displays correctly.
+- [ ] All mapped automated tests pass.
+- [ ] Test Coverage Map is complete.
+- [ ] `features/reference/data-model.md` is updated if the schema changes.
+- [ ] `features/reference/api.md` is updated if the API changes.
+- [ ] `features/reference/behavior.md` is updated if product rules change.
+
+---
+
+## Out of Scope
+
+- Registration, Google sign-in, session persistence, and logout (Feature 1).
+- Creating or editing reservation requests.
+- Assigning vehicles to reservations.
+- Vehicle availability and double-booking prevention.
+- Vehicle checkout and return management (Feature 12).
+- Vehicle issue reporting (Feature 13).
+- Maintenance request creation and status management (Feature 14).
+- Email notifications and pickup instructions (Feature 16).
+- Vehicle, driver, and destination management.
+- Automatic mileage updates from vehicle checkouts or returns.
+- Automatic service reminders and maintenance scheduling.
+- Editing or deleting historical mileage and service records.
+- Maintenance costs, invoices, and parts inventory.

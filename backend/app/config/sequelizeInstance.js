@@ -1,4 +1,3 @@
-import "dotenv/config";
 import dbConfig from "./db.config.js";
 import { Sequelize } from "sequelize";
 

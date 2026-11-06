@@ -1,4 +1,5 @@
 import routes from "./app/routes/index.js";
+import mileageServiceRoutes from "./app/routes/mileageService.routes.js";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -41,6 +42,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", routes);
+app.use("/vehicleapi", mileageServiceRoutes);
 
 const PORT = process.env.PORT || 3200;
 

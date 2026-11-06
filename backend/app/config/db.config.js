@@ -1,4 +1,15 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const backendRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "../..");
+
+if (process.env.JEST_WORKER_ID !== undefined || process.env.NODE_ENV === "test") {
+  dotenv.config({ path: path.join(backendRoot, ".env.test"), override: true });
+  process.env.NODE_ENV = "test";
+} else {
+  dotenv.config();
+}
 
 const dbConfig = {
   HOST: process.env.DB_HOST || "localhost",
