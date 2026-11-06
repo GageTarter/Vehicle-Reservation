@@ -2,7 +2,9 @@ import db from "../app/models/index.js";
 
 /** Sync schema for tests (no models registered in the starter shell). */
 export const syncTestDatabase = async () => {
+  await db.sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
   await db.sequelize.sync({ force: true });
+  await db.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
 };
 
 /**

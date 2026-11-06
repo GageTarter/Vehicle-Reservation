@@ -354,19 +354,30 @@ Other reservation statuses, such as `Rejected`, may be defined by the Reservatio
 
 Each scenario above must map to at least one automated test.
 
-| Story | Scenario | Expected Test |
-|-------|----------|---------------|
-| US-12.1 | Requestor checks out an assigned vehicle | Checkout succeeds and records the date/time |
-| US-12.1 | Requestor tries to check out a reservation without a vehicle | Checkout is rejected |
-| US-12.1 | Requestor checks out a vehicle twice | Duplicate checkout is rejected |
-| US-12.2 | Requestor views an assigned reservation | Reservation details are displayed |
-| US-12.2 | Requestor cannot view another user's reservation | Access is denied |
-| US-12.3 | Area administrator marks a checked-out vehicle as returned | Return succeeds and records the date/time |
-| US-12.3 | Area administrator tries to return a vehicle that was not checked out | Return is rejected |
-| US-12.3 | Requestor tries to mark a vehicle as returned | Access is denied |
-| US-12.3 | Area administrator attempts to return a vehicle twice | Duplicate return is rejected |
-| US-12.4 | Area administrator views reservation statuses | Authorized reservations are displayed |
-| US-12.4 | No reservations require checkout or return | Empty state is displayed |
+| Story | Scenario | Test file | Test name |
+|-------|----------|-----------|-----------|
+| US-12.1 | Requestor checks out an assigned vehicle | `backend/tests/checkout.test.js` | `it("Requestor checks out an assigned vehicle")` |
+| US-12.1 | Requestor checks out an assigned vehicle | `frontend/tests/CheckoutReturn.test.js` | `it("Requestor checks out an assigned vehicle")` |
+| US-12.1 | Requestor tries to check out a reservation without a vehicle | `backend/tests/checkout.test.js` | `it("Requestor tries to check out a reservation without a vehicle")` |
+| US-12.1 | Requestor tries to check out a reservation without a vehicle | `frontend/tests/CheckoutReturn.test.js` | `it("Requestor tries to check out a reservation without a vehicle")` |
+| US-12.1 | Requestor checks out a vehicle twice | `backend/tests/checkout.test.js` | `it("Requestor checks out a vehicle twice")` |
+| US-12.1 | Requestor checks out a vehicle twice | `frontend/tests/CheckoutReturn.test.js` | `it("Requestor checks out a vehicle twice")` |
+| US-12.2 | Requestor views an assigned reservation | `backend/tests/checkout.test.js` | `it("Requestor views an assigned reservation")` |
+| US-12.2 | Requestor views an assigned reservation | `frontend/tests/CheckoutReturn.test.js` | `it("Requestor views an assigned reservation")` |
+| US-12.2 | Requestor cannot view another user's reservation | `backend/tests/checkout.test.js` | `it("Requestor cannot view another user's reservation")` |
+| US-12.2 | Requestor cannot view another user's reservation | `frontend/tests/CheckoutReturn.test.js` | `it("Requestor cannot view another user's reservation")` |
+| US-12.3 | Area administrator marks a checked-out vehicle as returned | `backend/tests/checkout.test.js` | `it("Area administrator marks a checked-out vehicle as returned")` |
+| US-12.3 | Area administrator marks a checked-out vehicle as returned | `frontend/tests/CheckoutReturn.test.js` | `it("Area administrator marks a checked-out vehicle as returned")` |
+| US-12.3 | Area administrator tries to return a vehicle that was not checked out | `backend/tests/checkout.test.js` | `it("Area administrator tries to return a vehicle that was not checked out")` |
+| US-12.3 | Area administrator tries to return a vehicle that was not checked out | `frontend/tests/CheckoutReturn.test.js` | `it("Area administrator tries to return a vehicle that was not checked out")` |
+| US-12.3 | Requestor tries to mark a vehicle as returned | `backend/tests/checkout.test.js` | `it("Requestor tries to mark a vehicle as returned")` |
+| US-12.3 | Requestor tries to mark a vehicle as returned | `frontend/tests/CheckoutReturn.test.js` | `it("Requestor tries to mark a vehicle as returned")` |
+| US-12.3 | Area administrator attempts to return a vehicle twice | `backend/tests/checkout.test.js` | `it("Area administrator attempts to return a vehicle twice")` |
+| US-12.3 | Area administrator attempts to return a vehicle twice | `frontend/tests/CheckoutReturn.test.js` | `it("Area administrator attempts to return a vehicle twice")` |
+| US-12.4 | Area administrator views reservation statuses | `backend/tests/checkout.test.js` | `it("Area administrator views reservation statuses")` |
+| US-12.4 | Area administrator views reservation statuses | `frontend/tests/CheckoutReturn.test.js` | `it("Area administrator views reservation statuses")` |
+| US-12.4 | No reservations require checkout or return | `backend/tests/checkout.test.js` | `it("No reservations require checkout or return")` |
+| US-12.4 | No reservations require checkout or return | `frontend/tests/CheckoutReturn.test.js` | `it("No reservations require checkout or return")` |
 
 ---
 

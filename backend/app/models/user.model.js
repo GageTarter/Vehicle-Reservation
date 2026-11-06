@@ -27,6 +27,10 @@ export default (sequelize, Sequelize) => {
         allowNull: false,
         defaultValue: "user",
       },
+      area_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
     },
     {
       tableName: "users",

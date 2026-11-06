@@ -30,7 +30,11 @@ export async function authenticate(req, res, next) {
     return res.status(401).send({ message: "Unauthorized! Invalid or expired token." });
   }
 
-  req.user = { id: session.user.id, role: session.user.role };
+  req.user = {
+    id: session.user.id,
+    role: session.user.role,
+    area_id: session.user.area_id,
+  };
   return next();
 }
 
