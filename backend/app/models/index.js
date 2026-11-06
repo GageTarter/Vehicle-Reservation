@@ -1,12 +1,31 @@
 import { Sequelize } from "sequelize";
 import sequelize from "../config/sequelizeInstance.js";
+import userModel from "./user.model.js";
+import sessionModel from "./session.model.js";
+import vehicleModel from "./vehicle.model.js";
+import vehicleIssueModel from "./vehicleIssue.model.js";
+import maintenanceRequestModel from "./maintenanceRequest.model.js";
 
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-// Register models and associations here as features define them, e.g.:
-// import userModel from "./user.model.js";
-// db.user = userModel(sequelize, Sequelize);
+db.user = userModel(sequelize, Sequelize);
+db.session = sessionModel(sequelize, Sequelize);
+db.vehicle = vehicleModel(sequelize, Sequelize);
+db.vehicleIssue = vehicleIssueModel(sequelize, Sequelize);
+db.maintenanceRequest = maintenanceRequestModel(sequelize, Sequelize);
+
+db.user.hasMany(db.session, { foreignKey: "userId" });
+db.session.belongsTo(db.user, { foreignKey: "userId" });
+
+db.vehicle.hasMany(db.vehicleIssue, { foreignKey: "vehicle_id" });
+db.vehicleIssue.belongsTo(db.vehicle, { foreignKey: "vehicle_id" });
+
+db.vehicle.hasMany(db.maintenanceRequest, { foreignKey: "vehicle_id" });
+db.maintenanceRequest.belongsTo(db.vehicle, { foreignKey: "vehicle_id" });
+
+db.vehicleIssue.hasMany(db.maintenanceRequest, { foreignKey: "issue_id" });
+db.maintenanceRequest.belongsTo(db.vehicleIssue, { foreignKey: "issue_id" });
 
 export default db;
