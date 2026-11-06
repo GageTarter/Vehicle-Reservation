@@ -20,22 +20,34 @@ db.reservation = reservationModel(sequelize, Sequelize);
 db.areaInstruction = areaInstructionModel(sequelize, Sequelize);
 db.emailNotification = emailNotificationModel(sequelize, Sequelize);
 
-db.user.hasMany(db.session, { foreignKey: "userId" });
-db.session.belongsTo(db.user, { foreignKey: "userId" });
+const assoc = { constraints: false };
 
-db.area.hasMany(db.vehicle, { foreignKey: "area_id" });
-db.vehicle.belongsTo(db.area, { foreignKey: "area_id" });
+db.user.hasMany(db.session, { foreignKey: "userId", ...assoc });
+db.session.belongsTo(db.user, { foreignKey: "userId", ...assoc });
 
-db.area.hasOne(db.areaInstruction, { foreignKey: "area_id" });
-db.areaInstruction.belongsTo(db.area, { foreignKey: "area_id" });
+db.area.hasMany(db.vehicle, { foreignKey: "area_id", ...assoc });
+db.vehicle.belongsTo(db.area, { foreignKey: "area_id", ...assoc });
 
-db.user.hasMany(db.reservation, { foreignKey: "user_id" });
-db.reservation.belongsTo(db.user, { foreignKey: "user_id" });
+db.area.hasOne(db.areaInstruction, { foreignKey: "area_id", ...assoc });
+db.areaInstruction.belongsTo(db.area, { foreignKey: "area_id", ...assoc });
 
-db.vehicle.hasMany(db.reservation, { foreignKey: "vehicle_id" });
-db.reservation.belongsTo(db.vehicle, { foreignKey: "vehicle_id" });
+db.user.hasMany(db.reservation, {
+  foreignKey: "requester_id",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+  ...assoc,
+});
+db.reservation.belongsTo(db.user, {
+  foreignKey: "requester_id",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+  ...assoc,
+});
 
-db.reservation.hasMany(db.emailNotification, { foreignKey: "reservation_id" });
-db.emailNotification.belongsTo(db.reservation, { foreignKey: "reservation_id" });
+db.vehicle.hasMany(db.reservation, { foreignKey: "vehicle_id", ...assoc });
+db.reservation.belongsTo(db.vehicle, { foreignKey: "vehicle_id", ...assoc });
+
+db.reservation.hasMany(db.emailNotification, { foreignKey: "reservation_id", ...assoc });
+db.emailNotification.belongsTo(db.reservation, { foreignKey: "reservation_id", ...assoc });
 
 export default db;

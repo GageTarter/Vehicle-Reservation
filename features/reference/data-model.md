@@ -6,7 +6,7 @@
 
 ### `users`, `sessions`, `areas`, `vehicles`, `reservations`
 
-Stand-in tables so notification tests can run without Features 1–6 merged to `dev`.
+Stand-in tables so notification tests can run without Features 1–6 merged to `dev`. The `reservations` table in the shared local DB uses `id` (exposed as `reservation_id`) and `requester_id` (exposed as `user_id`).
 
 ### `area_instructions`
 

@@ -13,9 +13,27 @@ const shouldAlterSchema =
 
 const syncOptions = shouldAlterSchema ? { alter: true } : {};
 
+async function dropTableForeignKeys(tableName) {
+  const [rows] = await db.sequelize.query(
+    `SELECT CONSTRAINT_NAME AS name
+     FROM information_schema.TABLE_CONSTRAINTS
+     WHERE TABLE_SCHEMA = DATABASE()
+       AND TABLE_NAME = ?
+       AND CONSTRAINT_TYPE = 'FOREIGN KEY'`,
+    { replacements: [tableName] }
+  );
+
+  for (const row of rows) {
+    await db.sequelize.query(`ALTER TABLE \`${tableName}\` DROP FOREIGN KEY \`${row.name}\``);
+  }
+}
+
 if (process.env.NODE_ENV !== "test") {
   db.sequelize
-    .sync(syncOptions)
+    .query("SET FOREIGN_KEY_CHECKS = 0")
+    .then(() => dropTableForeignKeys("reservations"))
+    .then(() => db.sequelize.sync(syncOptions))
+    .then(() => db.sequelize.query("SET FOREIGN_KEY_CHECKS = 1"))
     .then(() => {
       if (syncOptions.alter) {
         logger.info("Database sync completed with alter: true.");
