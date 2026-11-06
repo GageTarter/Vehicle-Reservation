@@ -1,4 +1,5 @@
 import routes from "./app/routes/index.js";
+import issueRoutes from "./app/routes/issue.routes.js";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -41,6 +42,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", routes);
+app.use("/vehicleapi", issueRoutes);
 
 const PORT = process.env.PORT || 3200;
 
