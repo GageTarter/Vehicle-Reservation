@@ -14,13 +14,15 @@ db.session = sessionModel(sequelize, Sequelize);
 db.vehicle = vehicleModel(sequelize, Sequelize);
 db.reservation = reservationModel(sequelize, Sequelize);
 
-db.user.hasMany(db.session, { foreignKey: "userId" });
-db.session.belongsTo(db.user, { foreignKey: "userId" });
+const assoc = { constraints: false };
 
-db.vehicle.hasMany(db.reservation, { foreignKey: "vehicle_id" });
-db.reservation.belongsTo(db.vehicle, { foreignKey: "vehicle_id" });
+db.user.hasMany(db.session, { foreignKey: "userId", ...assoc });
+db.session.belongsTo(db.user, { foreignKey: "userId", ...assoc });
 
-db.user.hasMany(db.reservation, { foreignKey: "requester_id" });
-db.reservation.belongsTo(db.user, { foreignKey: "requester_id" });
+db.vehicle.hasMany(db.reservation, { foreignKey: "vehicle_id", ...assoc });
+db.reservation.belongsTo(db.vehicle, { foreignKey: "vehicle_id", ...assoc });
+
+db.user.hasMany(db.reservation, { foreignKey: "requester_id", ...assoc });
+db.reservation.belongsTo(db.user, { foreignKey: "requester_id", ...assoc });
 
 export default db;

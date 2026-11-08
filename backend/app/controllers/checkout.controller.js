@@ -3,6 +3,7 @@ import logger from "../config/logger.js";
 
 const Reservation = db.reservation;
 const Vehicle = db.vehicle;
+const User = db.user;
 
 const controller = {};
 
@@ -14,6 +15,9 @@ function toReservationJson(reservation) {
     requester_id: reservation.requester_id,
     vehicle_id: reservation.vehicle_id,
     vehicle_name: vehicle?.name ?? null,
+    requester_name: reservation.user
+      ? `${reservation.user.fName} ${reservation.user.lName}`.trim()
+      : null,
     status: reservation.status,
     start_datetime: reservation.start_datetime,
     end_datetime: reservation.end_datetime,
@@ -48,7 +52,10 @@ function canAccessReservation(user, reservation) {
 
 async function loadReservation(id) {
   return Reservation.findByPk(id, {
-    include: [{ model: Vehicle, required: false }],
+    include: [
+      { model: Vehicle, required: false },
+      { model: User, required: false },
+    ],
   });
 }
 
@@ -183,7 +190,10 @@ controller.findStatus = async (req, res) => {
     }
 
     const reservations = await Reservation.findAll({
-      include: [{ model: Vehicle, required: false }],
+      include: [
+        { model: Vehicle, required: false },
+        { model: User, required: false },
+      ],
       order: [["id", "ASC"]],
     });
 

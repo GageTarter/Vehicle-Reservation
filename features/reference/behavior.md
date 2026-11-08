@@ -33,3 +33,8 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | `fName` and `lName` must be strings. Empty strings are allowed. A missing or non-string name is rejected. | `400` `{ "message": "First and last name must be text." }` | Feature 2 |
 | Canceling edit or delete stays on the account page and does not call the API. | `Account.vue` | Feature 2 |
 | Deleting the account removes that user and their sessions. The browser then removes `localStorage` key `user` and opens `login`. | `DELETE /vehicles/me` returns `{ "message": "Account deleted." }` | Feature 2 |
+| A requestor can check out only their own assigned reservation. Checkout requires an assigned vehicle and status `Assigned`. | `POST /vehicleapi/reservations/:id/checkout` | Feature 12 |
+| Duplicate checkout is rejected; original checkout time is kept. | `409` | Feature 12 |
+| Only an area admin (own area) or system admin can mark a reservation `Returned`. Requestors receive `403`. | `POST /vehicleapi/reservations/:id/return` | Feature 12 |
+| Return is allowed only from `Checked Out`. Duplicate return is rejected. | `409` | Feature 12 |
+| Requestors can view only their own reservation checkout details. Area admins see reservations whose vehicle is in their area. | `GET .../checkout-return` and `GET .../checkout-status` | Feature 12 |

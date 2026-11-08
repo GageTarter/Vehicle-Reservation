@@ -14,6 +14,14 @@ Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/
 | `PUT` | `/vehicles/me` | Yes | Update `fName` and `lName` for the signed-in user | Feature 2 |
 | `DELETE` | `/vehicles/me` | Yes | Delete the signed-in user and that user's sessions | Feature 2 |
 | `GET` | `/api/health` | No | Process health check | Starter |
+| `GET` | `/vehicleapi/reservations/:id/checkout-return` | Yes | View checkout and return information for one reservation | Feature 12 |
+| `POST` | `/vehicleapi/reservations/:id/checkout` | Requestor (own reservation) | Record vehicle checkout | Feature 12 |
+| `POST` | `/vehicleapi/reservations/:id/return` | Area admin / system admin | Mark a checked-out vehicle as returned | Feature 12 |
+| `GET` | `/vehicleapi/reservations/checkout-status` | Area admin / system admin | List reservations and checkout/return statuses | Feature 12 |
+| `GET` | `/vehicleapi/reservations/:id/checkout-return` | Yes | View checkout and return information | Feature 12 |
+| `POST` | `/vehicleapi/reservations/:id/checkout` | Requestor (own reservation) | Record vehicle checkout | Feature 12 |
+| `POST` | `/vehicleapi/reservations/:id/return` | Area admin / system admin | Mark a checked-out vehicle as returned | Feature 12 |
+| `GET` | `/vehicleapi/reservations/checkout-status` | Area admin / system admin | List reservations and checkout/return statuses | Feature 12 |
 
 ### `POST /vehicles/auth/google`
 
@@ -98,6 +106,18 @@ Header: `Authorization: Bearer <token>`.
 |--------|------|
 | `200` | That user and every session for that user are deleted. Body: `{ "message": "Account deleted." }` |
 | `401` | Missing, expired, or unknown token, using the same messages as `GET /vehicles/me` |
+
+### Feature 12 checkout and return
+
+Success checkout (`200`): `{ "message": "Vehicle checkout recorded successfully.", "reservation": { "reservation_id", "status": "Checked Out", "checkout_datetime", "return_datetime": null, ... } }`
+
+Success return (`200`): `{ "message": "Vehicle return recorded successfully.", "reservation": { ..., "status": "Returned", "return_datetime" } }`
+
+Invalid status transition or duplicate checkout/return is `409`. Another user's reservation is `403`. Missing reservation is `404`.
+
+### Feature 12 checkout and return
+
+Checkout and return timestamps are set by the server. Duplicate checkout/return and checkout without a vehicle return `409`. A requestor marking return returns `403`.
 
 ## Conventions
 

@@ -203,6 +203,7 @@ onMounted(() => {
           <thead>
             <tr>
               <th>Reservation</th>
+              <th>Requestor</th>
               <th>Vehicle</th>
               <th>Status</th>
               <th>Checkout</th>
@@ -213,6 +214,7 @@ onMounted(() => {
           <tbody>
             <tr v-for="row in reservations" :key="row.reservation_id">
               <td>{{ row.reservation_id }}</td>
+              <td>{{ row.requester_name || row.requester_id }}</td>
               <td>{{ row.vehicle_name || row.vehicle_id }}</td>
               <td>{{ row.status }}</td>
               <td>{{ row.checkout_datetime }}</td>

@@ -9,6 +9,10 @@ const user = ref(Utils.getStore("user"));
 function openAccount() {
   router.push({ name: "account" });
 }
+
+function openCheckoutReturn() {
+  router.push({ name: "checkoutReturn" });
+}
 </script>
 
 <template>
@@ -19,6 +23,14 @@ function openAccount() {
         <v-chip class="mb-6">{{ user?.role }}</v-chip>
         <div>
           <v-btn color="primary" variant="elevated" class="oc-cta" @click="openAccount">My account</v-btn>
+          <v-btn
+            color="secondary"
+            variant="outlined"
+            class="oc-cta ml-2"
+            @click="openCheckoutReturn"
+          >
+            Checkout and Return
+          </v-btn>
         </div>
       </v-col>
     </v-row>

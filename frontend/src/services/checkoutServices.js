@@ -2,19 +2,19 @@ import apiClient from "./services.js";
 
 const checkoutServices = {
   getCheckoutReturn(id) {
-    return apiClient.get(`vehicleapi/reservations/${id}/checkout-return`);
+    return apiClient.get(`/vehicleapi/reservations/${id}/checkout-return`);
   },
 
   checkout(id) {
-    return apiClient.post(`vehicleapi/reservations/${id}/checkout`);
+    return apiClient.post(`/vehicleapi/reservations/${id}/checkout`);
   },
 
   returnVehicle(id) {
-    return apiClient.post(`vehicleapi/reservations/${id}/return`);
+    return apiClient.post(`/vehicleapi/reservations/${id}/return`);
   },
 
   getCheckoutStatus() {
-    return apiClient.get("vehicleapi/reservations/checkout-status");
+    return apiClient.get("/vehicleapi/reservations/checkout-status");
   },
 };
 

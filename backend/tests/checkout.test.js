@@ -3,6 +3,7 @@
  * Spec: features/feature-12-vehicle checkout & return management.md
  */
 import app from "../server.js";
+import db from "../app/models/index.js";
 import { syncTestDatabase } from "./helpers.js";
 import {
   createReservation,
@@ -31,6 +32,10 @@ async function assignedReservationWorld() {
 describe("Feature 12 — Vehicle Checkout & Return Management", () => {
   beforeEach(async () => {
     await syncTestDatabase();
+  });
+
+  afterAll(async () => {
+    await db.sequelize.close();
   });
 
   describe("US-12.1 — Record vehicle checkout", () => {
