@@ -16,13 +16,15 @@ db.vehicle = vehicleModel(sequelize, Sequelize);
 db.mileageLog = mileageLogModel(sequelize, Sequelize);
 db.serviceLog = serviceLogModel(sequelize, Sequelize);
 
-db.user.hasMany(db.session, { foreignKey: "userId" });
-db.session.belongsTo(db.user, { foreignKey: "userId" });
+const assoc = { constraints: false };
 
-db.vehicle.hasMany(db.mileageLog, { foreignKey: "vehicle_id" });
-db.mileageLog.belongsTo(db.vehicle, { foreignKey: "vehicle_id" });
+db.user.hasMany(db.session, { foreignKey: "userId", ...assoc });
+db.session.belongsTo(db.user, { foreignKey: "userId", ...assoc });
 
-db.vehicle.hasMany(db.serviceLog, { foreignKey: "vehicle_id" });
-db.serviceLog.belongsTo(db.vehicle, { foreignKey: "vehicle_id" });
+db.vehicle.hasMany(db.mileageLog, { foreignKey: "vehicle_id", ...assoc });
+db.mileageLog.belongsTo(db.vehicle, { foreignKey: "vehicle_id", ...assoc });
+
+db.vehicle.hasMany(db.serviceLog, { foreignKey: "vehicle_id", ...assoc });
+db.serviceLog.belongsTo(db.vehicle, { foreignKey: "vehicle_id", ...assoc });
 
 export default db;
