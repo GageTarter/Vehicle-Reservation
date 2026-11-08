@@ -13,9 +13,39 @@ const shouldAlterSchema =
 
 const syncOptions = shouldAlterSchema ? { alter: true } : {};
 
+async function dropExtraUniqueIndexes() {
+  const [tables] = await db.sequelize.query("SHOW TABLES");
+  const hasUsers = tables.some((row) => Object.values(row)[0] === "users");
+
+  if (!hasUsers) {
+    return;
+  }
+
+  const [indexes] = await db.sequelize.query("SHOW INDEX FROM `users`");
+  const seen = new Set();
+  const extraName = /^(googleId|email)(_\d+)?$/;
+
+  for (const index of indexes) {
+    if (
+      index.Non_unique !== 0 ||
+      index.Key_name === "PRIMARY" ||
+      seen.has(index.Key_name) ||
+      !extraName.test(index.Key_name)
+    ) {
+      continue;
+    }
+
+    seen.add(index.Key_name);
+    await db.sequelize.query(`ALTER TABLE \`users\` DROP INDEX \`${index.Key_name}\``);
+  }
+}
+
 if (process.env.NODE_ENV !== "test") {
   db.sequelize
-    .sync(syncOptions)
+    .query("SET FOREIGN_KEY_CHECKS = 0")
+    .then(() => dropExtraUniqueIndexes())
+    .then(() => db.sequelize.sync(syncOptions))
+    .then(() => db.sequelize.query("SET FOREIGN_KEY_CHECKS = 1"))
     .then(() => {
       if (syncOptions.alter) {
         logger.info("Database sync completed with alter: true.");

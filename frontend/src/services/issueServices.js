@@ -2,23 +2,23 @@ import apiClient from "./services.js";
 
 const issueServices = {
   getIssues() {
-    return apiClient.get("issues");
+    return apiClient.get("/vehicleapi/issues");
   },
 
   getIssue(id) {
-    return apiClient.get(`issues/${id}`);
+    return apiClient.get(`/vehicleapi/issues/${id}`);
   },
 
   createIssue(payload) {
-    return apiClient.post("issues", payload);
+    return apiClient.post("/vehicleapi/issues", payload);
   },
 
   updateIssueStatus(id, status) {
-    return apiClient.patch(`issues/${id}/status`, { status });
+    return apiClient.patch(`/vehicleapi/issues/${id}/status`, { status });
   },
 
   getVehicleIssues(vehicleId) {
-    return apiClient.get(`vehicles/${vehicleId}/issues`);
+    return apiClient.get(`/vehicleapi/vehicles/${vehicleId}/issues`);
   },
 };
 

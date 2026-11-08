@@ -74,7 +74,7 @@ async function adminWorld() {
 }
 
 describe("Feature 13 — Vehicle Issue Reporting", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await syncTestDatabase();
   });
 

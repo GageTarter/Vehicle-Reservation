@@ -40,7 +40,7 @@ function canAccessVehicle(user, vehicle) {
     return true;
   }
 
-  if (isAreaAdmin(user)) {
+  if (user.role === "area_admin" || user.role === "maintenance") {
     return vehicle.area_id === user.area_id;
   }
 
@@ -102,6 +102,12 @@ controller.create = async (req, res) => {
       if (reservation.requester_id !== req.user.id) {
         return res.status(403).send({
           message: "You cannot report an issue against another user's reservation.",
+        });
+      }
+
+      if (reservation.vehicle_id && reservation.vehicle_id !== vehicleId) {
+        return res.status(409).send({
+          message: "The selected vehicle does not match this reservation.",
         });
       }
     }

@@ -5,7 +5,6 @@ export default (sequelize, Sequelize) => {
       googleId: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true,
       },
       fName: {
         type: Sequelize.STRING,
@@ -20,7 +19,6 @@ export default (sequelize, Sequelize) => {
       email: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true,
       },
       role: {
         type: Sequelize.STRING(32),
@@ -35,6 +33,10 @@ export default (sequelize, Sequelize) => {
     {
       tableName: "users",
       timestamps: false,
+      indexes: [
+        { unique: true, name: "users_googleId_unique", fields: ["googleId"] },
+        { unique: true, name: "users_email_unique", fields: ["email"] },
+      ],
     }
   );
 

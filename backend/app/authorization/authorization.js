@@ -16,7 +16,7 @@ export async function authenticate(req, res, next) {
     include: [{ model: User }],
   });
 
-  if (!session || new Date(session.expirationDate) < new Date()) {
+  if (!session || !session.user || new Date(session.expirationDate) < new Date()) {
     return res.status(401).send({ message: "Unauthorized! Invalid or expired token." });
   }
 
