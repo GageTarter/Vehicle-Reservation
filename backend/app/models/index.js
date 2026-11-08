@@ -16,16 +16,18 @@ db.vehicle = vehicleModel(sequelize, Sequelize);
 db.vehicleIssue = vehicleIssueModel(sequelize, Sequelize);
 db.maintenanceRequest = maintenanceRequestModel(sequelize, Sequelize);
 
-db.user.hasMany(db.session, { foreignKey: "userId" });
-db.session.belongsTo(db.user, { foreignKey: "userId" });
+const assoc = { constraints: false };
 
-db.vehicle.hasMany(db.vehicleIssue, { foreignKey: "vehicle_id" });
-db.vehicleIssue.belongsTo(db.vehicle, { foreignKey: "vehicle_id" });
+db.user.hasMany(db.session, { foreignKey: "userId", ...assoc });
+db.session.belongsTo(db.user, { foreignKey: "userId", ...assoc });
 
-db.vehicle.hasMany(db.maintenanceRequest, { foreignKey: "vehicle_id" });
-db.maintenanceRequest.belongsTo(db.vehicle, { foreignKey: "vehicle_id" });
+db.vehicle.hasMany(db.vehicleIssue, { foreignKey: "vehicle_id", ...assoc });
+db.vehicleIssue.belongsTo(db.vehicle, { foreignKey: "vehicle_id", ...assoc });
 
-db.vehicleIssue.hasMany(db.maintenanceRequest, { foreignKey: "issue_id" });
-db.maintenanceRequest.belongsTo(db.vehicleIssue, { foreignKey: "issue_id" });
+db.vehicle.hasMany(db.maintenanceRequest, { foreignKey: "vehicle_id", ...assoc });
+db.maintenanceRequest.belongsTo(db.vehicle, { foreignKey: "vehicle_id", ...assoc });
+
+db.vehicleIssue.hasMany(db.maintenanceRequest, { foreignKey: "issue_id", ...assoc });
+db.maintenanceRequest.belongsTo(db.vehicleIssue, { foreignKey: "issue_id", ...assoc });
 
 export default db;

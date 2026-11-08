@@ -1,13 +1,20 @@
 # Data Model Reference
 
-**Status:** empty starter — no application tables yet.
+**Status:** Feature 14 stand-in schema on this branch.
 
-Update this file when a feature that defines schema merges to `dev`.
+## `maintenance_requests`
 
-## Tables
+| Field | Type | Rules |
+|-------|------|-------|
+| `maintenance_request_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | NOT NULL |
+| `issue_id` | INTEGER | Nullable |
+| `description` | TEXT | NOT NULL |
+| `status` | VARCHAR | NOT NULL, default `Open` |
 
-*(none)*
+Stand-in `users`, `sessions`, `vehicles`, and `vehicle_issues` support this feature.
 
 ## Associations
 
-*(none)*
+- A vehicle has many maintenance requests.
+- A maintenance request may belong to one vehicle issue.

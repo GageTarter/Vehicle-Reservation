@@ -3,6 +3,7 @@
  * Spec: features/feature-14-Vehicle Maintenance Management.md
  */
 import app from "../server.js";
+import db from "../app/models/index.js";
 import { syncTestDatabase } from "./helpers.js";
 import {
   createIssue,
@@ -44,6 +45,10 @@ async function maintenanceWorld() {
 describe("Feature 14 — Vehicle Maintenance Management", () => {
   beforeEach(async () => {
     await syncTestDatabase();
+  });
+
+  afterAll(async () => {
+    await db.sequelize.close();
   });
 
   describe("US-14.1 — View maintenance requests", () => {
@@ -234,6 +239,13 @@ describe("Feature 14 — Vehicle Maintenance Management", () => {
       );
 
       expect(res.status).toBe(403);
+      const admin = await createUser({ role: "maintenance", area_id: 1 });
+      const adminToken = await sessionTokenFor(admin);
+      const check = await getRequests(app, adminToken);
+      const found = check.body.find(
+        (row) => row.maintenance_request_id === inAreaRequest.maintenance_request_id
+      );
+      expect(found.status).toBe("Open");
     });
   });
 
