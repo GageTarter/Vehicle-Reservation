@@ -16,7 +16,8 @@ function openAccount() {
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6" class="text-center">
         <h1 class="text-h4 mb-4">Welcome, {{ user?.fName }}</h1>
-        <v-chip class="mb-6">{{ user?.role }}</v-chip>
+        <v-chip color="primary" variant="tonal" class="mb-6">{{ user?.role }}</v-chip>
+        <p class="text-body-1 mb-6">Use the menu for Vehicles.</p>
         <div>
           <v-btn color="primary" variant="elevated" class="oc-cta" @click="openAccount">My account</v-btn>
         </div>

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "./views/Home.vue";
 import Login from "./views/Login.vue";
 import Account from "./views/Account.vue";
+import VehicleList from "./views/VehicleList.vue";
 import Utils from "./config/utils.js";
 
 const router = createRouter({
@@ -21,6 +22,11 @@ const router = createRouter({
       path: "/account",
       name: "account",
       component: Account,
+    },
+    {
+      path: "/vehicles",
+      name: "vehicles",
+      component: VehicleList,
     },
     {
       path: "/:pathMatch(.*)*",

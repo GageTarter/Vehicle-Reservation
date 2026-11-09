@@ -99,6 +99,45 @@ Header: `Authorization: Bearer <token>`.
 | `200` | That user and every session for that user are deleted. Body: `{ "message": "Account deleted." }` |
 | `401` | Missing, expired, or unknown token, using the same messages as `GET /vehicles/me` |
 
+## Fleet vehicles
+
+Mounted at `/fleets`. Every route requires `Authorization: Bearer <token>`. A vehicle belongs to the signed-in user. Another user's id returns `404`.
+
+JSON fields: `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passengerCapacity`, `licensePlateNo`, `licensePlateExp`, `area`. Responses also include `id`. `userId` is not returned. The stored `name` is `${year} ${make} ${model}` and is not a request field.
+
+### `GET /fleets/vehicles`
+
+| Status | When |
+|--------|------|
+| `200` | That user's vehicles, oldest `createdAt` first |
+| `401` | Missing, expired, or unknown token |
+
+### `POST /fleets/vehicles`
+
+| Status | When |
+|--------|------|
+| `201` | Created. Body is the vehicle JSON |
+| `400` | A required field is blank, too long, not a valid date, or the VIN fails the check. A duplicate year, make, and model for that user returns `{ "message": "A vehicle with that year, make, and model already exists." }` |
+| `401` | Missing, expired, or unknown token |
+
+### `PUT /fleets/vehicles/:id`
+
+| Status | When |
+|--------|------|
+| `200` | `{ "message": "vehicle was updated successfully." }` |
+| `400` | `vehicleId` is not a number, a field is blank (`All fields must be filled.`), or a length, date, or VIN rule fails. Year must be exactly 4 digits. VIN must be exactly 17 characters and valid |
+| `401` | Missing, expired, or unknown token |
+| `404` | `{ "message": "Vehicle with id=${id} not found." }` |
+
+### `DELETE /fleets/vehicles/:id`
+
+| Status | When |
+|--------|------|
+| `204` | Deleted. Empty body |
+| `400` | `{ "message": "vehicleId must be a number." }` |
+| `401` | Missing, expired, or unknown token |
+| `404` | `{ "message": "Vehicle with id=${id} not found." }` |
+
 ## Conventions
 
 - Flat JSON responses (no `{ success, data }` envelope).
