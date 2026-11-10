@@ -20,6 +20,14 @@ function openAccount() {
         <p class="text-body-1 mb-6">Use the menu for Vehicles.</p>
         <div>
           <v-btn color="primary" variant="elevated" class="oc-cta" @click="openAccount">My account</v-btn>
+          <v-btn
+            color="primary"
+            variant="tonal"
+            class="ml-2"
+            @click="router.push({ name: 'vehicleIssueReporting' })"
+          >
+            Vehicle issues
+          </v-btn>
         </div>
       </v-col>
     </v-row>

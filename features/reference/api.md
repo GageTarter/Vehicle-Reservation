@@ -144,3 +144,17 @@ JSON fields: `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passenger
 - Errors: `{ "message": "..." }`.
 - Authenticated routes: `Authorization: Bearer <token>`.
 - `requireAdmin` rejects a non-admin with `403` and `{ "message": "Forbidden! Admin access required." }`.
+
+## Vehicle issues
+
+Mounted at `/vehicleapi` (also `/api/vehicleapi` for the kit frontend). Every route requires `Authorization: Bearer <token>`.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/vehicleapi/issues` | List issues the caller may access |
+| `GET` | `/vehicleapi/issues/:id` | View one issue |
+| `POST` | `/vehicleapi/issues` | Report an issue |
+| `PATCH` | `/vehicleapi/issues/:id` | Requestor edits their own issue |
+| `PATCH` | `/vehicleapi/issues/:id/status` | Admin updates status (`Open`, `In Progress`, `Resolved`) |
+| `DELETE` | `/vehicleapi/issues/:id` | Requestor deletes their own issue |
+| `GET` | `/vehicleapi/vehicles/:id/issues` | Issue history for a vehicle |

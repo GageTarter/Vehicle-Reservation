@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "./views/Home.vue";
+import VehicleIssueReporting from "./views/VehicleIssueReporting.vue";
 import Login from "./views/Login.vue";
 import Account from "./views/Account.vue";
 import VehicleList from "./views/VehicleList.vue";
@@ -27,6 +28,11 @@ const router = createRouter({
       path: "/vehicles",
       name: "vehicles",
       component: VehicleList,
+    },
+    {
+      path: "/issues",
+      name: "vehicleIssueReporting",
+      component: VehicleIssueReporting,
     },
     {
       path: "/:pathMatch(.*)*",

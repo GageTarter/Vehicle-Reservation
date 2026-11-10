@@ -57,3 +57,16 @@ No password column.
 Wired in `backend/app/models/index.js`.
 
 Deleting a user in Feature 2 also deletes every `sessions` row for that user. `googleId`, `email`, and `role` are not updated by Feature 2. Deleting a user also deletes that user's vehicles.
+
+### `vehicle_issues`
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `issue_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | NOT NULL; references `vehicles.id` |
+| `reservation_id` | INTEGER | Nullable |
+| `reported_by` | INTEGER | NOT NULL |
+| `issue_type` | VARCHAR | NOT NULL |
+| `description` | TEXT | NOT NULL |
+| `reported_date` | DATETIME | NOT NULL |
+| `status` | VARCHAR | NOT NULL, default `Open` |
