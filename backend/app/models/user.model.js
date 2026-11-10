@@ -5,10 +5,7 @@ export default (sequelize, Sequelize) => {
       googleId: {
         type: Sequelize.STRING,
         allowNull: false,
-<<<<<<< HEAD
-=======
         unique: true,
->>>>>>> origin/dev
       },
       fName: {
         type: Sequelize.STRING,
@@ -23,38 +20,22 @@ export default (sequelize, Sequelize) => {
       email: {
         type: Sequelize.STRING,
         allowNull: false,
-<<<<<<< HEAD
+        unique: true,
       },
       role: {
         type: Sequelize.STRING(32),
         allowNull: false,
-        defaultValue: "requestor",
+        defaultValue: "user",
       },
       area_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
-=======
-        unique: true,
-      },
-      role: {
-        type: Sequelize.STRING(20),
-        allowNull: false,
-        defaultValue: "user",
->>>>>>> origin/dev
       },
     },
     {
       tableName: "users",
       timestamps: false,
-<<<<<<< HEAD
-      indexes: [
-        { unique: true, name: "users_googleId_unique", fields: ["googleId"] },
-        { unique: true, name: "users_email_unique", fields: ["email"] },
-      ],
-    }
-=======
     },
->>>>>>> origin/dev
   );
 
   return User;

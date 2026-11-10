@@ -2,21 +2,6 @@ export default (sequelize, Sequelize) => {
   const Vehicle = sequelize.define(
     "vehicle",
     {
-<<<<<<< HEAD
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      area_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-    },
-    {
-      tableName: "vehicles",
-      timestamps: false,
-    }
-=======
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -65,12 +50,15 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
+      area_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
     },
     {
       tableName: "vehicles",
       indexes: [{ unique: true, fields: ["userId", "name"] }],
     },
->>>>>>> origin/dev
   );
 
   return Vehicle;

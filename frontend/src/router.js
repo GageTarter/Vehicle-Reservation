@@ -1,13 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "./views/Home.vue";
-<<<<<<< HEAD
 import VehicleIssueReporting from "./views/VehicleIssueReporting.vue";
-=======
 import Login from "./views/Login.vue";
 import Account from "./views/Account.vue";
 import VehicleList from "./views/VehicleList.vue";
 import Utils from "./config/utils.js";
->>>>>>> origin/dev
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,11 +20,6 @@ const router = createRouter({
       component: Home,
     },
     {
-<<<<<<< HEAD
-      path: "/issues",
-      name: "vehicleIssueReporting",
-      component: VehicleIssueReporting,
-=======
       path: "/account",
       name: "account",
       component: Account,
@@ -36,7 +28,11 @@ const router = createRouter({
       path: "/vehicles",
       name: "vehicles",
       component: VehicleList,
->>>>>>> origin/dev
+    },
+    {
+      path: "/issues",
+      name: "vehicleIssueReporting",
+      component: VehicleIssueReporting,
     },
     {
       path: "/:pathMatch(.*)*",

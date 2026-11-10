@@ -1,20 +1,5 @@
 # Behavior & Rules Reference
 
-<<<<<<< HEAD
-**Living snapshot** of product rules currently in force on this Feature 13 branch.
-
-| Rule | Enforcement | Provenance |
-|------|-------------|------------|
-| Signed-in session required | `401` without a valid Bearer session | FR-001 |
-| Issue type and description required | `400` if missing or invalid type | FR-015, FR-007 |
-| New issues start as `Open` | Set on create; reporting does not resolve the issue | FR-019 |
-| Reporting does not mark a reservation Returned | Checkout/return fields are not changed | FR-018 |
-| Requestor cannot use another user's reservation | `403` | FR-014 |
-| Area admins see issues for vehicles in their `area_id` | List/filter and `403` on GET outside area | FR-009 |
-| System admins see all issues | No area filter | FR-010 |
-| Only area/system admins update status | Requestor `403` | FR-011 |
-| Supported statuses | `Open`, `In Progress`, `Resolved` | FR-012 |
-=======
 **Living snapshot** of product rules currently implemented through Feature 3 vehicle management.
 
 These files answer: *"What rules does the app enforce right now?"*  
@@ -53,4 +38,4 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | `fName` and `lName` must be strings. Empty strings are allowed. A missing or non-string name is rejected. | `400` `{ "message": "First and last name must be text." }` | Feature 2 |
 | Canceling edit or delete stays on the account page and does not call the API. | `Account.vue` | Feature 2 |
 | Deleting the account removes that user and their sessions. The browser then removes `localStorage` key `user` and opens `login`. | `DELETE /vehicles/me` returns `{ "message": "Account deleted." }` | Feature 2 |
->>>>>>> origin/dev
+| A requestor (`user` / `requestor`) can create, view, edit, and delete their own vehicle issues. Area/system admins update status only. | `/vehicleapi/issues` | Feature 13 |

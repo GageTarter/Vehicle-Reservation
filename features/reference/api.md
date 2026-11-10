@@ -1,26 +1,5 @@
 # API Reference
 
-<<<<<<< HEAD
-**Status:** Feature 13 on `feature-13-vehicle-issue-reporting`.
-
-Authenticated routes use `Authorization: Bearer <token>`. Issue routes are mounted at `/vehicleapi`.
-
-## Endpoints
-
-| Method | Path | Purpose |
-|--------|------|---------|
-| `GET` | `/vehicleapi/issues` | List issues the caller may access |
-| `GET` | `/vehicleapi/issues/:id` | View one issue |
-| `POST` | `/vehicleapi/issues` | Report an issue |
-| `PATCH` | `/vehicleapi/issues/:id/status` | Update issue status (`Open`, `In Progress`, `Resolved`) |
-| `GET` | `/vehicleapi/vehicles/:id/issues` | Issue history for a vehicle |
-
-### POST `/vehicleapi/issues`
-
-Request: `{ "vehicle_id", "reservation_id?", "issue_type", "description" }`  
-Issue types: `Low Gas`, `Dirty Vehicle`, `Maintenance Needed`.  
-Success `201`: `{ "message": "Vehicle issue reported successfully.", "issue": { ... } }` with `status: "Open"`.
-=======
 **Status:** Feature 2 on `features/2-user-management`. Feature 1 auth routes remain.
 
 Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/health`.
@@ -158,15 +137,24 @@ JSON fields: `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passenger
 | `400` | `{ "message": "vehicleId must be a number." }` |
 | `401` | Missing, expired, or unknown token |
 | `404` | `{ "message": "Vehicle with id=${id} not found." }` |
->>>>>>> origin/dev
 
 ## Conventions
 
 - Flat JSON responses (no `{ success, data }` envelope).
 - Errors: `{ "message": "..." }`.
-<<<<<<< HEAD
-- `400` missing/invalid type or status, `401` unauthenticated, `403` another user's reservation or outside area, `404` missing vehicle/reservation/issue, `409` vehicle/reservation mismatch.
-=======
 - Authenticated routes: `Authorization: Bearer <token>`.
 - `requireAdmin` rejects a non-admin with `403` and `{ "message": "Forbidden! Admin access required." }`.
->>>>>>> origin/dev
+
+## Vehicle issues
+
+Mounted at `/vehicleapi` (also `/api/vehicleapi` for the kit frontend). Every route requires `Authorization: Bearer <token>`.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/vehicleapi/issues` | List issues the caller may access |
+| `GET` | `/vehicleapi/issues/:id` | View one issue |
+| `POST` | `/vehicleapi/issues` | Report an issue |
+| `PATCH` | `/vehicleapi/issues/:id` | Requestor edits their own issue |
+| `PATCH` | `/vehicleapi/issues/:id/status` | Admin updates status (`Open`, `In Progress`, `Resolved`) |
+| `DELETE` | `/vehicleapi/issues/:id` | Requestor deletes their own issue |
+| `GET` | `/vehicleapi/vehicles/:id/issues` | Issue history for a vehicle |

@@ -1,22 +1,4 @@
 <script setup>
-<<<<<<< HEAD
-import { useRouter } from "vue-router";
-
-const router = useRouter();
-</script>
-
-<template>
-  <v-container class="py-10">
-    <h1 class="text-h4 mb-4">Vehicle Reservation</h1>
-    <v-btn
-      class="oc-cta"
-      color="primary"
-      variant="elevated"
-      @click="router.push({ name: 'vehicleIssueReporting' })"
-    >
-      Vehicle issues
-    </v-btn>
-=======
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import Utils from "../config/utils.js";
@@ -38,9 +20,16 @@ function openAccount() {
         <p class="text-body-1 mb-6">Use the menu for Vehicles.</p>
         <div>
           <v-btn color="primary" variant="elevated" class="oc-cta" @click="openAccount">My account</v-btn>
+          <v-btn
+            color="primary"
+            variant="tonal"
+            class="ml-2"
+            @click="router.push({ name: 'vehicleIssueReporting' })"
+          >
+            Vehicle issues
+          </v-btn>
         </div>
       </v-col>
     </v-row>
->>>>>>> origin/dev
   </v-container>
 </template>

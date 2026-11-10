@@ -1,11 +1,8 @@
 import routes from "./app/routes/index.js";
-<<<<<<< HEAD
 import issueRoutes from "./app/routes/issue.routes.js";
-=======
 import authRoutes from "./app/routes/auth.routes.js";
 import accountRoutes from "./app/routes/account.routes.js";
 import vehicleRoutes from "./app/routes/vehicle.routes.js";
->>>>>>> origin/dev
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
