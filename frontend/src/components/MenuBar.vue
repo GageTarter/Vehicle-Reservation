@@ -41,11 +41,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <v-app-bar v-if="user" color="primary" density="comfortable">
-    <v-app-bar-title>Vehicle Management System</v-app-bar-title>
-    <v-btn variant="text" color="white" class="ml-4" :to="{ name: 'vehicles' }">Vehicles</v-btn>
+  <v-app-bar color="primary" density="comfortable">
+    <v-app-bar-title>OC Vehicle Scheduling System</v-app-bar-title>
+    <v-btn v-if="user" variant="text" color="white" class="ml-4" :to="{ name: 'vehicles' }">Vehicles</v-btn>
     <v-spacer />
-    <v-menu v-model="menu">
+    <v-menu v-if="user" v-model="menu">
       <template #activator="{ props }">
         <v-btn
           icon

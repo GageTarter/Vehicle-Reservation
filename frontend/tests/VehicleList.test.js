@@ -313,12 +313,14 @@ describe("Vehicles menu", () => {
     const Shell = { components: { MenuBar }, template: "<v-app><MenuBar /></v-app>" };
     const wrapper = mount(Shell, { global: { plugins: [vuetify, router] } });
 
+    expect(wrapper.text()).toContain("OC Vehicle Scheduling System");
     expect(wrapper.text()).toContain("Vehicles");
 
     Utils.removeItem("user");
     window.dispatchEvent(new Event("user-logged-out"));
     await flushPromises();
 
+    expect(wrapper.text()).toContain("OC Vehicle Scheduling System");
     expect(wrapper.text()).not.toContain("Vehicles");
   });
 });
