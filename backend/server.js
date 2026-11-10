@@ -73,6 +73,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", routes);
 app.use("/vehicleapi", issueRoutes);
+app.use("/api/vehicleapi", issueRoutes);
 
 const PORT = process.env.PORT || 3200;
 

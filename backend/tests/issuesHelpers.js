@@ -2,6 +2,7 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import db from "../app/models/index.js";
 import authConfig from "../app/config/auth.config.js";
+import { kitVehicleFields } from "./helpers.js";
 
 export const ISSUES_BASE = "/vehicleapi/issues";
 
@@ -59,10 +60,7 @@ export async function createUser(overrides = {}) {
 }
 
 export async function createVehicle(overrides = {}) {
-  return persist("vehicle", {
-    name: `Vehicle ${Date.now()}`,
-    ...overrides,
-  });
+  return persist("vehicle", kitVehicleFields(overrides));
 }
 
 export async function createReservation(overrides = {}) {
@@ -102,11 +100,19 @@ export function getIssue(app, token, id) {
   return request(app).get(`${ISSUES_BASE}/${id}`).set(authHeader(token));
 }
 
+export function patchIssue(app, token, id, payload) {
+  return request(app).patch(`${ISSUES_BASE}/${id}`).set(authHeader(token)).send(payload);
+}
+
 export function patchIssueStatus(app, token, id, status) {
   return request(app)
     .patch(`${ISSUES_BASE}/${id}/status`)
     .set(authHeader(token))
     .send({ status });
+}
+
+export function deleteIssue(app, token, id) {
+  return request(app).delete(`${ISSUES_BASE}/${id}`).set(authHeader(token));
 }
 
 export function getVehicleIssues(app, token, vehicleId) {

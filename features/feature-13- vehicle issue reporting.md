@@ -12,6 +12,8 @@
 
 ## User Stories
 
+### Requestor
+
 ### US-13.1: Report a vehicle issue
 **As a** requestor  
 **I want to** report an issue with a vehicle before, during, or after a trip  
@@ -20,35 +22,63 @@
 **Independent test:** Report an issue for an assigned vehicle and confirm that the issue details are saved  
 **Acceptance scenarios:** See US-13.1 under Acceptance Criteria
 
-### US-13.2: View reported vehicle issues
+### US-13.2: View my reported issues
+**As a** requestor  
+**I want to** view the issues I reported  
+**So that** I can confirm what was submitted  
+**Priority:** P1  
+**Independent test:** Open the issue page and confirm the requestor's own issues are displayed  
+**Acceptance scenarios:** See US-13.2 under Acceptance Criteria
+
+### US-13.3: Edit a reported issue
+**As a** requestor  
+**I want to** edit an issue I reported  
+**So that** I can correct the type, description, vehicle, or reservation  
+**Priority:** P1  
+**Independent test:** Edit an owned issue and confirm the saved fields change  
+**Acceptance scenarios:** See US-13.3 under Acceptance Criteria
+
+### US-13.4: Delete a reported issue
+**As a** requestor  
+**I want to** delete an issue I reported  
+**So that** I can remove a report that was submitted in error  
+**Priority:** P1  
+**Independent test:** Delete an owned issue and confirm it is no longer listed  
+**Acceptance scenarios:** See US-13.4 under Acceptance Criteria
+
+### Administrator
+
+### US-13.5: View reported vehicle issues
 **As an** area administrator  
 **I want to** view issues reported for vehicles in my area  
 **So that** I can review problems and determine what action is needed  
 **Priority:** P1  
 **Independent test:** Open the vehicle issue list and confirm that issues for the administrator's area are displayed  
-**Acceptance scenarios:** See US-13.2 under Acceptance Criteria
+**Acceptance scenarios:** See US-13.5 under Acceptance Criteria
 
-### US-13.3: Update vehicle issue status
+### US-13.6: Update vehicle issue status
 **As an** area administrator  
 **I want to** update the status of a reported vehicle issue  
 **So that** the system shows whether the issue is still open, being addressed, or resolved  
 **Priority:** P1  
 **Independent test:** Update an issue status and confirm that the new status is saved  
-**Acceptance scenarios:** See US-13.3 under Acceptance Criteria
+**Acceptance scenarios:** See US-13.6 under Acceptance Criteria
 
-### US-13.4: View vehicle issue history
+### US-13.7: View vehicle issue history
 **As an** area administrator  
 **I want to** view previously reported issues for a vehicle  
 **So that** I can identify recurring problems and review the vehicle's history  
 **Priority:** P2  
 **Independent test:** Open a vehicle's issue history and confirm that previously reported issues are displayed  
-**Acceptance scenarios:** See US-13.4 under Acceptance Criteria
+**Acceptance scenarios:** See US-13.7 under Acceptance Criteria
 
 ---
 
 ## Requirements
 
 ## Functional Requirements
+
+### Requestor
 
 -- **FR-001:** A user must be signed in to report a vehicle issue.
 -- **FR-002:** A requestor can report an issue with a vehicle before, during, or after a trip.
@@ -58,17 +88,26 @@
 -- **FR-006:** The system must record the issue type, description, and report date.
 -- **FR-007:** The system must support issue types such as Low Gas, Dirty Vehicle, and Maintenance Needed.
 -- **FR-008:** A requestor must be able to provide a description of the reported issue.
+-- **FR-015:** The system must validate required information before saving an issue.
+-- **FR-016:** The system must display a confirmation when an issue is reported successfully.
+-- **FR-017:** The system must display an appropriate error message when an issue cannot be reported or updated.
+-- **FR-018:** Reporting an issue must not automatically mark a reservation as Returned.
+-- **FR-019:** Reporting an issue must not automatically mark an issue as Resolved.
+-- **FR-023:** A requestor can view the issues they reported, including type, description, report date, and status.
+-- **FR-024:** A requestor can edit the vehicle, reservation, issue type, and description of an issue they reported.
+-- **FR-025:** A requestor must not be able to edit an issue reported by another user.
+-- **FR-026:** A requestor edit must not change the issue status. Status updates remain administrator-only.
+-- **FR-021:** A requestor can delete an issue they reported.
+-- **FR-022:** A requestor must not be able to delete an issue reported by another user.
+
+### Administrator
+
 -- **FR-009:** An area administrator can view issues associated with vehicles assigned to their area.
 -- **FR-010:** A system administrator can view issues across all areas.
 -- **FR-011:** An authorized area administrator or system administrator can update an issue's status.
 -- **FR-012:** The system must support Open, In Progress, and Resolved issue statuses.
 -- **FR-013:** The system must display issue information and status to authorized users.
 -- **FR-014:** The system must prevent unauthorized users from viewing or updating restricted issue records.
--- **FR-015:** The system must validate required information before saving an issue.
--- **FR-016:** The system must display a confirmation when an issue is reported successfully.
--- **FR-017:** The system must display an appropriate error message when an issue cannot be reported or updated.
--- **FR-018:** Reporting an issue must not automatically mark a reservation as Returned.
--- **FR-019:** Reporting an issue must not automatically mark an issue as Resolved.
 -- **FR-020:** The system must retain reported issues so authorized administrators can review vehicle issue history.
 
 ---
@@ -80,6 +119,7 @@
 - Each issue must be associated with a valid vehicle.
 - An issue may be associated with a reservation when it relates to a specific trip.
 - A requestor can report an issue related to their own reservation.
+- A requestor can view, edit, and delete only issues they reported.
 - Area administrators can view and manage issues for vehicles assigned to their area.
 - System administrators can view and manage issues across all areas.
 - Maintenance work and service records are handled by the Vehicle Maintenance and Service Log features.
@@ -96,6 +136,7 @@
 - Area administrator attempts to view an issue for a vehicle outside their area → access denied.
 - Unauthenticated caller → `401`.
 - Unauthorized caller attempts to update issue status → `403`.
+- Requestor attempts to view, edit, or delete another user's issue → `403`.
 - Issue ID does not exist → `404`.
 - Issue status is invalid → `400`.
 - Duplicate submission → duplicate issue records should be avoided when the same request is accidentally submitted more than once.
@@ -103,12 +144,19 @@
 
 ## Success Criteria
 
+### Requestor
+
 - **SC-001:** A requestor can successfully report an issue for a vehicle.
 - **SC-002:** Issue type, description, reporting user, vehicle, and report date are saved correctly.
+- **SC-008:** A requestor can create, view, edit, and delete their own issues.
+
+### Administrator
+
 - **SC-003:** An authorized area administrator can view issues for vehicles in their area.
 - **SC-004:** A system administrator can view issues across all areas.
 - **SC-005:** Authorized administrators can update issue statuses.
 - **SC-006:** Unauthorized users cannot view or update restricted issue records.
+
 - **SC-007:** Every acceptance scenario has at least one automated test before merge.
 
 ---
@@ -119,7 +167,7 @@ Vehicle issue information belongs to the associated vehicle and, when applicable
 
 | Rule | Requirement |
 |------|-------------|
-| **Requestor access** | A requestor can report issues for vehicles they are authorized to use |
+| **Requestor access** | A requestor can create, view, edit, and delete issues they reported |
 | **Area administrator access** | An area administrator can view and manage issues for vehicles assigned to their area |
 | **System administrator access** | A system administrator can view and manage issues across all areas |
 | **Maintenance access** | Authorized maintenance users can view relevant vehicle issues |
@@ -147,11 +195,13 @@ All endpoints require authentication.
 
 | Method | Endpoint | Auth | Purpose |
 |--------|----------|------|---------|
-| `GET` | `/vehicleapi/issues` | Yes | View vehicle issues the user is authorized to access |
-| `GET` | `/vehicleapi/issues/:id` | Yes | View details of one reported issue |
-| `POST` | `/vehicleapi/issues` | Requestor/Authorized User | Report a vehicle issue |
+| `POST` | `/vehicleapi/issues` | Requestor | Report a vehicle issue |
+| `GET` | `/vehicleapi/issues` | Requestor (own) / Admin (area or all) | View vehicle issues the user is authorized to access |
+| `GET` | `/vehicleapi/issues/:id` | Requestor (own) / Admin | View details of one reported issue |
+| `PATCH` | `/vehicleapi/issues/:id` | Requestor (own issue) | Edit type, description, vehicle, or reservation |
+| `DELETE` | `/vehicleapi/issues/:id` | Requestor (own issue) | Delete a reported issue |
 | `PATCH` | `/vehicleapi/issues/:id/status` | Area Admin/System Admin | Update an issue's status |
-| `GET` | `/vehicleapi/vehicles/:id/issues` | Yes | View issue history for a vehicle |
+| `GET` | `/vehicleapi/vehicles/:id/issues` | Area Admin/System Admin | View issue history for a vehicle |
 
 ### Issue report request
 
@@ -178,6 +228,37 @@ The system records the reporting user and report date automatically.
     "reported_by": 7,
     "issue_type": "Low Gas",
     "description": "The vehicle has less than one-quarter tank of gas.",
+    "reported_date": "2026-11-05T17:00:00",
+    "status": "Open"
+  }
+}
+```
+
+### Edit issue request
+
+A requestor can edit an issue they reported. This does not change status, reporting user, or report date.
+
+**Example request:**
+```json
+{
+  "vehicle_id": 4,
+  "reservation_id": 12,
+  "issue_type": "Dirty Vehicle",
+  "description": "The seats and floor need cleaning."
+}
+```
+
+**Example success response (`200`):**
+```json
+{
+  "message": "Vehicle issue updated successfully.",
+  "issue": {
+    "issue_id": 1,
+    "vehicle_id": 4,
+    "reservation_id": 12,
+    "reported_by": 7,
+    "issue_type": "Dirty Vehicle",
+    "description": "The seats and floor need cleaning.",
     "reported_date": "2026-11-05T17:00:00",
     "status": "Open"
   }
@@ -240,11 +321,13 @@ Follow the existing project's UI style and navigation conventions.
 
 ### [View: Vehicle Issue Reporting]
 
-- **Purpose:** Allow requestors to report vehicle issues and allow authorized administrators to review and manage reported issues.
-- **Requestor view:** Show a form to select or confirm the vehicle, select the issue type, and enter a description.
+- **Purpose:** Allow requestors to create, view, edit, and delete their own vehicle issues and allow authorized administrators to review and manage reported issues.
+- **Requestor view:** Show a form to select or confirm the vehicle, select the issue type, and enter a description. Show the requestor's reported issues with view, edit, and delete actions.
 - **Issue types:** Provide options such as Low Gas, Dirty Vehicle, and Maintenance Needed.
 - **Reservation information:** Allow the requestor to associate the issue with a relevant reservation when applicable.
 - **Primary action:** **Report Issue** — saves the reported vehicle issue.
+- **Requestor edit action:** **Save Changes** — updates an issue the requestor reported.
+- **Requestor delete action:** **Delete** — removes an issue the requestor reported.
 - **Area administrator view:** Show issues associated with vehicles assigned to the administrator's area.
 - **Administrator action:** **Update Status** — allows an authorized administrator to change an issue's status.
 - **Issue history:** Allow authorized users to view previously reported issues for a selected vehicle.
@@ -296,6 +379,8 @@ Relevant issue status values for this feature:
 
 ## Acceptance Criteria (Gherkin)
 
+### Requestor
+
 ### US-13.1 — Report a vehicle issue
 
 #### Scenario: Requestor reports a vehicle issue
@@ -331,7 +416,55 @@ Relevant issue status values for this feature:
 - **Then** the system denies access
 - **And** no issue record is created
 
-### US-13.2 — View reported vehicle issues
+### US-13.2 — View my reported issues
+
+#### Scenario: Requestor views their reported issues
+
+- **Given** I am signed in as a requestor
+- **And** I have reported an issue
+- **When** I open the vehicle issue page
+- **Then** the system displays the issues I reported
+- **And** each issue displays its type, description, report date, and status
+
+### US-13.3 — Edit a reported issue
+
+#### Scenario: Requestor edits a reported issue
+
+- **Given** I am signed in as a requestor
+- **And** I have reported an issue
+- **When** I change the issue type or description and save
+- **Then** the system saves the updated issue
+- **And** the issue status remains unchanged
+
+#### Scenario: Requestor cannot edit another user's issue
+
+- **Given** I am signed in as a requestor
+- **And** another user has reported an issue
+- **When** I attempt to edit that issue
+- **Then** the system returns `403`
+- **And** the issue remains unchanged
+
+### US-13.4 — Delete a reported issue
+
+#### Scenario: Requestor deletes a reported issue
+
+- **Given** I am signed in as a requestor
+- **And** I have reported an issue
+- **When** I delete that issue
+- **Then** the system removes the issue
+- **And** it no longer appears in my issue list
+
+#### Scenario: Requestor cannot delete another user's issue
+
+- **Given** I am signed in as a requestor
+- **And** another user has reported an issue
+- **When** I attempt to delete that issue
+- **Then** the system returns `403`
+- **And** the issue remains saved
+
+### Administrator
+
+### US-13.5 — View reported vehicle issues
 
 #### Scenario: Area administrator views issues for their area
 
@@ -353,7 +486,7 @@ Relevant issue status values for this feature:
 - **When** I open the vehicle issue list
 - **Then** I can see issues across all areas
 
-### US-13.3 — Update vehicle issue status
+### US-13.6 — Update vehicle issue status
 
 #### Scenario: Area administrator updates an issue status
 
@@ -378,7 +511,7 @@ Relevant issue status values for this feature:
 - **Then** the system returns `403`
 - **And** the issue status remains unchanged
 
-### US-13.4 — View vehicle issue history
+### US-13.7 — View vehicle issue history
 
 #### Scenario: Administrator views vehicle issue history
 
@@ -411,61 +544,40 @@ Each scenario above must map to at least one automated test.
 | US-13.1 | Requestor submits an incomplete issue report | `frontend/tests/VehicleIssueReporting.test.js` | `it("Requestor submits an incomplete issue report")` |
 | US-13.1 | Requestor reports an issue against another user's reservation | `backend/tests/issues.test.js` | `it("Requestor reports an issue against another user's reservation")` |
 | US-13.1 | Requestor reports an issue against another user's reservation | `frontend/tests/VehicleIssueReporting.test.js` | `it("Requestor reports an issue against another user's reservation")` |
-| US-13.2 | Area administrator views issues for their area | `backend/tests/issues.test.js` | `it("Area administrator views issues for their area")` |
-| US-13.2 | Area administrator views issues for their area | `frontend/tests/VehicleIssueReporting.test.js` | `it("Area administrator views issues for their area")` |
-| US-13.2 | Area administrator attempts to view an issue outside their area | `backend/tests/issues.test.js` | `it("Area administrator attempts to view an issue outside their area")` |
-| US-13.2 | Area administrator attempts to view an issue outside their area | `frontend/tests/VehicleIssueReporting.test.js` | `it("Area administrator attempts to view an issue outside their area")` |
-| US-13.2 | System administrator views all vehicle issues | `backend/tests/issues.test.js` | `it("System administrator views all vehicle issues")` |
-| US-13.2 | System administrator views all vehicle issues | `frontend/tests/VehicleIssueReporting.test.js` | `it("System administrator views all vehicle issues")` |
-| US-13.3 | Area administrator updates an issue status | `backend/tests/issues.test.js` | `it("Area administrator updates an issue status")` |
-| US-13.3 | Area administrator updates an issue status | `frontend/tests/VehicleIssueReporting.test.js` | `it("Area administrator updates an issue status")` |
-| US-13.3 | Administrator resolves an issue | `backend/tests/issues.test.js` | `it("Administrator resolves an issue")` |
-| US-13.3 | Administrator resolves an issue | `frontend/tests/VehicleIssueReporting.test.js` | `it("Administrator resolves an issue")` |
-| US-13.3 | Requestor attempts to update an issue status | `backend/tests/issues.test.js` | `it("Requestor attempts to update an issue status")` |
-| US-13.3 | Requestor attempts to update an issue status | `frontend/tests/VehicleIssueReporting.test.js` | `it("Requestor attempts to update an issue status")` |
-| US-13.4 | Administrator views vehicle issue history | `backend/tests/issues.test.js` | `it("Administrator views vehicle issue history")` |
-| US-13.4 | Administrator views vehicle issue history | `frontend/tests/VehicleIssueReporting.test.js` | `it("Administrator views vehicle issue history")` |
-| US-13.4 | Vehicle has no reported issues | `backend/tests/issues.test.js` | `it("Vehicle has no reported issues")` |
-| US-13.4 | Vehicle has no reported issues | `frontend/tests/VehicleIssueReporting.test.js` | `it("Vehicle has no reported issues")` |
+| US-13.2 | Requestor views their reported issues | `backend/tests/issues.test.js` | `it("Requestor views their reported issues")` |
+| US-13.2 | Requestor views their reported issues | `frontend/tests/VehicleIssueReporting.test.js` | `it("Requestor views their reported issues")` |
+| US-13.3 | Requestor edits a reported issue | `backend/tests/issues.test.js` | `it("Requestor edits a reported issue")` |
+| US-13.3 | Requestor edits a reported issue | `frontend/tests/VehicleIssueReporting.test.js` | `it("Requestor edits a reported issue")` |
+| US-13.3 | Requestor cannot edit another user's issue | `backend/tests/issues.test.js` | `it("Requestor cannot edit another user's issue")` |
+| US-13.4 | Requestor deletes a reported issue | `backend/tests/issues.test.js` | `it("Requestor deletes a reported issue")` |
+| US-13.4 | Requestor deletes a reported issue | `frontend/tests/VehicleIssueReporting.test.js` | `it("Requestor deletes a reported issue")` |
+| US-13.4 | Requestor cannot delete another user's issue | `backend/tests/issues.test.js` | `it("Requestor cannot delete another user's issue")` |
+| US-13.5 | Area administrator views issues for their area | `backend/tests/issues.test.js` | `it("Area administrator views issues for their area")` |
+| US-13.5 | Area administrator views issues for their area | `frontend/tests/VehicleIssueReporting.test.js` | `it("Area administrator views issues for their area")` |
+| US-13.5 | Area administrator attempts to view an issue outside their area | `backend/tests/issues.test.js` | `it("Area administrator attempts to view an issue outside their area")` |
+| US-13.5 | Area administrator attempts to view an issue outside their area | `frontend/tests/VehicleIssueReporting.test.js` | `it("Area administrator attempts to view an issue outside their area")` |
+| US-13.5 | System administrator views all vehicle issues | `backend/tests/issues.test.js` | `it("System administrator views all vehicle issues")` |
+| US-13.5 | System administrator views all vehicle issues | `frontend/tests/VehicleIssueReporting.test.js` | `it("System administrator views all vehicle issues")` |
+| US-13.6 | Area administrator updates an issue status | `backend/tests/issues.test.js` | `it("Area administrator updates an issue status")` |
+| US-13.6 | Area administrator updates an issue status | `frontend/tests/VehicleIssueReporting.test.js` | `it("Area administrator updates an issue status")` |
+| US-13.6 | Administrator resolves an issue | `backend/tests/issues.test.js` | `it("Administrator resolves an issue")` |
+| US-13.6 | Administrator resolves an issue | `frontend/tests/VehicleIssueReporting.test.js` | `it("Administrator resolves an issue")` |
+| US-13.6 | Requestor attempts to update an issue status | `backend/tests/issues.test.js` | `it("Requestor attempts to update an issue status")` |
+| US-13.6 | Requestor attempts to update an issue status | `frontend/tests/VehicleIssueReporting.test.js` | `it("Requestor attempts to update an issue status")` |
+| US-13.7 | Administrator views vehicle issue history | `backend/tests/issues.test.js` | `it("Administrator views vehicle issue history")` |
+| US-13.7 | Administrator views vehicle issue history | `frontend/tests/VehicleIssueReporting.test.js` | `it("Administrator views vehicle issue history")` |
+| US-13.7 | Vehicle has no reported issues | `backend/tests/issues.test.js` | `it("Vehicle has no reported issues")` |
+| US-13.7 | Vehicle has no reported issues | `frontend/tests/VehicleIssueReporting.test.js` | `it("Vehicle has no reported issues")` |
 
 ---
 
-## Agent Implementation Request
 
-Copy when asking Cursor to implement this feature:
-
-```text
-Implement Feature 13 from @features/feature-13-vehicle-issue-reporting.md.
-
-Before coding, inspect the existing project structure and shared feature references.
-
-Follow the layer order in @features/framework.md:
-models → routes → backend tests → frontend → frontend tests.
-
-Reuse the existing authentication, vehicle, reservation, user, and area models.
-Do not create duplicate vehicle, reservation, or vehicle issue tables.
-
-Implement vehicle issue reporting, issue listing, issue status updates, and vehicle issue history.
-
-Validate issue information, enforce requestor ownership and administrator area permissions, and implement the required screen behavior.
-
-Map every Gherkin scenario in the Test Coverage Map to at least one automated test.
-
-Run the project's test suite before finishing.
-
-If API routes, payloads, schema, or product rules change, update the relevant shared reference files in the same branch.
-
-Complete the Definition of Done and merge checklist in @features/framework.md.
-
-Do not implement behavior outside this specification.
-```
-
----
 
 ## Definition of Done
 
 - [ ] Backend and frontend implemented according to this specification.
 - [ ] Requestors can report vehicle issues.
+- [ ] Requestors can view, edit, and delete issues they reported.
 - [ ] Issue types and descriptions are validated.
 - [ ] Vehicle, optional reservation, and reporting user associations are saved correctly.
 - [ ] Report date is recorded correctly.

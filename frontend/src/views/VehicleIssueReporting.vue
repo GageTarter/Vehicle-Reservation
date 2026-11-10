@@ -1,16 +1,15 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import Utils from "../config/utils.js";
+import { canReportIssue, canReviewIssues } from "../config/roles.js";
 import issueServices from "../services/issueServices.js";
 
 const ISSUE_TYPES = ["Low Gas", "Dirty Vehicle", "Maintenance Needed"];
 const STATUSES = ["Open", "In Progress", "Resolved"];
 
 const user = computed(() => Utils.getStore("user"));
-const isRequestor = computed(() => user.value?.role === "requestor");
-const isAdmin = computed(() =>
-  ["area_admin", "system_admin"].includes(user.value?.role)
-);
+const isRequestor = computed(() => canReportIssue(user.value));
+const isAdmin = computed(() => canReviewIssues(user.value));
 
 const loading = ref(false);
 const successMessage = ref("");
@@ -27,6 +26,7 @@ const historyIssues = ref([]);
 const historyLoaded = ref(false);
 const selectedIssue = ref(null);
 const nextStatus = ref("");
+const editingId = ref(null);
 
 function clearMessages() {
   successMessage.value = "";
@@ -35,6 +35,28 @@ function clearMessages() {
 
 function apiMessage(error, fallback) {
   return error?.response?.data?.message || fallback;
+}
+
+function issuePayload() {
+  const payload = {
+    vehicle_id: Number(vehicleId.value),
+    issue_type: issueType.value,
+    description: description.value.trim(),
+  };
+
+  if (reservationId.value !== "") {
+    payload.reservation_id = Number(reservationId.value);
+  }
+
+  return payload;
+}
+
+function resetForm() {
+  editingId.value = null;
+  vehicleId.value = "";
+  reservationId.value = "";
+  issueType.value = "";
+  description.value = "";
 }
 
 async function reportIssue() {
@@ -48,19 +70,11 @@ async function reportIssue() {
   loading.value = true;
 
   try {
-    const payload = {
-      vehicle_id: Number(vehicleId.value),
-      issue_type: issueType.value,
-      description: description.value.trim(),
-    };
-
-    if (reservationId.value !== "") {
-      payload.reservation_id = Number(reservationId.value);
-    }
-
-    const res = await issueServices.createIssue(payload);
+    const res = await issueServices.createIssue(issuePayload());
     successMessage.value =
       res.data?.message || "Vehicle issue reported successfully.";
+    resetForm();
+    await loadIssues();
   } catch (error) {
     errorMessage.value = apiMessage(error, "Unable to report the vehicle issue.");
   } finally {
@@ -68,13 +82,51 @@ async function reportIssue() {
   }
 }
 
-async function loadIssues() {
-  if (!isAdmin.value) {
+function startEdit(issue) {
+  clearMessages();
+  editingId.value = issue.issue_id;
+  vehicleId.value = String(issue.vehicle_id ?? "");
+  reservationId.value =
+    issue.reservation_id === null || issue.reservation_id === undefined
+      ? ""
+      : String(issue.reservation_id);
+  issueType.value = issue.issue_type;
+  description.value = issue.description;
+}
+
+async function saveIssue() {
+  if (!editingId.value) {
+    return;
+  }
+
+  clearMessages();
+
+  if (!issueType.value || !description.value?.trim()) {
+    errorMessage.value = "Issue type and description are required.";
     return;
   }
 
   loading.value = true;
-  clearMessages();
+
+  try {
+    const res = await issueServices.updateIssue(editingId.value, issuePayload());
+    successMessage.value =
+      res.data?.message || "Vehicle issue updated successfully.";
+    resetForm();
+    await loadIssues();
+  } catch (error) {
+    errorMessage.value = apiMessage(error, "Unable to update the vehicle issue.");
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function loadIssues() {
+  if (!isAdmin.value && !isRequestor.value) {
+    return;
+  }
+
+  loading.value = true;
 
   try {
     const res = await issueServices.getIssues();
@@ -125,6 +177,24 @@ async function updateStatus() {
   }
 }
 
+async function deleteIssue(issueId) {
+  clearMessages();
+  loading.value = true;
+
+  try {
+    await issueServices.deleteIssue(issueId);
+    successMessage.value = "Vehicle issue deleted successfully.";
+    if (selectedIssue.value?.issue_id === issueId) {
+      selectedIssue.value = null;
+    }
+    await loadIssues();
+  } catch (error) {
+    errorMessage.value = apiMessage(error, "Unable to delete the vehicle issue.");
+  } finally {
+    loading.value = false;
+  }
+}
+
 async function loadHistory() {
   clearMessages();
   historyLoaded.value = false;
@@ -157,7 +227,7 @@ onMounted(() => {
 
 <template>
   <v-container class="py-8">
-    <h1 class="text-h4 mb-4">Vehicle Issue Reporting</h1>
+    <h1 class="text-h4 mb-4">{{ isRequestor && !isAdmin ? "Report a vehicle issue" : "Vehicle issues" }}</h1>
 
     <v-progress-linear v-if="loading" indeterminate class="mb-4" />
 
@@ -180,7 +250,7 @@ onMounted(() => {
     </v-alert>
 
     <v-card v-if="isRequestor" class="mb-6 pa-4" elevation="2">
-      <v-card-title>Report a vehicle issue</v-card-title>
+      <v-card-title>{{ editingId ? "Edit a vehicle issue" : "Report a vehicle issue" }}</v-card-title>
       <v-card-text>
         <v-text-field
           id="vehicle-id"
@@ -208,6 +278,7 @@ onMounted(() => {
       </v-card-text>
       <v-card-actions>
         <v-btn
+          v-if="!editingId"
           class="oc-cta"
           color="primary"
           variant="elevated"
@@ -216,7 +287,76 @@ onMounted(() => {
         >
           Report Issue
         </v-btn>
+        <v-btn
+          v-else
+          class="oc-cta"
+          color="primary"
+          variant="elevated"
+          :loading="loading"
+          @click="saveIssue"
+        >
+          Save Changes
+        </v-btn>
       </v-card-actions>
+    </v-card>
+
+    <v-card v-if="isRequestor" class="mb-6 pa-4" elevation="2">
+      <v-card-title>My reported issues</v-card-title>
+      <v-card-text>
+        <v-table v-if="issues.length" data-testid="my-issue-list">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Report date</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="issue in issues" :key="issue.issue_id">
+              <td>{{ issue.issue_type }}</td>
+              <td>{{ issue.description }}</td>
+              <td>{{ issue.reported_date }}</td>
+              <td>{{ issue.status }}</td>
+              <td>
+                <v-btn
+                  variant="text"
+                  color="primary"
+                  @click="loadIssue(issue.issue_id)"
+                >
+                  View
+                </v-btn>
+                <v-btn variant="text" color="primary" @click="startEdit(issue)">
+                  Edit
+                </v-btn>
+                <v-btn
+                  variant="text"
+                  color="error"
+                  @click="deleteIssue(issue.issue_id)"
+                >
+                  Delete
+                </v-btn>
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
+      </v-card-text>
+    </v-card>
+
+    <v-card
+      v-if="isRequestor && selectedIssue"
+      class="mb-6 pa-4"
+      elevation="2"
+      data-testid="my-issue-detail"
+    >
+      <v-card-title>Issue details</v-card-title>
+      <v-card-text>
+        <p>{{ selectedIssue.issue_type }}</p>
+        <p>{{ selectedIssue.description }}</p>
+        <p>{{ selectedIssue.reported_date }}</p>
+        <p>{{ selectedIssue.status }}</p>
+      </v-card-text>
     </v-card>
 
     <v-card v-if="isAdmin" class="mb-6 pa-4" elevation="2">

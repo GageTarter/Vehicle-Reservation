@@ -13,8 +13,16 @@ const issueServices = {
     return apiClient.post("/vehicleapi/issues", payload);
   },
 
+  updateIssue(id, payload) {
+    return apiClient.patch(`/vehicleapi/issues/${id}`, payload);
+  },
+
   updateIssueStatus(id, status) {
     return apiClient.patch(`/vehicleapi/issues/${id}/status`, { status });
+  },
+
+  deleteIssue(id) {
+    return apiClient.delete(`/vehicleapi/issues/${id}`);
   },
 
   getVehicleIssues(vehicleId) {

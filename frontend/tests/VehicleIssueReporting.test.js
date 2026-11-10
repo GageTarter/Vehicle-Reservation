@@ -14,7 +14,9 @@ vi.mock("../src/services/issueServices.js", () => ({
     getIssues: vi.fn(),
     getIssue: vi.fn(),
     createIssue: vi.fn(),
+    updateIssue: vi.fn(),
     updateIssueStatus: vi.fn(),
+    deleteIssue: vi.fn(),
     getVehicleIssues: vi.fn(),
   },
 }));
@@ -141,7 +143,7 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
     });
   });
 
-  describe("US-13.2 — View reported vehicle issues", () => {
+  describe("US-13.5 — View reported vehicle issues", () => {
     it("Area administrator views issues for their area", async () => {
       setUser("area_admin");
       issueServices.getIssues.mockResolvedValue({ data: [sampleIssue] });
@@ -202,7 +204,7 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
     });
   });
 
-  describe("US-13.3 — Update vehicle issue status", () => {
+  describe("US-13.6 — Update vehicle issue status", () => {
     it("Area administrator updates an issue status", async () => {
       setUser("area_admin");
       issueServices.getIssues.mockResolvedValue({ data: [sampleIssue] });
@@ -264,7 +266,7 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
     });
   });
 
-  describe("US-13.4 — View vehicle issue history", () => {
+  describe("US-13.7 — View vehicle issue history", () => {
     it("Administrator views vehicle issue history", async () => {
       setUser("area_admin");
       issueServices.getVehicleIssues.mockResolvedValue({ data: [sampleIssue] });
@@ -296,6 +298,86 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
 
       expect(wrapper.find("[data-testid='empty-history']").text()).toContain(
         "No reported issues for this vehicle."
+      );
+    });
+  });
+
+  describe("US-13.4 — Delete a reported issue", () => {
+    it("Requestor deletes a reported issue", async () => {
+      setUser("requestor");
+      issueServices.getIssues.mockResolvedValue({ data: [sampleIssue] });
+      issueServices.deleteIssue.mockResolvedValue({ status: 204 });
+
+      const { wrapper } = await mountView();
+      await flushPromises();
+
+      expect(wrapper.find("[data-testid='my-issue-list']").text()).toContain("Low Gas");
+
+      issueServices.getIssues.mockResolvedValue({ data: [] });
+      await wrapper.findAll("button").find((btn) => btn.text() === "Delete")?.trigger("click");
+      await flushPromises();
+
+      expect(issueServices.deleteIssue).toHaveBeenCalledWith(1);
+      expect(wrapper.text()).not.toContain("Low Gas");
+    });
+  });
+
+  describe("US-13.2 — View my reported issues", () => {
+    it("Requestor views their reported issues", async () => {
+      setUser("requestor");
+      issueServices.getIssues.mockResolvedValue({ data: [sampleIssue] });
+      issueServices.getIssue.mockResolvedValue({ data: { issue: sampleIssue } });
+
+      const { wrapper } = await mountView();
+      await flushPromises();
+
+      const list = wrapper.find("[data-testid='my-issue-list']");
+      expect(list.text()).toContain("Low Gas");
+      expect(list.text()).toContain(
+        "The vehicle has less than one-quarter tank of gas."
+      );
+      expect(list.text()).toContain("2026-11-05T17:00:00");
+      expect(list.text()).toContain("Open");
+
+      await wrapper.findAll("button").find((btn) => btn.text() === "View")?.trigger("click");
+      await flushPromises();
+
+      expect(wrapper.find("[data-testid='my-issue-detail']").text()).toContain("Low Gas");
+    });
+  });
+
+  describe("US-13.3 — Edit a reported issue", () => {
+    it("Requestor edits a reported issue", async () => {
+      setUser("requestor");
+      issueServices.getIssues.mockResolvedValue({ data: [sampleIssue] });
+      issueServices.updateIssue.mockResolvedValue({
+        data: {
+          message: "Vehicle issue updated successfully.",
+          issue: {
+            ...sampleIssue,
+            issue_type: "Dirty Vehicle",
+            description: "The seats and floor need cleaning.",
+          },
+        },
+      });
+
+      const { wrapper } = await mountView();
+      await flushPromises();
+      await wrapper.findAll("button").find((btn) => btn.text() === "Edit")?.trigger("click");
+      await wrapper.find("#issue-description").setValue(
+        "The seats and floor need cleaning."
+      );
+      await wrapper.findAll("button").find((btn) => btn.text() === "Save Changes")?.trigger("click");
+      await flushPromises();
+
+      expect(issueServices.updateIssue).toHaveBeenCalledWith(1, {
+        vehicle_id: 4,
+        reservation_id: 12,
+        issue_type: "Low Gas",
+        description: "The seats and floor need cleaning.",
+      });
+      expect(wrapper.find("[data-testid='success-alert']").text()).toContain(
+        "Vehicle issue updated successfully."
       );
     });
   });

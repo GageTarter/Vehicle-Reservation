@@ -10,10 +10,12 @@ import {
   createReservation,
   createUser,
   createVehicle,
+  deleteIssue,
   getIssue,
   getIssues,
   getVehicleIssues,
   issuesList,
+  patchIssue,
   patchIssueStatus,
   postIssue,
   sessionTokenFor,
@@ -158,7 +160,7 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
     });
   });
 
-  describe("US-13.2 — View reported vehicle issues", () => {
+  describe("US-13.5 — View reported vehicle issues", () => {
     it("Area administrator views issues for their area", async () => {
       const { areaToken, inAreaIssue } = await adminWorld();
       const inAreaId = inAreaIssue.issue_id ?? inAreaIssue.id;
@@ -205,7 +207,7 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
     });
   });
 
-  describe("US-13.3 — Update vehicle issue status", () => {
+  describe("US-13.6 — Update vehicle issue status", () => {
     it("Area administrator updates an issue status", async () => {
       const { areaToken, inAreaIssue } = await adminWorld();
       const issueId = inAreaIssue.issue_id ?? inAreaIssue.id;
@@ -249,7 +251,7 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
     });
   });
 
-  describe("US-13.4 — View vehicle issue history", () => {
+  describe("US-13.7 — View vehicle issue history", () => {
     it("Administrator views vehicle issue history", async () => {
       const { systemToken, inAreaVehicle, inAreaIssue } = await adminWorld();
       const vehicleId = inAreaVehicle.vehicle_id ?? inAreaVehicle.id;
@@ -276,6 +278,118 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
 
       expect(res.status).toBe(200);
       expect(issuesList(res.body)).toEqual([]);
+    });
+  });
+
+  describe("US-13.4 — Delete a reported issue", () => {
+    it("Requestor deletes a reported issue", async () => {
+      const { requestor, vehicle, token } = await requestorWorld();
+      const vehicleId = vehicle.vehicle_id ?? vehicle.id;
+      const issue = await createIssue({
+        vehicle_id: vehicleId,
+        reported_by: requestor.user_id ?? requestor.id,
+        issue_type: "Low Gas",
+        description: "The vehicle has less than one-quarter tank of gas.",
+      });
+      const issueId = issue.issue_id ?? issue.id;
+
+      const res = await deleteIssue(app, token, issueId);
+
+      expect(res.status).toBe(204);
+      const listed = await getIssues(app, token);
+      expect(
+        issuesList(listed.body).find((row) => (row.issue_id ?? row.id) === issueId)
+      ).toBeFalsy();
+    });
+
+    it("Requestor cannot delete another user's issue", async () => {
+      const { vehicle, token } = await requestorWorld();
+      const otherUser = await createUser({ role: "requestor" });
+      const issue = await createIssue({
+        vehicle_id: vehicle.vehicle_id ?? vehicle.id,
+        reported_by: otherUser.user_id ?? otherUser.id,
+        issue_type: "Dirty Vehicle",
+        description: "Seats need cleaning.",
+      });
+      const issueId = issue.issue_id ?? issue.id;
+
+      const res = await deleteIssue(app, token, issueId);
+
+      expect(res.status).toBe(403);
+      const remaining = await db.vehicleIssue.findByPk(issueId);
+      expect(remaining).toBeTruthy();
+    });
+  });
+
+  describe("US-13.2 — View my reported issues", () => {
+    it("Requestor views their reported issues", async () => {
+      const { requestor, vehicle, token } = await requestorWorld();
+      const vehicleId = vehicle.vehicle_id ?? vehicle.id;
+      await createIssue({
+        vehicle_id: vehicleId,
+        reported_by: requestor.user_id ?? requestor.id,
+        issue_type: "Low Gas",
+        description: "The vehicle has less than one-quarter tank of gas.",
+      });
+
+      const res = await getIssues(app, token);
+
+      expect(res.status).toBe(200);
+      const displayed = issuesList(res.body)[0];
+      expect(displayed.issue_type).toBe("Low Gas");
+      expect(displayed.description).toBe(
+        "The vehicle has less than one-quarter tank of gas."
+      );
+      expect(displayed.reported_date).toBeTruthy();
+      expect(displayed.status).toBe("Open");
+    });
+  });
+
+  describe("US-13.3 — Edit a reported issue", () => {
+    it("Requestor edits a reported issue", async () => {
+      const { requestor, vehicle, token } = await requestorWorld();
+      const vehicleId = vehicle.vehicle_id ?? vehicle.id;
+      const issue = await createIssue({
+        vehicle_id: vehicleId,
+        reported_by: requestor.user_id ?? requestor.id,
+        issue_type: "Low Gas",
+        description: "The vehicle has less than one-quarter tank of gas.",
+        status: "Open",
+      });
+      const issueId = issue.issue_id ?? issue.id;
+
+      const res = await patchIssue(app, token, issueId, {
+        vehicle_id: vehicleId,
+        issue_type: "Dirty Vehicle",
+        description: "The seats and floor need cleaning.",
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.issue.issue_type).toBe("Dirty Vehicle");
+      expect(res.body.issue.description).toBe("The seats and floor need cleaning.");
+      expect(res.body.issue.status).toBe("Open");
+    });
+
+    it("Requestor cannot edit another user's issue", async () => {
+      const { vehicle, token } = await requestorWorld();
+      const otherUser = await createUser({ role: "requestor" });
+      const issue = await createIssue({
+        vehicle_id: vehicle.vehicle_id ?? vehicle.id,
+        reported_by: otherUser.user_id ?? otherUser.id,
+        issue_type: "Dirty Vehicle",
+        description: "Seats need cleaning.",
+      });
+      const issueId = issue.issue_id ?? issue.id;
+
+      const res = await patchIssue(app, token, issueId, {
+        vehicle_id: vehicle.vehicle_id ?? vehicle.id,
+        issue_type: "Low Gas",
+        description: "Changed by another user.",
+      });
+
+      expect(res.status).toBe(403);
+      const remaining = await db.vehicleIssue.findByPk(issueId);
+      expect(remaining.description).toBe("Seats need cleaning.");
     });
   });
 });
