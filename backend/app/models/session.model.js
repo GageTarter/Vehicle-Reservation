@@ -22,7 +22,11 @@ export default (sequelize, Sequelize) => {
     {
       tableName: "sessions",
       timestamps: false,
+<<<<<<< HEAD
     }
+=======
+    },
+>>>>>>> origin/dev
   );
 
   return Session;

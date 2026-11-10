@@ -3,8 +3,11 @@ import sequelize from "../config/sequelizeInstance.js";
 import userModel from "./user.model.js";
 import sessionModel from "./session.model.js";
 import vehicleModel from "./vehicle.model.js";
+<<<<<<< HEAD
 import reservationModel from "./reservation.model.js";
 import vehicleIssueModel from "./vehicleIssue.model.js";
+=======
+>>>>>>> origin/dev
 
 const db = {};
 db.Sequelize = Sequelize;
@@ -13,6 +16,7 @@ db.sequelize = sequelize;
 db.user = userModel(sequelize, Sequelize);
 db.session = sessionModel(sequelize, Sequelize);
 db.vehicle = vehicleModel(sequelize, Sequelize);
+<<<<<<< HEAD
 db.reservation = reservationModel(sequelize, Sequelize);
 db.vehicleIssue = vehicleIssueModel(sequelize, Sequelize);
 
@@ -35,5 +39,12 @@ db.vehicleIssue.belongsTo(db.reservation, { foreignKey: "reservation_id", ...ass
 
 db.user.hasMany(db.vehicleIssue, { foreignKey: "reported_by", ...assoc });
 db.vehicleIssue.belongsTo(db.user, { foreignKey: "reported_by", ...assoc });
+=======
+
+db.user.hasMany(db.session, { foreignKey: "userId" });
+db.session.belongsTo(db.user, { foreignKey: "userId" });
+db.user.hasMany(db.vehicle, { foreignKey: "userId", onDelete: "CASCADE" });
+db.vehicle.belongsTo(db.user, { foreignKey: "userId" });
+>>>>>>> origin/dev
 
 export default db;
