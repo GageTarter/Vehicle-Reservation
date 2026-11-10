@@ -255,7 +255,7 @@ onMounted(() => {
         <v-text-field
           id="vehicle-id"
           v-model="vehicleId"
-          label="Vehicle ID"
+          label="Vehicle ID (from the Vehicles list)"
           type="number"
         />
         <v-text-field

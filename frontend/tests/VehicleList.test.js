@@ -127,6 +127,7 @@ describe("Feature 3 — Vehicle Management", () => {
       });
       const wrapper = await mountVehicles();
 
+      expect(wrapper.text()).toContain("1");
       expect(wrapper.text()).toContain("Pathfinder");
       expect(wrapper.text().indexOf("Pathfinder")).toBeLessThan(wrapper.text().indexOf("Rogue"));
     });
