@@ -2,6 +2,7 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import db from "../app/models/index.js";
 import authConfig from "../app/config/auth.config.js";
+import { kitVehicleFields } from "./helpers.js";
 
 export const MAINTENANCE_BASE = "/vehicleapi/maintenance-requests";
 
@@ -38,11 +39,7 @@ export async function createUser(overrides = {}) {
 }
 
 export async function createVehicle(overrides = {}) {
-  return db.vehicle.create({
-    name: `Vehicle ${Date.now()}`,
-    area_id: 1,
-    ...overrides,
-  });
+  return db.vehicle.create(kitVehicleFields(overrides));
 }
 
 export async function createIssue(overrides = {}) {
@@ -50,6 +47,8 @@ export async function createIssue(overrides = {}) {
     issue_type: "Maintenance Needed",
     description: "Engine warning light.",
     status: "Open",
+    reported_by: overrides.reported_by ?? 1,
+    reported_date: new Date(),
     ...overrides,
   });
 }

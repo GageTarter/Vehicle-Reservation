@@ -16,9 +16,14 @@ const transports = [
   new winston.transports.Console({
     format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
   }),
-  new DailyRotateFile({ filename: "logs/error-%DATE%.log", datePattern: "YYYY-MM-DD", level: "error" }),
-  new DailyRotateFile({ filename: "logs/all-%DATE%.log", datePattern: "YYYY-MM-DD" }),
 ];
+
+if (process.env.NODE_ENV !== "test") {
+  transports.push(
+    new DailyRotateFile({ filename: "logs/error-%DATE%.log", datePattern: "YYYY-MM-DD", level: "error" }),
+    new DailyRotateFile({ filename: "logs/all-%DATE%.log", datePattern: "YYYY-MM-DD" }),
+  );
+}
 
 const logger = winston.createLogger({ level: level(), levels, format, transports });
 logger.stream = { write: (message) => logger.http(message.trim()) };

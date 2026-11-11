@@ -11,12 +11,24 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
+      reservation_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
+      reported_by: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
       issue_type: {
         type: Sequelize.STRING,
         allowNull: false,
       },
       description: {
         type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      reported_date: {
+        type: Sequelize.DATE,
         allowNull: false,
       },
       status: {

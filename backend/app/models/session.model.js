@@ -22,7 +22,7 @@ export default (sequelize, Sequelize) => {
     {
       tableName: "sessions",
       timestamps: false,
-    }
+    },
   );
 
   return Session;

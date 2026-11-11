@@ -1,5 +1,9 @@
 import db from "../models/index.js";
 import logger from "../config/logger.js";
+import {
+  canAccessVehicle,
+  canManageMaintenance,
+} from "../authorization/kitRoles.js";
 
 const Vehicle = db.vehicle;
 const VehicleIssue = db.vehicleIssue;
@@ -17,26 +21,6 @@ function toJson(request) {
     description: request.description,
     status: request.status,
   };
-}
-
-function isSystemAdmin(user) {
-  return user.role === "system_admin";
-}
-
-function canManageMaintenance(user) {
-  return ["maintenance", "area_admin", "system_admin"].includes(user.role);
-}
-
-function canAccessVehicle(user, vehicle) {
-  if (isSystemAdmin(user)) {
-    return true;
-  }
-
-  if (["maintenance", "area_admin"].includes(user.role)) {
-    return vehicle.area_id === user.area_id;
-  }
-
-  return false;
 }
 
 controller.findAll = async (req, res) => {

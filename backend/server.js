@@ -1,5 +1,9 @@
 import routes from "./app/routes/index.js";
+import issueRoutes from "./app/routes/issue.routes.js";
 import maintenanceRoutes from "./app/routes/maintenance.routes.js";
+import authRoutes from "./app/routes/auth.routes.js";
+import accountRoutes from "./app/routes/account.routes.js";
+import vehicleRoutes from "./app/routes/vehicle.routes.js";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -13,7 +17,7 @@ const shouldAlterSchema =
 
 const syncOptions = shouldAlterSchema ? { alter: true } : {};
 
-async function dropExtraUserUniqueIndexes() {
+async function dropExtraUniqueIndexes() {
   const [tables] = await db.sequelize.query("SHOW TABLES");
   const hasUsers = tables.some((row) => Object.values(row)[0] === "users");
 
@@ -43,7 +47,7 @@ async function dropExtraUserUniqueIndexes() {
 if (process.env.NODE_ENV !== "test") {
   db.sequelize
     .query("SET FOREIGN_KEY_CHECKS = 0")
-    .then(() => dropExtraUserUniqueIndexes())
+    .then(() => dropExtraUniqueIndexes())
     .then(() => db.sequelize.sync(syncOptions))
     .then(() => db.sequelize.query("SET FOREIGN_KEY_CHECKS = 1"))
     .then(() => {
@@ -71,8 +75,14 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/vehicles", authRoutes);
+app.use("/vehicles", accountRoutes);
+app.use("/fleets", vehicleRoutes);
 app.use("/api", routes);
+app.use("/vehicleapi", issueRoutes);
+app.use("/api/vehicleapi", issueRoutes);
 app.use("/vehicleapi", maintenanceRoutes);
+app.use("/api/vehicleapi", maintenanceRoutes);
 
 const PORT = process.env.PORT || 3200;
 
