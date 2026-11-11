@@ -44,6 +44,7 @@ No password column.
 | `licensePlateNo` | STRING(7) | Required |
 | `licensePlateExp` | STRING(10) | Required. Same date rules as `purchaseDate` |
 | `area` | STRING(100) | Required typed string |
+| `area_id` | INTEGER | Nullable; used for kit area-scoped access |
 | `createdAt` | DATE | Sequelize timestamp. List order |
 | `updatedAt` | DATE | Sequelize timestamp |
 
@@ -132,3 +133,23 @@ Deleting a user also deletes that user's vehicles.
 | `issue_id` | INTEGER | Nullable |
 | `description` | TEXT | NOT NULL |
 | `status` | VARCHAR | NOT NULL, default `Open` |
+
+### `mileage_logs`
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `mileage_log_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | FK to `vehicles.id`; NOT NULL |
+| `date_recorded` | DATE | NOT NULL |
+| `current_mileage` | INTEGER | NOT NULL; non-negative |
+
+### `service_logs`
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `service_log_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | FK to `vehicles.id`; NOT NULL |
+| `service_date` | DATE | NOT NULL |
+| `service_performed` | TEXT | NOT NULL |
+
+A vehicle has many mileage logs and many service logs. Each log belongs to one vehicle.

@@ -205,3 +205,26 @@ Mounted at `/vehicleapi`. Every route requires `Authorization: Bearer <token>`.
 | `POST` | `/vehicleapi/maintenance-requests` | Create a request (`status` starts `Open`) |
 | `PATCH` | `/vehicleapi/maintenance-requests/:id/status` | Update status (`Open`, `In Progress`, `Completed`) |
 | `GET` | `/vehicleapi/vehicles/:id/maintenance` | Maintenance history for a vehicle |
+
+## Vehicle mileage and service logs
+
+Mounted at `/vehicleapi` (also `/api/vehicleapi` for the kit frontend). Every route requires `Authorization: Bearer <token>`. Maintenance users, area administrators, and system administrators (`admin`) may access records they are permitted to manage.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/vehicleapi/vehicles/:id/mileage` | List mileage records for a vehicle (newest first) |
+| `POST` | `/vehicleapi/vehicles/:id/mileage` | Record current mileage |
+| `GET` | `/vehicleapi/vehicles/:id/service-logs` | List service records for a vehicle (newest first) |
+| `POST` | `/vehicleapi/vehicles/:id/service-logs` | Record a vehicle service |
+| `GET` | `/vehicleapi/mileage-logs/:id` | View one mileage record |
+| `GET` | `/vehicleapi/service-logs/:id` | View one service record |
+
+### `POST /vehicleapi/vehicles/:id/mileage`
+
+Request: `{ "date_recorded": "2026-11-05", "current_mileage": 45200 }`  
+Success `201`: `{ "message": "Mileage record created successfully.", "mileage_log": { ... } }`
+
+### `POST /vehicleapi/vehicles/:id/service-logs`
+
+Request: `{ "service_date": "2026-11-05", "service_performed": "Oil change and tire rotation" }`  
+Success `201`: `{ "message": "Service record created successfully.", "service_log": { ... } }`

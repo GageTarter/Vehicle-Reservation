@@ -41,6 +41,14 @@ function openRequests() {
           >
             Vehicle maintenance
           </v-btn>
+          <v-btn
+            color="primary"
+            variant="tonal"
+            class="ml-2"
+            @click="router.push({ name: 'vehicleMileageService' })"
+          >
+            Mileage and service logs
+          </v-btn>
         </div>
       </v-col>
     </v-row>
