@@ -1,4 +1,5 @@
 import routes from "./app/routes/index.js";
+import mileageServiceRoutes from "./app/routes/mileageService.routes.js";
 import issueRoutes from "./app/routes/issue.routes.js";
 import maintenanceRoutes from "./app/routes/maintenance.routes.js";
 import authRoutes from "./app/routes/auth.routes.js";
@@ -85,6 +86,8 @@ app.use("/vehicleapi", issueRoutes);
 app.use("/api/vehicleapi", issueRoutes);
 app.use("/vehicleapi", maintenanceRoutes);
 app.use("/api/vehicleapi", maintenanceRoutes);
+app.use("/vehicleapi", mileageServiceRoutes);
+app.use("/api/vehicleapi", mileageServiceRoutes);
 
 const PORT = process.env.PORT || 3200;
 

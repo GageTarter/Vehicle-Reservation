@@ -1,6 +1,6 @@
 # Behavior & Rules Reference
 
-**Living snapshot** of product rules currently implemented on `feature/8-vehicle-reservation-requests`.
+**Living snapshot** of product rules currently implemented on `feature/9-vehicle-assignment-and-availability`.
 
 These files answer: *"What rules does the app enforce right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.
@@ -44,5 +44,13 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | A requestor reads and lists only their reservations. Another user's id is `404`, not `403`. An admin lists every reservation. | `GET /vehicles/reservations` | Feature 8 |
 | A requestor can update a reservation only while `status` is `requested` and they own it. | `PUT /vehicles/reservations/:id` | Feature 8 |
 | **My Requests** lists the caller's reservations, and requestors add or edit them in a dialog. Admins see the list without those actions. | route `requests` | Feature 8 |
+| Only an admin may assign a vehicle or mark a request awaiting a vehicle. | `PUT /vehicles/reservations/:id/assignment` + `requireAdmin` | Feature 9 |
+| Assigning a free vehicle sets `status` `reserved` and that `vehicleId`. Marking awaiting sets `awaiting_vehicle` and clears `vehicleId`. | Assignment body | Feature 9 |
+| A vehicle already `reserved` for an overlapping window cannot be assigned again. Adjacent trips that touch at an endpoint are allowed. | `409` `{ "message": "Vehicle is not available for this time." }` | Feature 9 |
+| **Need Vehicle** lists `awaiting_vehicle` rows for admins. Non-admins are sent to `home`. | route `requestServicing` | Feature 9 |
 | A requestor (`user` / `requestor`) can create, view, edit, and delete their own vehicle issues. Area/system admins update status only. | `/vehicleapi/issues` | Feature 13 |
 | Maintenance, area admin, and system admin may manage maintenance requests for vehicles in their area. | `/vehicleapi/maintenance-requests` | Feature 14 |
+| Maintenance, area_admin, and system_admin (`admin`) may view and record mileage and service. Other roles receive `403`. | `/vehicleapi` mileage and service-log routes | Feature 15 |
+| Area admins and maintenance users are limited to vehicles in their `area_id`. System admins can access all areas. | `403` for other areas | Feature 15 |
+| Mileage requires a date and a non-negative number. Service records require a date and description. Missing vehicle is `404`. | Mileage and service POST validation | Feature 15 |
+| Mileage and service history is append-only. Lists show newest records first. | New POSTs create new rows; no edit/delete | Feature 15 |

@@ -318,6 +318,11 @@ describe("Vehicles menu", () => {
         { path: "/login", name: "login", component: { template: "<div>Login</div>" } },
         { path: "/vehicles", name: "vehicles", component: { template: "<div>Vehicles</div>" } },
         { path: "/requests", name: "requests", component: { template: "<div>Requests</div>" } },
+        {
+          path: "/request-servicing",
+          name: "requestServicing",
+          component: { template: "<div>Need Vehicle</div>" },
+        },
       ],
     });
     await router.push("/");

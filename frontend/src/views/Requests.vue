@@ -2,16 +2,22 @@
 import { computed, onMounted, ref } from "vue";
 import Utils from "../config/utils.js";
 import reservationServices from "../services/reservationServices.js";
+import vehicleServices from "../services/vehicleServices.js";
 
 const loading = ref(true);
 const loadError = ref("");
 const formError = ref("");
 const dialog = ref(false);
+const assignDialog = ref(false);
 const saving = ref(false);
 const editingId = ref(null);
+const assignTarget = ref(null);
+const assignVehicleId = ref(null);
+const assignError = ref("");
 const reservations = ref([]);
 const drivers = ref([]);
 const destinations = ref([]);
+const vehicles = ref([]);
 
 const emptyForm = () => ({
   partyName: "",
@@ -26,6 +32,7 @@ const emptyForm = () => ({
 
 const form = ref(emptyForm());
 const isRequestor = computed(() => Utils.getStore("user")?.role !== "admin");
+const isAdmin = computed(() => Utils.getStore("user")?.role === "admin");
 
 const statusLabel = {
   requested: "Requested",
@@ -137,16 +144,66 @@ async function submit() {
   }
 }
 
+function openAssign(row) {
+  assignTarget.value = row;
+  assignVehicleId.value = null;
+  assignError.value = "";
+  assignDialog.value = true;
+}
+
+async function reserveVehicle() {
+  if (!assignVehicleId.value) {
+    assignError.value = "Vehicle is required.";
+    return;
+  }
+
+  saving.value = true;
+  assignError.value = "";
+
+  try {
+    const response = await reservationServices.assign(assignTarget.value.id, {
+      vehicleId: assignVehicleId.value,
+    });
+    reservations.value = reservations.value.map((row) =>
+      row.id === response.data.id ? response.data : row,
+    );
+    assignDialog.value = false;
+  } catch (err) {
+    assignError.value = err.response?.data?.message || "Unable to assign the vehicle.";
+  } finally {
+    saving.value = false;
+  }
+}
+
+async function markAwaiting(row) {
+  try {
+    const response = await reservationServices.assign(row.id, { vehicleId: null });
+    reservations.value = reservations.value.map((item) =>
+      item.id === response.data.id ? response.data : item,
+    );
+  } catch (err) {
+    loadError.value = err.response?.data?.message || "Unable to mark awaiting vehicle.";
+  }
+}
+
 onMounted(async () => {
   try {
-    const [reservationResponse, driverResponse, destinationResponse] = await Promise.all([
+    const requests = [
       reservationServices.list(),
       reservationServices.listDrivers(),
       reservationServices.listDestinations(),
-    ]);
+    ];
+
+    if (isAdmin.value) {
+      requests.push(vehicleServices.getAll());
+    }
+
+    const [reservationResponse, driverResponse, destinationResponse, vehicleResponse] =
+      await Promise.all(requests);
     reservations.value = reservationResponse.data;
     drivers.value = driverResponse.data;
     destinations.value = destinationResponse.data;
+    vehicles.value = vehicleResponse?.data || [];
   } catch (err) {
     loadError.value = err.response?.data?.message || "Unable to load requests.";
   } finally {
@@ -183,6 +240,22 @@ onMounted(async () => {
             aria-label="Edit request"
             @click="openEdit(row)"
           />
+          <v-btn
+            v-if="isAdmin && row.status !== 'reserved'"
+            size="small"
+            class="ml-2"
+            @click="openAssign(row)"
+          >
+            Assign vehicle
+          </v-btn>
+          <v-btn
+            v-if="isAdmin && row.status !== 'reserved'"
+            size="small"
+            class="ml-2"
+            @click="markAwaiting(row)"
+          >
+            Mark awaiting vehicle
+          </v-btn>
         </template>
       </v-list-item>
     </v-list>
@@ -213,6 +286,27 @@ onMounted(async () => {
           <v-btn color="primary" class="oc-cta" :loading="saving" @click="submit">
             {{ editingId ? "Save" : "Submit" }}
           </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="assignDialog" max-width="480">
+      <v-card>
+        <v-card-title>Assign vehicle</v-card-title>
+        <v-card-text>
+          <v-alert v-if="assignError" type="error" class="mb-4">{{ assignError }}</v-alert>
+          <v-select
+            v-model="assignVehicleId"
+            :items="vehicles"
+            item-title="name"
+            item-value="id"
+            label="Vehicle"
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn @click="assignDialog = false">Cancel</v-btn>
+          <v-btn color="primary" class="oc-cta" :loading="saving" @click="reserveVehicle">Reserve</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
