@@ -1,6 +1,6 @@
 # Behavior & Rules Reference
 
-**Living snapshot** of product rules currently implemented on `feature-10-reservation-status-management`.
+**Living snapshot** of product rules currently implemented on `feature-11-weekly-reservation-calendar`.
 
 These files answer: *"What rules does the app enforce right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.
@@ -52,6 +52,7 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | Re-assigning a vehicle without changing `status` does not send another status email. | Assignment when already `reserved` | Feature 10 |
 | Admins can send day-before pickup emails for `reserved` trips starting tomorrow (UTC). Each trip is emailed at most once (`preTripEmailSentAt`). | `POST /vehicles/reservations/pre-trip-notices` | Feature 10 |
 | **Need Vehicle** includes **Send pickup notices**, which shows `Sent <n> pickup notices.` | `RequestServicing.vue` | Feature 10 |
+| Admins can open a Monday-start UTC **Weekly calendar** of overlapping reservations with status and vehicle. Requestors get `403` / are redirected home. | `GET /vehicles/reservations/calendar`, route `calendar` | Feature 11 |
 | A requestor (`user` / `requestor`) can create, view, edit, and delete their own vehicle issues. Area/system admins update status only. | `/vehicleapi/issues` | Feature 13 |
 | Maintenance, area admin, and system admin may manage maintenance requests for vehicles in their area. | `/vehicleapi/maintenance-requests` | Feature 14 |
 | Maintenance, area_admin, and system_admin (`admin`) may view and record mileage and service. Other roles receive `403`. | `/vehicleapi` mileage and service-log routes | Feature 15 |

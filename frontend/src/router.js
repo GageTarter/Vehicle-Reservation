@@ -7,6 +7,7 @@ import Login from "./views/Login.vue";
 import Account from "./views/Account.vue";
 import Requests from "./views/Requests.vue";
 import RequestServicing from "./views/RequestServicing.vue";
+import Calendar from "./views/Calendar.vue";
 import VehicleList from "./views/VehicleList.vue";
 import Utils from "./config/utils.js";
 import { isSystemAdmin } from "./config/roles.js";
@@ -38,6 +39,11 @@ const router = createRouter({
       path: "/request-servicing",
       name: "requestServicing",
       component: RequestServicing,
+    },
+    {
+      path: "/calendar",
+      name: "calendar",
+      component: Calendar,
     },
     {
       path: "/vehicles",
@@ -77,7 +83,7 @@ router.beforeEach((to) => {
     return { name: "home" };
   }
 
-  if (to.name === "requestServicing" && !isSystemAdmin(user)) {
+  if ((to.name === "requestServicing" || to.name === "calendar") && !isSystemAdmin(user)) {
     return { name: "home" };
   }
 

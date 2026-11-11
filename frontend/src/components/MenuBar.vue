@@ -49,6 +49,9 @@ onUnmounted(() => {
     <v-btn v-if="user && admin()" variant="text" color="white" class="ml-2" :to="{ name: 'requestServicing' }">
       Need Vehicle
     </v-btn>
+    <v-btn v-if="user && admin()" variant="text" color="white" class="ml-2" :to="{ name: 'calendar' }">
+      Weekly calendar
+    </v-btn>
     <v-btn v-if="user" variant="text" color="white" class="ml-2" :to="{ name: 'vehicles' }">Vehicles</v-btn>
     <v-spacer />
     <v-menu v-if="user" v-model="menu">

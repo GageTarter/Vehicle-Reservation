@@ -21,6 +21,10 @@ const reservationServices = {
     return apiClient.post("vehicles/reservations/pre-trip-notices", body);
   },
 
+  calendar(weekStart) {
+    return apiClient.get("vehicles/reservations/calendar", { params: { weekStart } });
+  },
+
   listDrivers() {
     return apiClient.get("vehicles/drivers");
   },

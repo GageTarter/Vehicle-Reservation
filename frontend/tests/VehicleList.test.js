@@ -323,6 +323,11 @@ describe("Vehicles menu", () => {
           name: "requestServicing",
           component: { template: "<div>Need Vehicle</div>" },
         },
+        {
+          path: "/calendar",
+          name: "calendar",
+          component: { template: "<div>Weekly calendar</div>" },
+        },
       ],
     });
     await router.push("/");
