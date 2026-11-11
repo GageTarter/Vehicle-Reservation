@@ -447,40 +447,6 @@ Each scenario above must map to at least one automated test.
 
 ---
 
-## Agent Implementation Request
-
-Copy when asking Cursor to implement this feature:
-
-```text
-Implement Feature 14 from @features/feature-14-vehicle-maintenance-management.md.
-
-Before coding, inspect the existing project structure and shared feature references.
-
-Follow the layer order in @features/framework.md:
-models → routes → backend tests → frontend → frontend tests.
-
-Reuse the existing authentication, vehicle, vehicle issue, and maintenance request models.
-Do not create duplicate vehicle, vehicle issue, or maintenance request tables.
-
-Implement maintenance request listing, creation, status updates, and vehicle maintenance information.
-
-Validate required fields and vehicle/issue associations. Enforce maintenance user permissions and area-based access restrictions.
-
-Map every Gherkin scenario in the Test Coverage Map to at least one automated test.
-
-Run the project's test suite before finishing.
-
-If API routes, payloads, schema, or product rules change, update the relevant shared reference files in the same branch.
-
-Confirm any proposed schema changes with the shared data model before implementing them.
-
-Complete the Definition of Done and merge checklist in @features/framework.md.
-
-Do not implement behavior outside this specification.
-```
-
----
-
 ## Definition of Done
 
 - [ ] Backend and frontend implemented according to this specification.
