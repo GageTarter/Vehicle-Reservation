@@ -5,7 +5,7 @@
 **Status:** Draft  
 **Created:** 2026-10-27  
 **Input:** OC Vehicle Scheduling System requirements  
-**Depends on:** Feature 1 — User Authentication, Vehicle Reservation Management, Vehicle Assignment and Availability Management  
+**Depends on:** [Feature 1 — Google Authentication](feature-1-google-auth.md), [Feature 3 — Vehicle Management](feature-3-vehicle-management.md), [Feature 8 — Vehicle Reservation Requests](feature-8-vehicle-reservation-requests.md), [Feature 9 — Vehicle Assignment and Availability](feature-9-vehicle-assignment-and-availability.md)  
 **Related:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`
 
 ---

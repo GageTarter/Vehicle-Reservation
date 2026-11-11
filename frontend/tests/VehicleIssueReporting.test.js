@@ -174,7 +174,7 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
 
       const { wrapper } = await mountView();
       await flushPromises();
-      await wrapper.findAll("button").find((btn) => btn.text() === "View")?.trigger("click");
+      await wrapper.get("[aria-label='See issue']").trigger("click");
       await flushPromises();
 
       expect(wrapper.find("[data-testid='error-alert']").exists()).toBe(true);
@@ -218,7 +218,7 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
 
       const { wrapper } = await mountView();
       await flushPromises();
-      await wrapper.findAll("button").find((btn) => btn.text() === "View")?.trigger("click");
+      await wrapper.get("[aria-label='See issue']").trigger("click");
       await flushPromises();
 
       const statusSelect = wrapper.findAllComponents({ name: "VSelect" }).at(-1);
@@ -244,7 +244,7 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
 
       const { wrapper } = await mountView();
       await flushPromises();
-      await wrapper.findAll("button").find((btn) => btn.text() === "View")?.trigger("click");
+      await wrapper.get("[aria-label='See issue']").trigger("click");
       await flushPromises();
 
       const statusSelect = wrapper.findAllComponents({ name: "VSelect" }).at(-1);
@@ -314,7 +314,7 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
       expect(wrapper.find("[data-testid='my-issue-list']").text()).toContain("Low Gas");
 
       issueServices.getIssues.mockResolvedValue({ data: [] });
-      await wrapper.findAll("button").find((btn) => btn.text() === "Delete")?.trigger("click");
+      await wrapper.get("[aria-label='Delete issue']").trigger("click");
       await flushPromises();
 
       expect(issueServices.deleteIssue).toHaveBeenCalledWith(1);
@@ -339,10 +339,15 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
       expect(list.text()).toContain("2026-11-05T17:00:00");
       expect(list.text()).toContain("Open");
 
-      await wrapper.findAll("button").find((btn) => btn.text() === "View")?.trigger("click");
+      await wrapper.get("[aria-label='See issue']").trigger("click");
       await flushPromises();
 
       expect(wrapper.find("[data-testid='my-issue-detail']").text()).toContain("Low Gas");
+
+      await wrapper.get("[aria-label='Unsee issue']").trigger("click");
+      await flushPromises();
+
+      expect(wrapper.find("[data-testid='my-issue-detail']").exists()).toBe(false);
     });
   });
 
@@ -363,7 +368,7 @@ describe("Feature 13 — Vehicle Issue Reporting", () => {
 
       const { wrapper } = await mountView();
       await flushPromises();
-      await wrapper.findAll("button").find((btn) => btn.text() === "Edit")?.trigger("click");
+      await wrapper.get("[aria-label='Edit issue']").trigger("click");
       await wrapper.find("#issue-description").setValue(
         "The seats and floor need cleaning."
       );

@@ -139,6 +139,10 @@ async function loadIssues() {
   }
 }
 
+function isIssueVisible(issue) {
+  return selectedIssue.value?.issue_id === issue.issue_id;
+}
+
 async function loadIssue(issueId) {
   clearMessages();
   selectedIssue.value = null;
@@ -150,6 +154,15 @@ async function loadIssue(issueId) {
   } catch (error) {
     errorMessage.value = apiMessage(error, "Unable to load this vehicle issue.");
   }
+}
+
+async function toggleIssueView(issue) {
+  if (isIssueVisible(issue)) {
+    selectedIssue.value = null;
+    return;
+  }
+
+  await loadIssue(issue.issue_id);
 }
 
 async function updateStatus() {
@@ -320,23 +333,37 @@ onMounted(() => {
               <td>{{ issue.reported_date }}</td>
               <td>{{ issue.status }}</td>
               <td>
-                <v-btn
-                  variant="text"
-                  color="primary"
-                  @click="loadIssue(issue.issue_id)"
-                >
-                  View
-                </v-btn>
-                <v-btn variant="text" color="primary" @click="startEdit(issue)">
-                  Edit
-                </v-btn>
-                <v-btn
-                  variant="text"
-                  color="error"
-                  @click="deleteIssue(issue.issue_id)"
-                >
-                  Delete
-                </v-btn>
+                <div class="d-flex align-center ga-6">
+                  <v-btn
+                    icon
+                    size="small"
+                    variant="text"
+                    :aria-label="isIssueVisible(issue) ? 'Unsee issue' : 'See issue'"
+                    @click="toggleIssueView(issue)"
+                  >
+                    <v-icon size="small">
+                      {{ isIssueVisible(issue) ? "mdi-eye-off" : "mdi-eye" }}
+                    </v-icon>
+                  </v-btn>
+                  <v-btn
+                    icon
+                    size="small"
+                    variant="text"
+                    aria-label="Edit issue"
+                    @click="startEdit(issue)"
+                  >
+                    <v-icon size="small">mdi-pencil</v-icon>
+                  </v-btn>
+                  <v-btn
+                    icon
+                    size="small"
+                    variant="text"
+                    aria-label="Delete issue"
+                    @click="deleteIssue(issue.issue_id)"
+                  >
+                    <v-icon size="small">mdi-trash-can</v-icon>
+                  </v-btn>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -382,11 +409,15 @@ onMounted(() => {
               <td>{{ issue.status }}</td>
               <td>
                 <v-btn
+                  icon
+                  size="small"
                   variant="text"
-                  color="primary"
-                  @click="loadIssue(issue.issue_id)"
+                  :aria-label="isIssueVisible(issue) ? 'Unsee issue' : 'See issue'"
+                  @click="toggleIssueView(issue)"
                 >
-                  View
+                  <v-icon size="small">
+                    {{ isIssueVisible(issue) ? "mdi-eye-off" : "mdi-eye" }}
+                  </v-icon>
                 </v-btn>
               </td>
             </tr>
