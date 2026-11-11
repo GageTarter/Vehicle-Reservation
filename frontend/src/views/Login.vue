@@ -17,6 +17,7 @@ async function signInWithGoogle() {
     const idToken = await requestGoogleIdToken();
     const response = await authServices.googleSignIn(idToken);
     Utils.setStore("user", response.data);
+    window.dispatchEvent(new Event("user-logged-in"));
     await router.push({ name: "home" });
   } catch (error) {
     if (error?.code === "cancelled") {

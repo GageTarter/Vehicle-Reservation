@@ -50,6 +50,10 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
+      area_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
     },
     {
       tableName: "vehicles",

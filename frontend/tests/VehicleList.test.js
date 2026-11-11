@@ -127,6 +127,7 @@ describe("Feature 3 — Vehicle Management", () => {
       });
       const wrapper = await mountVehicles();
 
+      expect(wrapper.text()).toContain("1");
       expect(wrapper.text()).toContain("Pathfinder");
       expect(wrapper.text().indexOf("Pathfinder")).toBeLessThan(wrapper.text().indexOf("Rogue"));
     });
@@ -317,6 +318,11 @@ describe("Vehicles menu", () => {
         { path: "/login", name: "login", component: { template: "<div>Login</div>" } },
         { path: "/vehicles", name: "vehicles", component: { template: "<div>Vehicles</div>" } },
         { path: "/requests", name: "requests", component: { template: "<div>Requests</div>" } },
+        {
+          path: "/request-servicing",
+          name: "requestServicing",
+          component: { template: "<div>Need Vehicle</div>" },
+        },
       ],
     });
     await router.push("/");
@@ -324,12 +330,14 @@ describe("Vehicles menu", () => {
     const Shell = { components: { MenuBar }, template: "<v-app><MenuBar /></v-app>" };
     const wrapper = mount(Shell, { global: { plugins: [vuetify, router] } });
 
+    expect(wrapper.text()).toContain("OC Vehicle Scheduling System");
     expect(wrapper.text()).toContain("Vehicles");
 
     Utils.removeItem("user");
     window.dispatchEvent(new Event("user-logged-out"));
     await flushPromises();
 
+    expect(wrapper.text()).toContain("OC Vehicle Scheduling System");
     expect(wrapper.text()).not.toContain("Vehicles");
   });
 });
