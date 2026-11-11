@@ -27,7 +27,12 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | The browser keeps one session under `localStorage` key `user`. | Login writes the success payload with `Utils.setStore`. Axios sends `Authorization: Bearer <token>`. A `401` clears `user` and redirects to `login`. | Feature 1 |
 | Anonymous visitors cannot open protected screens. A signed-in visitor cannot stay on `login`. | `router.beforeEach` | Feature 1 |
 | Dismissing the Google prompt stays on `login` and does not call the API. | Login catches cancellation before `authServices.googleSignIn`. | Feature 1 |
-| Home shows the first name and the role, and offers **My account**. There is no `MenuBar`. | `Home.vue` | Feature 1, Feature 2 |
+| Home shows the first name and the role, and offers **My account**. A signed-in user also sees the menu. | `Home.vue`, `MenuBar.vue` | Feature 1, Feature 2, Feature 3 |
+| The menu title is **Vehicle Management System**. The only nav item is **Vehicles**, shown when a user is stored. Sign out clears the session and opens `login`. | `MenuBar.vue` | Feature 3 |
+| Vehicles are listed oldest first. The screen columns are make, model, year, VIN, purchase date, color, passenger capacity, license plate number, license plate expiration, area, and actions. | `GET /fleets/vehicles` order `createdAt` ASC | Feature 3 |
+| Create and edit use the same ten fields, including `area` as typed text. The button label is **+ New vehicle**. | `VehicleList.vue`, `VehicleForm.vue` | Feature 3 |
+| An empty create shows the field's required message and does not call the API. An empty edit shows **All fields must be filled.** and does not call the API. Length, date, and VIN failures come from the API and show in a `v-alert`. | `VehicleForm.vue`, `vehicle.validation.js` | Feature 3 |
+| Every signed-in user can list only their own vehicles. Only `role` `admin` can create, edit, or delete, and only their own rows. | `vehicle.routes.js`, `vehicleAccess.js` | Feature 3 |
 | The account page shows email, first name, last name, and role from `GET /vehicles/me`. | `Account.vue` | Feature 2 |
 | A signed-in user can change only `fName` and `lName`. `email`, `googleId`, and `role` in the body are ignored. A successful save updates `localStorage` key `user`. | `PUT /vehicles/me` | Feature 2 |
 | `fName` and `lName` must be strings. Empty strings are allowed. A missing or non-string name is rejected. | `400` `{ "message": "First and last name must be text." }` | Feature 2 |
@@ -39,3 +44,4 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | A requestor reads and lists only their reservations. Another user's id is `404`, not `403`. An admin lists every reservation. | `GET /vehicles/reservations` | Feature 8 |
 | A requestor can update a reservation only while `status` is `requested` and they own it. | `PUT /vehicles/reservations/:id` | Feature 8 |
 | **My Requests** lists the caller's reservations, and requestors add or edit them in a dialog. Admins see the list without those actions. | route `requests` | Feature 8 |
+| A requestor (`user` / `requestor`) can create, view, edit, and delete their own vehicle issues. Area/system admins update status only. | `/vehicleapi/issues` | Feature 13 |

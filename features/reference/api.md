@@ -131,6 +131,47 @@ Request:
 | `400` | Driver is missing or not approved, destination is missing, end is not after start, passenger count is below 1, or the row is no longer `requested`. |
 | `401` | Missing or invalid session. |
 | `404` | Update target is missing or belongs to someone else. `{ "message": "Reservation with id=<id> not found." }` |
+## Fleet vehicles
+
+Mounted at `/fleets`. Every route requires `Authorization: Bearer <token>`. A vehicle belongs to the signed-in user. Another user's id returns `404`. Create, update, and delete also require `role` `admin`.
+
+JSON fields: `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passengerCapacity`, `licensePlateNo`, `licensePlateExp`, `area`. Responses also include `id`. `userId` is not returned. The stored `name` is `${year} ${make} ${model}` and is not a request field.
+
+### `GET /fleets/vehicles`
+
+| Status | When |
+|--------|------|
+| `200` | That user's vehicles, oldest `createdAt` first |
+| `401` | Missing, expired, or unknown token |
+
+### `POST /fleets/vehicles`
+
+| Status | When |
+|--------|------|
+| `201` | Created. Body is the vehicle JSON |
+| `400` | A required field is blank, too long, not a valid date, or the VIN fails the check. A duplicate year, make, and model for that user returns `{ "message": "A vehicle with that year, make, and model already exists." }` |
+| `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin`. Body: `{ "message": "Forbidden! Admin access required." }` |
+
+### `PUT /fleets/vehicles/:id`
+
+| Status | When |
+|--------|------|
+| `200` | `{ "message": "vehicle was updated successfully." }` |
+| `400` | `vehicleId` is not a number, a field is blank (`All fields must be filled.`), or a length, date, or VIN rule fails. Year must be exactly 4 digits. VIN must be exactly 17 characters and valid |
+| `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin`. Body: `{ "message": "Forbidden! Admin access required." }` |
+| `404` | `{ "message": "Vehicle with id=${id} not found." }` |
+
+### `DELETE /fleets/vehicles/:id`
+
+| Status | When |
+|--------|------|
+| `204` | Deleted. Empty body |
+| `400` | `{ "message": "vehicleId must be a number." }` |
+| `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin`. Body: `{ "message": "Forbidden! Admin access required." }` |
+| `404` | `{ "message": "Vehicle with id=${id} not found." }` |
 
 ## Conventions
 
@@ -138,3 +179,17 @@ Request:
 - Errors: `{ "message": "..." }`.
 - Authenticated routes: `Authorization: Bearer <token>`.
 - `requireAdmin` rejects a non-admin with `403` and `{ "message": "Forbidden! Admin access required." }`.
+
+## Vehicle issues
+
+Mounted at `/vehicleapi` (also `/api/vehicleapi` for the kit frontend). Every route requires `Authorization: Bearer <token>`.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/vehicleapi/issues` | List issues the caller may access |
+| `GET` | `/vehicleapi/issues/:id` | View one issue |
+| `POST` | `/vehicleapi/issues` | Report an issue |
+| `PATCH` | `/vehicleapi/issues/:id` | Requestor edits their own issue |
+| `PATCH` | `/vehicleapi/issues/:id/status` | Admin updates status (`Open`, `In Progress`, `Resolved`) |
+| `DELETE` | `/vehicleapi/issues/:id` | Requestor deletes their own issue |
+| `GET` | `/vehicleapi/vehicles/:id/issues` | Issue history for a vehicle |

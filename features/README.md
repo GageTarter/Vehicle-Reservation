@@ -29,7 +29,7 @@ No application code may be written unless it maps to a requirement in one of the
 | 12 | *Reserved: checkout / return* | `feature-12-vehicle-checkout-return-management` | Feature 9+ |
 | 13 | *Reserved: issue reporting* | `feature-13-vehicle-issue-reporting` | Feature 12 |
 
-Feature 7 is unused. Features 1 and 2 are on this branch. Features 3–6 are still required before Features 9–11. Do not implement feature work on `main`.
+Feature 7 is unused. Integrate Features 1–6 onto `dev` before implementing 8–11. Do not implement 8–11 on `main`.
 
 New features: follow [framework.md](./framework.md#feature-spec-template) — **Status**, **Input**, **FR-00N**, **SC-00N**, **Key Entities**, Gherkin, **Agent implementation request**, **Definition of Done**.
 

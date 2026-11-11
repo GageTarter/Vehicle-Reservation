@@ -75,8 +75,8 @@
 ## Assumptions
 
 - Feature 1 roles: `user` is the North **Requestor**; `admin` is the North **Admin**. Area Admin is not a separate role in this feature.
-- Features 4 and 5 have no schema yet. This feature creates the minimum `drivers` (`id`, `name`, `status`) and `destinations` (`id`, `name`) rows it must validate. A driver is approved when `status` is `approved`. Features 4 and 5 extend these tables; they do not replace the reservation rules.
-- Feature 3’s `vehicles` table is not on this branch. `vehicleId` is stored as a nullable integer with no foreign key until that table exists. Requestors do not choose a vehicle here.
+- Features 4 and 5 have shipped `drivers` and `destinations` tables on `dev` before this branch is implemented. Approved driver means Feature 4’s approved status value.
+- Vehicles exist (Feature 3) but are not chosen by the requestor here.
 - Dates and times are stored as UTC ISO-8601 datetimes. Requestors who “only use dates” still submit start/end datetimes (date-only UI may default time to `00:00` / `23:59` locally; the API always receives datetimes).
 
 ## Edge Cases
@@ -220,26 +220,11 @@ Admins may open the same list route and see every request (read-only in this fea
 | `noteType` | STRING(50) | Nullable |
 | `noteText` | STRING(2000) | Nullable |
 | `status` | STRING(32) | Required; default `requested` |
-| `vehicleId` | INTEGER | Nullable; no foreign key until Feature 3’s `vehicles` table exists |
+| `vehicleId` | INTEGER FK | Nullable; `vehicles.id`; null in this feature |
 | `createdAt` | DATE | Sequelize timestamps |
 | `updatedAt` | DATE | Sequelize timestamps |
 
 Allowed `status` values this feature writes: `requested` only. Later features may persist `awaiting_vehicle` and `reserved` on the same column.
-
-### `drivers` table (minimum until Feature 4)
-
-| Field | Type | Rules |
-|-------|------|-------|
-| `id` | INTEGER PK | Auto-increment |
-| `name` | STRING(100) | Required |
-| `status` | STRING(32) | Required; `approved` may be selected |
-
-### `destinations` table (minimum until Feature 5)
-
-| Field | Type | Rules |
-|-------|------|-------|
-| `id` | INTEGER PK | Auto-increment |
-| `name` | STRING(100) | Required |
 
 ### Associations (in `models/index.js`)
 
@@ -247,6 +232,7 @@ Allowed `status` values this feature writes: `requested` only. Later features ma
 *   `Reservation belongsTo User` as requestor
 *   `Reservation belongsTo Driver`
 *   `Reservation belongsTo Destination`
+*   `Reservation belongsTo Vehicle` (optional)
 
 ---
 

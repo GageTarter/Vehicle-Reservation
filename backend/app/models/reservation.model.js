@@ -5,6 +5,7 @@ export default (sequelize, Sequelize) => {
       requestorUserId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        field: "requester_id",
       },
       partyName: {
         type: Sequelize.STRING(100),
@@ -46,11 +47,30 @@ export default (sequelize, Sequelize) => {
       vehicleId: {
         type: Sequelize.INTEGER,
         allowNull: true,
+        field: "vehicle_id",
+      },
+      requester_id: {
+        type: Sequelize.VIRTUAL,
+        get() {
+          return this.getDataValue("requestorUserId");
+        },
+        set(value) {
+          this.setDataValue("requestorUserId", value);
+        },
+      },
+      vehicle_id: {
+        type: Sequelize.VIRTUAL,
+        get() {
+          return this.getDataValue("vehicleId");
+        },
+        set(value) {
+          this.setDataValue("vehicleId", value);
+        },
       },
     },
     {
       tableName: "reservations",
-    },
+    }
   );
 
   return Reservation;

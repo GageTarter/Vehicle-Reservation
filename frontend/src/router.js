@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "./views/Home.vue";
+import VehicleIssueReporting from "./views/VehicleIssueReporting.vue";
 import Login from "./views/Login.vue";
 import Account from "./views/Account.vue";
 import Requests from "./views/Requests.vue";
+import VehicleList from "./views/VehicleList.vue";
 import Utils from "./config/utils.js";
 
 const router = createRouter({
@@ -27,6 +29,16 @@ const router = createRouter({
       path: "/requests",
       name: "requests",
       component: Requests,
+    },
+    {
+      path: "/vehicles",
+      name: "vehicles",
+      component: VehicleList,
+    },
+    {
+      path: "/issues",
+      name: "vehicleIssueReporting",
+      component: VehicleIssueReporting,
     },
     {
       path: "/:pathMatch(.*)*",
