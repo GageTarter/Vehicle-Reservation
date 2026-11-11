@@ -5,6 +5,7 @@ import VehicleIssueReporting from "./views/VehicleIssueReporting.vue";
 import VehicleMaintenance from "./views/VehicleMaintenance.vue";
 import Login from "./views/Login.vue";
 import Account from "./views/Account.vue";
+import CheckoutReturn from "./views/CheckoutReturn.vue";
 import Requests from "./views/Requests.vue";
 import RequestServicing from "./views/RequestServicing.vue";
 import Calendar from "./views/Calendar.vue";
@@ -64,6 +65,11 @@ const router = createRouter({
       path: "/mileage-service",
       name: "vehicleMileageService",
       component: VehicleMileageService,
+    },
+    {
+      path: "/checkout-return",
+      name: "checkoutReturn",
+      component: CheckoutReturn,
     },
     {
       path: "/:pathMatch(.*)*",

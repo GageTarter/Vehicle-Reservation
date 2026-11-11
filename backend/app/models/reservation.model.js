@@ -49,6 +49,14 @@ export default (sequelize, Sequelize) => {
         allowNull: true,
         field: "vehicle_id",
       },
+      checkout_datetime: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      return_datetime: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
       preTripEmailSentAt: {
         type: Sequelize.DATE,
         allowNull: true,
@@ -69,6 +77,24 @@ export default (sequelize, Sequelize) => {
         },
         set(value) {
           this.setDataValue("vehicleId", value);
+        },
+      },
+      start_datetime: {
+        type: Sequelize.VIRTUAL,
+        get() {
+          return this.getDataValue("startAt");
+        },
+        set(value) {
+          this.setDataValue("startAt", value);
+        },
+      },
+      end_datetime: {
+        type: Sequelize.VIRTUAL,
+        get() {
+          return this.getDataValue("endAt");
+        },
+        set(value) {
+          this.setDataValue("endAt", value);
         },
       },
     },

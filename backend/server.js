@@ -4,6 +4,7 @@ import issueRoutes from "./app/routes/issue.routes.js";
 import maintenanceRoutes from "./app/routes/maintenance.routes.js";
 import authRoutes from "./app/routes/auth.routes.js";
 import accountRoutes from "./app/routes/account.routes.js";
+import checkoutRoutes from "./app/routes/checkout.routes.js";
 import reservationRoutes from "./app/routes/reservation.routes.js";
 import vehicleRoutes from "./app/routes/vehicle.routes.js";
 import express from "express";
@@ -88,6 +89,8 @@ app.use("/vehicleapi", maintenanceRoutes);
 app.use("/api/vehicleapi", maintenanceRoutes);
 app.use("/vehicleapi", mileageServiceRoutes);
 app.use("/api/vehicleapi", mileageServiceRoutes);
+app.use("/vehicleapi", checkoutRoutes);
+app.use("/api/vehicleapi", checkoutRoutes);
 
 const PORT = process.env.PORT || 3200;
 

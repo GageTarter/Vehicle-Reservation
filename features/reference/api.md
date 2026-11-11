@@ -269,3 +269,14 @@ Success `201`: `{ "message": "Mileage record created successfully.", "mileage_lo
 
 Request: `{ "service_date": "2026-11-05", "service_performed": "Oil change and tire rotation" }`  
 Success `201`: `{ "message": "Service record created successfully.", "service_log": { ... } }`
+
+## Vehicle checkout and return
+
+Mounted at `/vehicleapi` (also `/api/vehicleapi`). Every route requires `Authorization: Bearer <token>`.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/vehicleapi/reservations/:id/checkout-return` | View checkout and return information |
+| `POST` | `/vehicleapi/reservations/:id/checkout` | Requestor records vehicle checkout |
+| `POST` | `/vehicleapi/reservations/:id/return` | Area/system admin marks a vehicle returned |
+| `GET` | `/vehicleapi/reservations/checkout-status` | Admin list of reservation checkout/return statuses |

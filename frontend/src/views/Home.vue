@@ -49,6 +49,14 @@ function openRequests() {
           >
             Mileage and service logs
           </v-btn>
+          <v-btn
+            color="primary"
+            variant="tonal"
+            class="ml-2"
+            @click="router.push({ name: 'checkoutReturn' })"
+          >
+            Checkout and Return
+          </v-btn>
         </div>
       </v-col>
     </v-row>

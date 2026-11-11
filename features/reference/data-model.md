@@ -98,6 +98,8 @@ Minimum table until Feature 5.
 | `noteText` | STRING(2000) | Nullable |
 | `status` | STRING(32) | Required; Feature 8 writes `requested` |
 | `vehicleId` | INTEGER | Nullable; no foreign key until Feature 3 |
+| `checkout_datetime` | DATE | Nullable; set when the requestor checks out (Feature 12) |
+| `return_datetime` | DATE | Nullable; set when an admin confirms return (Feature 12) |
 | `preTripEmailSentAt` | DATE | Nullable; set when the day-before pickup email is sent (Feature 10) |
 | `createdAt` | DATE | Sequelize timestamp |
 | `updatedAt` | DATE | Sequelize timestamp |

@@ -59,3 +59,8 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | Area admins and maintenance users are limited to vehicles in their `area_id`. System admins can access all areas. | `403` for other areas | Feature 15 |
 | Mileage requires a date and a non-negative number. Service records require a date and description. Missing vehicle is `404`. | Mileage and service POST validation | Feature 15 |
 | Mileage and service history is append-only. Lists show newest records first. | New POSTs create new rows; no edit/delete | Feature 15 |
+| A requestor can check out only their own assigned reservation. Checkout requires an assigned vehicle and status `Assigned`. | `POST /vehicleapi/reservations/:id/checkout` | Feature 12 |
+| Duplicate checkout is rejected; original checkout time is kept. | `409` | Feature 12 |
+| Only an area admin (own area) or system admin can mark a reservation `Returned`. Requestors receive `403`. | `POST /vehicleapi/reservations/:id/return` | Feature 12 |
+| Return is allowed only from `Checked Out`. Duplicate return is rejected. | `409` | Feature 12 |
+| Requestors can view only their own reservation checkout details. Area admins see reservations whose vehicle is in their area. | `GET .../checkout-return` and `GET .../checkout-status` | Feature 12 |
