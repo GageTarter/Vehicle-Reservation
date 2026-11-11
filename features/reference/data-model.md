@@ -1,6 +1,6 @@
 # Data Model Reference
 
-**Status:** Feature 1 tables `users` and `sessions`. Feature 2 adds no columns. Feature 3 adds `vehicles`.
+**Status:** Feature 10 adds `reservations.preTripEmailSentAt`. Feature 1–3 and 8–9 tables remain.
 
 ## Tables
 
@@ -44,6 +44,7 @@ No password column.
 | `licensePlateNo` | STRING(7) | Required |
 | `licensePlateExp` | STRING(10) | Required. Same date rules as `purchaseDate` |
 | `area` | STRING(100) | Required typed string |
+| `area_id` | INTEGER | Nullable; used for kit area-scoped access |
 | `createdAt` | DATE | Sequelize timestamp. List order |
 | `updatedAt` | DATE | Sequelize timestamp |
 
@@ -56,7 +57,60 @@ No password column.
 
 Wired in `backend/app/models/index.js`.
 
-Deleting a user in Feature 2 also deletes every `sessions` row for that user. `googleId`, `email`, and `role` are not updated by Feature 2. Deleting a user also deletes that user's vehicles.
+Deleting a user in Feature 2 also deletes every `sessions` row for that user. `googleId`, `email`, and `role` are not updated by Feature 2.
+
+### `drivers`
+
+Minimum table until Feature 4. Feature 8 uses it to require an approved driver.
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `id` | INTEGER PK | Auto-increment |
+| `name` | STRING(100) | Required |
+| `status` | STRING(32) | Required; `approved` may be selected on a request |
+| `createdAt` | DATE | Sequelize timestamp |
+| `updatedAt` | DATE | Sequelize timestamp |
+
+### `destinations`
+
+Minimum table until Feature 5.
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `id` | INTEGER PK | Auto-increment |
+| `name` | STRING(100) | Required |
+| `createdAt` | DATE | Sequelize timestamp |
+| `updatedAt` | DATE | Sequelize timestamp |
+
+### `reservations`
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `id` | INTEGER PK | Auto-increment |
+| `requestorUserId` | INTEGER FK | Required; `users.id`; set from the session |
+| `partyName` | STRING(100) | Nullable |
+| `driverId` | INTEGER FK | Required; `drivers.id` |
+| `destinationId` | INTEGER FK | Required; `destinations.id` |
+| `startAt` | DATE | Required |
+| `endAt` | DATE | Required; after `startAt` |
+| `passengerCount` | INTEGER | Required; ≥ 1 |
+| `noteType` | STRING(50) | Nullable |
+| `noteText` | STRING(2000) | Nullable |
+| `status` | STRING(32) | Required; Feature 8 writes `requested` |
+| `vehicleId` | INTEGER | Nullable; no foreign key until Feature 3 |
+| `preTripEmailSentAt` | DATE | Nullable; set when the day-before pickup email is sent (Feature 10) |
+| `createdAt` | DATE | Sequelize timestamp |
+| `updatedAt` | DATE | Sequelize timestamp |
+
+## Associations (Feature 8)
+
+- `User hasMany Reservation` on `requestorUserId`
+- `Reservation belongsTo User` on `requestorUserId`
+- `Driver hasMany Reservation` on `driverId`
+- `Reservation belongsTo Driver` on `driverId`
+- `Destination hasMany Reservation` on `destinationId`
+- `Reservation belongsTo Destination` on `destinationId`
+Deleting a user also deletes that user's vehicles.
 
 ### `vehicle_issues`
 
@@ -70,3 +124,33 @@ Deleting a user in Feature 2 also deletes every `sessions` row for that user. `g
 | `description` | TEXT | NOT NULL |
 | `reported_date` | DATETIME | NOT NULL |
 | `status` | VARCHAR | NOT NULL, default `Open` |
+
+### `maintenance_requests`
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `maintenance_request_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | NOT NULL |
+| `issue_id` | INTEGER | Nullable |
+| `description` | TEXT | NOT NULL |
+| `status` | VARCHAR | NOT NULL, default `Open` |
+
+### `mileage_logs`
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `mileage_log_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | FK to `vehicles.id`; NOT NULL |
+| `date_recorded` | DATE | NOT NULL |
+| `current_mileage` | INTEGER | NOT NULL; non-negative |
+
+### `service_logs`
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `service_log_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | FK to `vehicles.id`; NOT NULL |
+| `service_date` | DATE | NOT NULL |
+| `service_performed` | TEXT | NOT NULL |
+
+A vehicle has many mileage logs and many service logs. Each log belongs to one vehicle.

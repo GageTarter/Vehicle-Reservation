@@ -64,8 +64,21 @@ export async function createVehicle(overrides = {}) {
 }
 
 export async function createReservation(overrides = {}) {
+  const suffix = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  const driverId =
+    overrides.driverId ??
+    (await persist("driver", { name: `Driver ${suffix}`, status: "approved" })).id;
+  const destinationId =
+    overrides.destinationId ??
+    (await persist("destination", { name: `City ${suffix}` })).id;
+
   return persist("reservation", {
-    status: "Assigned",
+    status: "reserved",
+    driverId,
+    destinationId,
+    startAt: new Date("2026-11-17T09:00:00.000Z"),
+    endAt: new Date("2026-11-17T12:00:00.000Z"),
+    passengerCount: 2,
     ...overrides,
   });
 }

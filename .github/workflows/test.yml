@@ -2,9 +2,9 @@ name: Test
 
 on:
   push:
-    branches: [main]
+    branches: [dev]
   pull_request:
-    branches: [main, dev]
+    branches: [dev]
   workflow_call:
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
         image: mysql:8
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_DATABASE: todospeckit_db_test
+          MYSQL_DATABASE: speckit-db-test
         ports:
           - 3306:3306
         options: >-
@@ -23,6 +23,9 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
+    env:
+      # Must match MYSQL_DATABASE above and backend/.env.test.example DB_NAME.
+      DB_NAME: todospeckit_db_test
     defaults:
       run:
         working-directory: backend
@@ -32,6 +35,9 @@ jobs:
         with:
           node-version: 24
       - run: cp .env.test.example .env.test
+      - name: Assert test DB name matches CI MySQL
+        run: |
+          grep -q '^DB_NAME=todospeckit_db_test$' .env.test
       - run: npm install
       - run: npm test
 

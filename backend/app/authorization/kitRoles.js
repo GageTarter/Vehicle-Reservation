@@ -30,6 +30,10 @@ export function canManageMaintenance(user) {
   return isMaintenance(user) || isAreaAdmin(user) || isSystemAdmin(user);
 }
 
+export function canManageMileage(user) {
+  return canManageMaintenance(user);
+}
+
 export function canMarkReturned(user) {
   return isSystemAdmin(user) || isAreaAdmin(user);
 }

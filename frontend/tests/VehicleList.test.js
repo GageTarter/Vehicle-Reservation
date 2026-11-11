@@ -46,7 +46,7 @@ const jane = {
   email: "jane@example.com",
   fName: "Jane",
   lName: "Doe",
-  role: "user",
+  role: "admin",
   token: "session-token",
 };
 
@@ -144,6 +144,17 @@ describe("Feature 3 — Vehicle Management", () => {
       const wrapper = await mountVehicles();
 
       expect(wrapper.text()).toContain("Failed to fetch vehicles.");
+    });
+
+    it("hides create, edit, and delete from a signed-in user who is not the admin", async () => {
+      Utils.setStore("user", { ...jane, role: "user" });
+      vehicleServices.getAll.mockResolvedValue({ data: [nissan] });
+      const wrapper = await mountVehicles();
+
+      expect(wrapper.text()).toContain("Pathfinder");
+      expect(wrapper.text()).not.toContain("+ New vehicle");
+      expect(wrapper.find("[aria-label='Edit vehicle']").exists()).toBe(false);
+      expect(wrapper.find("[aria-label='Delete vehicle']").exists()).toBe(false);
     });
   });
 
@@ -306,6 +317,12 @@ describe("Vehicles menu", () => {
         { path: "/", name: "home", component: { template: "<div>Home</div>" } },
         { path: "/login", name: "login", component: { template: "<div>Login</div>" } },
         { path: "/vehicles", name: "vehicles", component: { template: "<div>Vehicles</div>" } },
+        { path: "/requests", name: "requests", component: { template: "<div>Requests</div>" } },
+        {
+          path: "/request-servicing",
+          name: "requestServicing",
+          component: { template: "<div>Need Vehicle</div>" },
+        },
       ],
     });
     await router.push("/");
