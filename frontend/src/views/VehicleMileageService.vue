@@ -1,12 +1,11 @@
 <script setup>
 import { computed, ref } from "vue";
 import Utils from "../config/utils.js";
+import { canManageMileage } from "../config/roles.js";
 import mileageServiceServices from "../services/mileageServiceServices.js";
 
 const user = computed(() => Utils.getStore("user"));
-const canManage = computed(() =>
-  ["maintenance", "area_admin", "system_admin"].includes(user.value?.role)
-);
+const canManage = computed(() => canManageMileage(user.value));
 
 const loading = ref(false);
 const successMessage = ref("");

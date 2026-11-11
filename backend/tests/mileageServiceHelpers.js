@@ -2,6 +2,7 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import db from "../app/models/index.js";
 import authConfig from "../app/config/auth.config.js";
+import { kitVehicleFields } from "./helpers.js";
 
 export function authHeader(token) {
   return { Authorization: `Bearer ${token}` };
@@ -36,11 +37,7 @@ export async function createUser(overrides = {}) {
 }
 
 export async function createVehicle(overrides = {}) {
-  return db.vehicle.create({
-    name: `Vehicle ${Date.now()}`,
-    area_id: 1,
-    ...overrides,
-  });
+  return db.vehicle.create(kitVehicleFields(overrides));
 }
 
 export async function createMileage(overrides = {}) {

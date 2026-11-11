@@ -488,21 +488,21 @@ Do not implement behavior outside this specification.
 
 ## Definition of Done
 
-- [ ] Backend and frontend implemented according to this specification.
-- [ ] Authorized maintenance users can view vehicle mileage records.
-- [ ] Authorized maintenance users can create mileage records.
-- [ ] Mileage records are saved with the correct vehicle, date, and mileage value.
-- [ ] Authorized maintenance users can view vehicle service records.
-- [ ] Authorized maintenance users can create service records.
-- [ ] Service records are saved with the correct vehicle, date, and description.
-- [ ] Existing mileage and service records are retained.
-- [ ] Area-based and system administrator permissions are enforced.
-- [ ] Vehicle mileage and service history displays correctly.
-- [ ] All mapped automated tests pass.
-- [ ] Test Coverage Map is complete.
-- [ ] `features/reference/data-model.md` is updated if the schema changes.
-- [ ] `features/reference/api.md` is updated if the API changes.
-- [ ] `features/reference/behavior.md` is updated if product rules change.
+- [x] Backend and frontend implemented according to this specification.
+- [x] Authorized maintenance users can view vehicle mileage records.
+- [x] Authorized maintenance users can create mileage records.
+- [x] Mileage records are saved with the correct vehicle, date, and mileage value.
+- [x] Authorized maintenance users can view vehicle service records.
+- [x] Authorized maintenance users can create service records.
+- [x] Service records are saved with the correct vehicle, date, and description.
+- [x] Existing mileage and service records are retained.
+- [x] Area-based and system administrator permissions are enforced.
+- [x] Vehicle mileage and service history displays correctly.
+- [x] All mapped automated tests pass.
+- [x] Test Coverage Map is complete.
+- [x] `features/reference/data-model.md` is updated if the schema changes.
+- [x] `features/reference/api.md` is updated if the API changes.
+- [x] `features/reference/behavior.md` is updated if product rules change.
 
 ---
 

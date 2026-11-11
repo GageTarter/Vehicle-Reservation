@@ -1,5 +1,6 @@
 import db from "../models/index.js";
 import logger from "../config/logger.js";
+import { canAccessVehicle, canManageMileage } from "../authorization/kitRoles.js";
 
 const Vehicle = db.vehicle;
 const MileageLog = db.mileageLog;
@@ -8,22 +9,6 @@ const ServiceLog = db.serviceLog;
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
 
 const controller = {};
-
-function canManage(user) {
-  return ["maintenance", "area_admin", "system_admin"].includes(user.role);
-}
-
-function canAccessVehicle(user, vehicle) {
-  if (user.role === "system_admin") {
-    return true;
-  }
-
-  if (["maintenance", "area_admin"].includes(user.role)) {
-    return vehicle.area_id === user.area_id;
-  }
-
-  return false;
-}
 
 function toMileageJson(row) {
   return {
@@ -66,7 +51,7 @@ async function loadVehicleOrError(req, res, vehicleId) {
 
 controller.listMileage = async (req, res) => {
   try {
-    if (!canManage(req.user)) {
+    if (!canManageMileage(req.user)) {
       return res.status(403).send({ message: "You cannot view mileage records." });
     }
 
@@ -92,7 +77,7 @@ controller.listMileage = async (req, res) => {
 
 controller.createMileage = async (req, res) => {
   try {
-    if (!canManage(req.user)) {
+    if (!canManageMileage(req.user)) {
       return res.status(403).send({ message: "You cannot record mileage." });
     }
 
@@ -136,7 +121,7 @@ controller.createMileage = async (req, res) => {
 
 controller.listService = async (req, res) => {
   try {
-    if (!canManage(req.user)) {
+    if (!canManageMileage(req.user)) {
       return res.status(403).send({ message: "You cannot view service records." });
     }
 
@@ -162,7 +147,7 @@ controller.listService = async (req, res) => {
 
 controller.createService = async (req, res) => {
   try {
-    if (!canManage(req.user)) {
+    if (!canManageMileage(req.user)) {
       return res.status(403).send({ message: "You cannot record a service." });
     }
 
@@ -200,6 +185,10 @@ controller.createService = async (req, res) => {
 
 controller.findMileage = async (req, res) => {
   try {
+    if (!canManageMileage(req.user)) {
+      return res.status(403).send({ message: "You cannot view mileage records." });
+    }
+
     const id = parseInt(req.params.id, 10);
 
     if (Number.isNaN(id)) {
@@ -227,6 +216,10 @@ controller.findMileage = async (req, res) => {
 
 controller.findService = async (req, res) => {
   try {
+    if (!canManageMileage(req.user)) {
+      return res.status(403).send({ message: "You cannot view service records." });
+    }
+
     const id = parseInt(req.params.id, 10);
 
     if (Number.isNaN(id)) {
