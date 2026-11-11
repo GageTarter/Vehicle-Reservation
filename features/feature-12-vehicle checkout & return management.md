@@ -413,16 +413,16 @@ Do not implement behavior outside this specification.
 
 ## Definition of Done
 
-- [ ] Backend and frontend implemented according to this specification.
-- [ ] Checkout and return timestamps are saved correctly.
-- [ ] Reservation status transitions are validated.
-- [ ] Requestor and administrator permissions are enforced.
-- [ ] Checkout and return information is displayed correctly.
-- [ ] All mapped automated tests pass.
-- [ ] Test Coverage Map is complete.
-- [ ] `features/reference/data-model.md` is updated if the schema changes.
-- [ ] `features/reference/api.md` is updated if the API changes.
-- [ ] `features/reference/behavior.md` is updated if product rules change.
+- [x] Backend and frontend implemented according to this specification.
+- [x] Checkout and return timestamps are saved correctly.
+- [x] Reservation status transitions are validated.
+- [x] Requestor and administrator permissions are enforced.
+- [x] Checkout and return information is displayed correctly.
+- [x] All mapped automated tests pass.
+- [x] Test Coverage Map is complete.
+- [x] `features/reference/data-model.md` is updated if the schema changes.
+- [x] `features/reference/api.md` is updated if the API changes.
+- [x] `features/reference/behavior.md` is updated if product rules change.
 
 ---
 

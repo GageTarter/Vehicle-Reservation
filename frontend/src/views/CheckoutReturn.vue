@@ -1,15 +1,12 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import Utils from "../config/utils.js";
+import { canReturnVehicle, isRequestor as roleIsRequestor } from "../config/roles.js";
 import checkoutServices from "../services/checkoutServices.js";
 
 const user = computed(() => Utils.getStore("user"));
-const isRequestor = computed(() =>
-  ["requestor", "user"].includes(user.value?.role)
-);
-const isAdmin = computed(() =>
-  ["area_admin", "system_admin", "admin"].includes(user.value?.role)
-);
+const isRequestor = computed(() => roleIsRequestor(user.value));
+const isAdmin = computed(() => canReturnVehicle(user.value));
 
 const loading = ref(false);
 const successMessage = ref("");

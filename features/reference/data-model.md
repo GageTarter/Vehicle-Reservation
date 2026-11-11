@@ -1,6 +1,6 @@
 # Data Model Reference
 
-**Status:** Feature 1 tables `users` and `sessions`. Feature 2 adds no columns. Feature 12 adds stand-in `vehicles` and `reservations` (including checkout/return timestamps).
+**Status:** Feature 10 adds `reservations.preTripEmailSentAt`. Feature 1–3 and 8–9 tables remain.
 
 ## Tables
 
@@ -15,7 +15,7 @@
 | `email` | STRING | Required, unique; from the verified token |
 | `role` | STRING(20) | Required; `user` or `admin`; default `user` |
 
-No password column. Feature 12 also uses `area_id` (nullable) and roles `requestor`, `area_admin`, and `system_admin` on stand-in rows.
+No password column.
 
 ### `sessions`
 
@@ -27,51 +27,132 @@ No password column. Feature 12 also uses `area_id` (nullable) and roles `request
 | `expirationDate` | DATE | Required; 24 hours after creation |
 | `userId` | INTEGER FK | Required, references `users.id` |
 
-### `vehicles` (Feature 12 stand-in)
+### `vehicles`
 
 | Field | Type | Rules |
 |-------|------|-------|
 | `id` | INTEGER PK | Auto-increment |
-| `name` | STRING | Required |
-| `area_id` | INTEGER | Required; used for area-admin scoping |
-
-### `reservations` (Feature 12)
-
-| Field | Type | Rules |
-|-------|------|-------|
-| `id` | INTEGER PK | Exposed as `reservation_id` |
-| `requester_id` | INTEGER | Required; requestor `users.id` |
-| `vehicle_id` | INTEGER | Nullable until assigned |
-| `status` | VARCHAR | `Requested`, `Awaiting Vehicle`, `Assigned`, `Checked Out`, `Returned` |
-| `start_datetime` / `end_datetime` | DATETIME | Nullable |
-| `checkout_datetime` | DATETIME | Nullable; set on checkout |
-| `return_datetime` | DATETIME | Nullable; set on return |
+| `userId` | INTEGER FK | Required, references `users.id`, `ON DELETE CASCADE` |
+| `name` | STRING(100) | Required. Set to `${year} ${make} ${model}`. Unique with `userId` |
+| `make` | STRING(100) | Required |
+| `model` | STRING(100) | Required |
+| `year` | STRING(100) | Required. Create: 1–4 digits. Edit: exactly 4 digits |
+| `vin` | STRING(17) | Required. Create: at most 17 characters and a valid VIN. Edit: exactly 17 characters and a valid VIN |
+| `purchaseDate` | STRING(10) | Required. Stored as typed (`M/D/YY` or `YYYY-M-D`) after a calendar check |
+| `color` | STRING(100) | Required |
+| `passengerCapacity` | INTEGER | Required. 0–9999 |
+| `licensePlateNo` | STRING(7) | Required |
+| `licensePlateExp` | STRING(10) | Required. Same date rules as `purchaseDate` |
+| `area` | STRING(100) | Required typed string |
+| `area_id` | INTEGER | Nullable; used for kit area-scoped access |
+| `createdAt` | DATE | Sequelize timestamp. List order |
+| `updatedAt` | DATE | Sequelize timestamp |
 
 ## Associations
 
 - `User hasMany Session` on `userId`
 - `Session belongsTo User` on `userId`
+- `User hasMany Vehicle` on `userId`, `onDelete: CASCADE`
+- `Vehicle belongsTo User` on `userId`
 
 Wired in `backend/app/models/index.js`.
 
 Deleting a user in Feature 2 also deletes every `sessions` row for that user. `googleId`, `email`, and `role` are not updated by Feature 2.
 
-### `vehicles` (Feature 12 stand-in)
+### `drivers`
+
+Minimum table until Feature 4. Feature 8 uses it to require an approved driver.
 
 | Field | Type | Rules |
 |-------|------|-------|
-| `id` | INTEGER PK | Stand-in until Vehicle Management |
-| `name` | STRING | Required |
-| `area_id` | INTEGER | Required; used for area-admin access |
+| `id` | INTEGER PK | Auto-increment |
+| `name` | STRING(100) | Required |
+| `status` | STRING(32) | Required; `approved` may be selected on a request |
+| `createdAt` | DATE | Sequelize timestamp |
+| `updatedAt` | DATE | Sequelize timestamp |
 
-### `reservations` (Feature 12)
+### `destinations`
+
+Minimum table until Feature 5.
 
 | Field | Type | Rules |
 |-------|------|-------|
-| `id` | INTEGER PK | Exposed as `reservation_id` |
-| `requester_id` | INTEGER | FK to `users.id` |
-| `vehicle_id` | INTEGER | Nullable until assigned |
-| `status` | VARCHAR | `Requested`, `Awaiting Vehicle`, `Assigned`, `Checked Out`, `Returned` |
-| `start_datetime` / `end_datetime` | DATETIME | Nullable on this stand-in |
-| `checkout_datetime` | DATETIME | Nullable; set on checkout |
-| `return_datetime` | DATETIME | Nullable; set on return |
+| `id` | INTEGER PK | Auto-increment |
+| `name` | STRING(100) | Required |
+| `createdAt` | DATE | Sequelize timestamp |
+| `updatedAt` | DATE | Sequelize timestamp |
+
+### `reservations`
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `id` | INTEGER PK | Auto-increment |
+| `requestorUserId` | INTEGER FK | Required; `users.id`; set from the session |
+| `partyName` | STRING(100) | Nullable |
+| `driverId` | INTEGER FK | Required; `drivers.id` |
+| `destinationId` | INTEGER FK | Required; `destinations.id` |
+| `startAt` | DATE | Required |
+| `endAt` | DATE | Required; after `startAt` |
+| `passengerCount` | INTEGER | Required; ≥ 1 |
+| `noteType` | STRING(50) | Nullable |
+| `noteText` | STRING(2000) | Nullable |
+| `status` | STRING(32) | Required; Feature 8 writes `requested` |
+| `vehicleId` | INTEGER | Nullable; no foreign key until Feature 3 |
+| `checkout_datetime` | DATE | Nullable; set when the requestor checks out (Feature 12) |
+| `return_datetime` | DATE | Nullable; set when an admin confirms return (Feature 12) |
+| `preTripEmailSentAt` | DATE | Nullable; set when the day-before pickup email is sent (Feature 10) |
+| `createdAt` | DATE | Sequelize timestamp |
+| `updatedAt` | DATE | Sequelize timestamp |
+
+## Associations (Feature 8)
+
+- `User hasMany Reservation` on `requestorUserId`
+- `Reservation belongsTo User` on `requestorUserId`
+- `Driver hasMany Reservation` on `driverId`
+- `Reservation belongsTo Driver` on `driverId`
+- `Destination hasMany Reservation` on `destinationId`
+- `Reservation belongsTo Destination` on `destinationId`
+Deleting a user also deletes that user's vehicles.
+
+### `vehicle_issues`
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `issue_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | NOT NULL; references `vehicles.id` |
+| `reservation_id` | INTEGER | Nullable |
+| `reported_by` | INTEGER | NOT NULL |
+| `issue_type` | VARCHAR | NOT NULL |
+| `description` | TEXT | NOT NULL |
+| `reported_date` | DATETIME | NOT NULL |
+| `status` | VARCHAR | NOT NULL, default `Open` |
+
+### `maintenance_requests`
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `maintenance_request_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | NOT NULL |
+| `issue_id` | INTEGER | Nullable |
+| `description` | TEXT | NOT NULL |
+| `status` | VARCHAR | NOT NULL, default `Open` |
+
+### `mileage_logs`
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `mileage_log_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | FK to `vehicles.id`; NOT NULL |
+| `date_recorded` | DATE | NOT NULL |
+| `current_mileage` | INTEGER | NOT NULL; non-negative |
+
+### `service_logs`
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `service_log_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | FK to `vehicles.id`; NOT NULL |
+| `service_date` | DATE | NOT NULL |
+| `service_performed` | TEXT | NOT NULL |
+
+A vehicle has many mileage logs and many service logs. Each log belongs to one vehicle.

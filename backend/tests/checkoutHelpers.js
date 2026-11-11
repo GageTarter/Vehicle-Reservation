@@ -2,6 +2,7 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import db from "../app/models/index.js";
 import authConfig from "../app/config/auth.config.js";
+import { kitVehicleFields } from "./helpers.js";
 
 export const CHECKOUT_BASE = "/vehicleapi/reservations";
 
@@ -38,18 +39,24 @@ export async function createUser(overrides = {}) {
 }
 
 export async function createVehicle(overrides = {}) {
-  return db.vehicle.create({
-    name: `Vehicle ${Date.now()}`,
-    area_id: 1,
-    ...overrides,
-  });
+  return db.vehicle.create(kitVehicleFields(overrides));
 }
 
 export async function createReservation(overrides = {}) {
+  const driverId =
+    overrides.driverId ??
+    (await db.driver.create({ name: `Checkout driver ${Date.now()}`, status: "approved" })).id;
+  const destinationId =
+    overrides.destinationId ??
+    (await db.destination.create({ name: `Checkout dest ${Date.now()}` })).id;
+
   return db.reservation.create({
     status: "Assigned",
-    start_datetime: new Date("2026-11-05T09:00:00"),
-    end_datetime: new Date("2026-11-05T17:00:00"),
+    startAt: new Date("2026-11-05T09:00:00"),
+    endAt: new Date("2026-11-05T17:00:00"),
+    passengerCount: 2,
+    driverId,
+    destinationId,
     ...overrides,
   });
 }

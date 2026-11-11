@@ -1,5 +1,11 @@
 import db from "../models/index.js";
 import logger from "../config/logger.js";
+import {
+  canMarkReturned,
+  isAreaAdmin,
+  isRequestor,
+  isSystemAdmin,
+} from "../authorization/kitRoles.js";
 
 const Reservation = db.reservation;
 const Vehicle = db.vehicle;
@@ -26,18 +32,6 @@ function toReservationJson(reservation) {
   };
 }
 
-function isSystemAdmin(user) {
-  return user.role === "system_admin" || user.role === "admin";
-}
-
-function isAreaAdmin(user) {
-  return user.role === "area_admin";
-}
-
-function canManageReturn(user) {
-  return isSystemAdmin(user) || isAreaAdmin(user);
-}
-
 function canAccessReservation(user, reservation) {
   if (isSystemAdmin(user)) {
     return true;
@@ -47,7 +41,7 @@ function canAccessReservation(user, reservation) {
     return reservation.vehicle?.area_id === user.area_id;
   }
 
-  return reservation.requester_id === user.id;
+  return isRequestor(user) && reservation.requester_id === user.id;
 }
 
 async function loadReservation(id) {
@@ -134,7 +128,7 @@ controller.checkout = async (req, res) => {
 
 controller.returnVehicle = async (req, res) => {
   try {
-    if (!canManageReturn(req.user)) {
+    if (!canMarkReturned(req.user)) {
       return res.status(403).send({
         message: "You are not allowed to mark a vehicle as returned.",
       });
@@ -183,7 +177,7 @@ controller.returnVehicle = async (req, res) => {
 
 controller.findStatus = async (req, res) => {
   try {
-    if (!canManageReturn(req.user)) {
+    if (!canMarkReturned(req.user)) {
       return res.status(403).send({
         message: "You are not allowed to view checkout and return statuses.",
       });

@@ -34,6 +34,7 @@ export async function authenticate(req, res, next) {
     id: session.user.id,
     role: session.user.role,
     area_id: session.user.area_id,
+    email: session.user.email,
   };
   return next();
 }

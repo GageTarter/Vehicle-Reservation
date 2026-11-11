@@ -23,7 +23,7 @@ export default (sequelize, Sequelize) => {
         unique: true,
       },
       role: {
-        type: Sequelize.STRING(20),
+        type: Sequelize.STRING(32),
         allowNull: false,
         defaultValue: "user",
       },
