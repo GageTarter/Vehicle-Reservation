@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "./views/Home.vue";
+import VehicleMileageService from "./views/VehicleMileageService.vue";
 import VehicleIssueReporting from "./views/VehicleIssueReporting.vue";
 import VehicleMaintenance from "./views/VehicleMaintenance.vue";
 import Login from "./views/Login.vue";
@@ -52,6 +53,11 @@ const router = createRouter({
       path: "/maintenance",
       name: "vehicleMaintenance",
       component: VehicleMaintenance,
+    },
+    {
+      path: "/mileage-service",
+      name: "vehicleMileageService",
+      component: VehicleMileageService,
     },
     {
       path: "/:pathMatch(.*)*",

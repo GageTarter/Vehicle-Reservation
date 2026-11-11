@@ -50,3 +50,7 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | **Need Vehicle** lists `awaiting_vehicle` rows for admins. Non-admins are sent to `home`. | route `requestServicing` | Feature 9 |
 | A requestor (`user` / `requestor`) can create, view, edit, and delete their own vehicle issues. Area/system admins update status only. | `/vehicleapi/issues` | Feature 13 |
 | Maintenance, area admin, and system admin may manage maintenance requests for vehicles in their area. | `/vehicleapi/maintenance-requests` | Feature 14 |
+| Maintenance, area_admin, and system_admin (`admin`) may view and record mileage and service. Other roles receive `403`. | `/vehicleapi` mileage and service-log routes | Feature 15 |
+| Area admins and maintenance users are limited to vehicles in their `area_id`. System admins can access all areas. | `403` for other areas | Feature 15 |
+| Mileage requires a date and a non-negative number. Service records require a date and description. Missing vehicle is `404`. | Mileage and service POST validation | Feature 15 |
+| Mileage and service history is append-only. Lists show newest records first. | New POSTs create new rows; no edit/delete | Feature 15 |
