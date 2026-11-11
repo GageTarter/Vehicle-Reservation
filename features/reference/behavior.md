@@ -1,6 +1,6 @@
 # Behavior & Rules Reference
 
-**Living snapshot** of product rules currently implemented through Feature 3 vehicle management.
+**Living snapshot** of product rules currently implemented on `feature/8-vehicle-reservation-requests`.
 
 These files answer: *"What rules does the app enforce right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.
@@ -38,7 +38,14 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | `fName` and `lName` must be strings. Empty strings are allowed. A missing or non-string name is rejected. | `400` `{ "message": "First and last name must be text." }` | Feature 2 |
 | Canceling edit or delete stays on the account page and does not call the API. | `Account.vue` | Feature 2 |
 | Deleting the account removes that user and their sessions. The browser then removes `localStorage` key `user` and opens `login`. | `DELETE /vehicles/me` returns `{ "message": "Account deleted." }` | Feature 2 |
+| A new reservation is owned by the signed-in user, starts as `requested`, and has no vehicle. Body `status`, `requestorUserId`, and `vehicleId` are ignored. | `POST /vehicles/reservations` | Feature 8 |
+| The named driver must exist and have `status` `approved`. | `400` `{ "message": "Driver must be on the approved drivers list." }` | Feature 8 |
+| The destination must exist. `endAt` must be after `startAt`. `passengerCount` must be an integer ≥ 1. | `400` with the matching message from Feature 8 | Feature 8 |
+| A requestor reads and lists only their reservations. Another user's id is `404`, not `403`. An admin lists every reservation. | `GET /vehicles/reservations` | Feature 8 |
+| A requestor can update a reservation only while `status` is `requested` and they own it. | `PUT /vehicles/reservations/:id` | Feature 8 |
+| **My Requests** lists the caller's reservations, and requestors add or edit them in a dialog. Admins see the list without those actions. | route `requests` | Feature 8 |
 | A requestor (`user` / `requestor`) can create, view, edit, and delete their own vehicle issues. Area/system admins update status only. | `/vehicleapi/issues` | Feature 13 |
+| Maintenance, area admin, and system admin may manage maintenance requests for vehicles in their area. | `/vehicleapi/maintenance-requests` | Feature 14 |
 | Maintenance, area_admin, and system_admin (`admin`) may view and record mileage and service. Other roles receive `403`. | `/vehicleapi` mileage and service-log routes | Feature 15 |
 | Area admins and maintenance users are limited to vehicles in their `area_id`. System admins can access all areas. | `403` for other areas | Feature 15 |
 | Mileage requires a date and a non-negative number. Service records require a date and description. Missing vehicle is `404`. | Mileage and service POST validation | Feature 15 |

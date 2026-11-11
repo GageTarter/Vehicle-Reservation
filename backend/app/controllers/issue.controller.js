@@ -86,7 +86,9 @@ async function resolveIssueFields(user, body) {
       };
     }
 
-    if (reservation.requester_id !== user.id) {
+    const reservationRequestorId = reservation.requestorUserId ?? reservation.requester_id;
+
+    if (reservationRequestorId !== user.id) {
       return {
         error: {
           status: 403,
@@ -95,7 +97,9 @@ async function resolveIssueFields(user, body) {
       };
     }
 
-    if (reservation.vehicle_id && reservation.vehicle_id !== vehicleId) {
+    const reservationVehicleId = reservation.vehicleId ?? reservation.vehicle_id;
+
+    if (reservationVehicleId && reservationVehicleId !== vehicleId) {
       return {
         error: {
           status: 409,

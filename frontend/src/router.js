@@ -2,8 +2,10 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "./views/Home.vue";
 import VehicleMileageService from "./views/VehicleMileageService.vue";
 import VehicleIssueReporting from "./views/VehicleIssueReporting.vue";
+import VehicleMaintenance from "./views/VehicleMaintenance.vue";
 import Login from "./views/Login.vue";
 import Account from "./views/Account.vue";
+import Requests from "./views/Requests.vue";
 import VehicleList from "./views/VehicleList.vue";
 import Utils from "./config/utils.js";
 
@@ -26,6 +28,11 @@ const router = createRouter({
       component: Account,
     },
     {
+      path: "/requests",
+      name: "requests",
+      component: Requests,
+    },
+    {
       path: "/vehicles",
       name: "vehicles",
       component: VehicleList,
@@ -34,6 +41,11 @@ const router = createRouter({
       path: "/issues",
       name: "vehicleIssueReporting",
       component: VehicleIssueReporting,
+    },
+    {
+      path: "/maintenance",
+      name: "vehicleMaintenance",
+      component: VehicleMaintenance,
     },
     {
       path: "/mileage-service",
