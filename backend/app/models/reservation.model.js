@@ -49,6 +49,10 @@ export default (sequelize, Sequelize) => {
         allowNull: true,
         field: "vehicle_id",
       },
+      preTripEmailSentAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
       requester_id: {
         type: Sequelize.VIRTUAL,
         get() {

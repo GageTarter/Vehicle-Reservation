@@ -8,6 +8,9 @@ const loadError = ref("");
 const formError = ref("");
 const dialog = ref(false);
 const saving = ref(false);
+const sendingNotices = ref(false);
+const snackbar = ref(false);
+const snackbarText = ref("");
 const reservations = ref([]);
 const vehicles = ref([]);
 const selected = ref(null);
@@ -40,6 +43,21 @@ async function reserve() {
   }
 }
 
+async function sendPickupNotices() {
+  sendingNotices.value = true;
+  loadError.value = "";
+
+  try {
+    const response = await reservationServices.sendPreTripNotices();
+    snackbarText.value = `Sent ${response.data.sent} pickup notices.`;
+    snackbar.value = true;
+  } catch (err) {
+    loadError.value = err.response?.data?.message || "Unable to send pickup notices.";
+  } finally {
+    sendingNotices.value = false;
+  }
+}
+
 onMounted(async () => {
   try {
     const [reservationResponse, vehicleResponse] = await Promise.all([
@@ -58,7 +76,12 @@ onMounted(async () => {
 
 <template>
   <v-container>
-    <h1 class="text-h4 mb-4">Need Vehicle</h1>
+    <div class="d-flex align-center justify-space-between mb-4">
+      <h1 class="text-h4">Need Vehicle</h1>
+      <v-btn color="primary" class="oc-cta" :loading="sendingNotices" @click="sendPickupNotices">
+        Send pickup notices
+      </v-btn>
+    </div>
 
     <v-progress-linear v-if="loading" indeterminate color="primary" />
     <v-alert v-else-if="loadError" type="error">{{ loadError }}</v-alert>
@@ -96,5 +119,7 @@ onMounted(async () => {
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-snackbar v-model="snackbar">{{ snackbarText }}</v-snackbar>
   </v-container>
 </template>

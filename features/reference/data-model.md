@@ -1,6 +1,6 @@
 # Data Model Reference
 
-**Status:** Feature 1 tables `users` and `sessions`. Feature 2 adds no columns. Feature 3 adds `vehicles`. Feature 8 adds `drivers`, `destinations`, and `reservations`.
+**Status:** Feature 10 adds `reservations.preTripEmailSentAt`. Feature 1–3 and 8–9 tables remain.
 
 ## Tables
 
@@ -98,6 +98,7 @@ Minimum table until Feature 5.
 | `noteText` | STRING(2000) | Nullable |
 | `status` | STRING(32) | Required; Feature 8 writes `requested` |
 | `vehicleId` | INTEGER | Nullable; no foreign key until Feature 3 |
+| `preTripEmailSentAt` | DATE | Nullable; set when the day-before pickup email is sent (Feature 10) |
 | `createdAt` | DATE | Sequelize timestamp |
 | `updatedAt` | DATE | Sequelize timestamp |
 

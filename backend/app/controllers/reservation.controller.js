@@ -2,6 +2,7 @@ import { Op } from "sequelize";
 import db from "../models/index.js";
 import logger from "../config/logger.js";
 import { getAccessibleReservationOrNull } from "../authorization/reservationAccess.js";
+import { notifyStatusChange, sendDuePreTripNotices } from "../services/reservationMail.js";
 
 const Reservation = db.reservation;
 const Driver = db.driver;
@@ -24,6 +25,7 @@ function reservationPayload(row) {
     noteText: row.noteText,
     status: row.status,
     vehicleId: row.vehicleId,
+    preTripEmailSentAt: row.preTripEmailSentAt ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
@@ -172,6 +174,7 @@ exports.create = async (req, res) => {
       vehicleId: null,
     });
 
+    await notifyStatusChange(row);
     return res.status(201).send(reservationPayload(row));
   } catch (err) {
     logger.error(err.message);
@@ -228,8 +231,13 @@ exports.assign = async (req, res) => {
     return res.status(404).send({ message: `Reservation with id=${id} not found.` });
   }
 
+  const previousStatus = row.status;
+
   if (req.body.vehicleId === null) {
     await row.update({ status: "awaiting_vehicle", vehicleId: null });
+    if (previousStatus !== "awaiting_vehicle") {
+      await notifyStatusChange(row);
+    }
     return res.status(200).send(reservationPayload(row));
   }
 
@@ -260,7 +268,15 @@ exports.assign = async (req, res) => {
   }
 
   await row.update({ status: "reserved", vehicleId });
+  if (previousStatus !== "reserved") {
+    await notifyStatusChange(row);
+  }
   return res.status(200).send(reservationPayload(row));
+};
+
+exports.sendPreTripNotices = async (req, res) => {
+  const sent = await sendDuePreTripNotices(req.body?.now);
+  return res.status(200).send({ sent });
 };
 
 exports.listDrivers = async (_req, res) => {

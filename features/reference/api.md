@@ -1,6 +1,6 @@
 # API Reference
 
-**Status:** Feature 9 on `feature/9-vehicle-assignment-and-availability`. Features 1, 2, and 8 remain.
+**Status:** Feature 10 on `feature-10-reservation-status-management`. Features 1, 2, 8, and 9 remain.
 
 Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/health`.
 
@@ -18,6 +18,7 @@ Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/
 | `GET` | `/vehicles/reservations/:id` | Yes | Fetch one reservation the caller may read | Feature 8 |
 | `PUT` | `/vehicles/reservations/:id` | Yes | Update a `requested` reservation owned by the caller | Feature 8 |
 | `PUT` | `/vehicles/reservations/:id/assignment` | Yes + admin | Assign a vehicle (`reserved`) or mark awaiting (`vehicleId` null) | Feature 9 |
+| `POST` | `/vehicles/reservations/pre-trip-notices` | Yes + admin | Send day-before pickup instruction emails | Feature 10 |
 | `GET` | `/vehicles/drivers` | Yes | Approved drivers (`status` `approved`) | Feature 8 |
 | `GET` | `/vehicles/destinations` | Yes | Destinations for the request form | Feature 8 |
 | `GET` | `/api/health` | No | Process health check | Starter |
@@ -188,6 +189,18 @@ Assign body: `{ "vehicleId": 7 }`. Awaiting body: `{ "vehicleId": null }`.
 | `403` | Authenticated non-admin |
 | `404` | Reservation or vehicle not found |
 | `409` | `{ "message": "Vehicle is not available for this time." }` — overlapping `reserved` trip |
+
+### `POST /vehicles/reservations/pre-trip-notices`
+
+Header: `Authorization: Bearer <token>`. Admin only. Optional body `{ "now": "<ISO datetime>" }` for tests.
+
+| Status | When |
+|--------|------|
+| `200` | `{ "sent": <n> }` — pickup emails sent for `reserved` trips starting tomorrow (UTC) that have not been emailed yet |
+| `401` | Missing or invalid session |
+| `403` | Authenticated non-admin |
+
+Creating a reservation or changing its status also sends **Reservation status updated** through `backend/app/services/mailer.js`. Re-assignment that leaves `status` unchanged does not send another status email.
 
 ## Conventions
 

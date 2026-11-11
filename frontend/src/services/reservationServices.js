@@ -17,6 +17,10 @@ const reservationServices = {
     return apiClient.put(`vehicles/reservations/${id}/assignment`, body);
   },
 
+  sendPreTripNotices(body = {}) {
+    return apiClient.post("vehicles/reservations/pre-trip-notices", body);
+  },
+
   listDrivers() {
     return apiClient.get("vehicles/drivers");
   },

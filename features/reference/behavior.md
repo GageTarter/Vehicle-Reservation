@@ -1,6 +1,6 @@
 # Behavior & Rules Reference
 
-**Living snapshot** of product rules currently implemented on `feature/9-vehicle-assignment-and-availability`.
+**Living snapshot** of product rules currently implemented on `feature-10-reservation-status-management`.
 
 These files answer: *"What rules does the app enforce right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.
@@ -48,6 +48,10 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | Assigning a free vehicle sets `status` `reserved` and that `vehicleId`. Marking awaiting sets `awaiting_vehicle` and clears `vehicleId`. | Assignment body | Feature 9 |
 | A vehicle already `reserved` for an overlapping window cannot be assigned again. Adjacent trips that touch at an endpoint are allowed. | `409` `{ "message": "Vehicle is not available for this time." }` | Feature 9 |
 | **Need Vehicle** lists `awaiting_vehicle` rows for admins. Non-admins are sent to `home`. | route `requestServicing` | Feature 9 |
+| Every reservation status change emails the requestor once with subject **Reservation status updated**. | `mailer.send` via create/assign | Feature 10 |
+| Re-assigning a vehicle without changing `status` does not send another status email. | Assignment when already `reserved` | Feature 10 |
+| Admins can send day-before pickup emails for `reserved` trips starting tomorrow (UTC). Each trip is emailed at most once (`preTripEmailSentAt`). | `POST /vehicles/reservations/pre-trip-notices` | Feature 10 |
+| **Need Vehicle** includes **Send pickup notices**, which shows `Sent <n> pickup notices.` | `RequestServicing.vue` | Feature 10 |
 | A requestor (`user` / `requestor`) can create, view, edit, and delete their own vehicle issues. Area/system admins update status only. | `/vehicleapi/issues` | Feature 13 |
 | Maintenance, area admin, and system admin may manage maintenance requests for vehicles in their area. | `/vehicleapi/maintenance-requests` | Feature 14 |
 | Maintenance, area_admin, and system_admin (`admin`) may view and record mileage and service. Other roles receive `403`. | `/vehicleapi` mileage and service-log routes | Feature 15 |
