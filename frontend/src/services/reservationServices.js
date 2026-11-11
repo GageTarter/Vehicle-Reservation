@@ -1,8 +1,8 @@
 import apiClient from "./services.js";
 
 const reservationServices = {
-  list() {
-    return apiClient.get("vehicles/reservations");
+  list(params = {}) {
+    return apiClient.get("vehicles/reservations", { params });
   },
 
   create(body) {
@@ -11,6 +11,10 @@ const reservationServices = {
 
   update(id, body) {
     return apiClient.put(`vehicles/reservations/${id}`, body);
+  },
+
+  assign(id, body) {
+    return apiClient.put(`vehicles/reservations/${id}/assignment`, body);
   },
 
   listDrivers() {

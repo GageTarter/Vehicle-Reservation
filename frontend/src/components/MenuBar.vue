@@ -3,11 +3,13 @@ import { onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import Utils from "../config/utils.js";
 import authServices from "../services/authServices.js";
+import { isSystemAdmin } from "../config/roles.js";
 
 const router = useRouter();
 const user = ref(Utils.getStore("user"));
 const menu = ref(false);
 const signingOut = ref(false);
+const admin = () => isSystemAdmin(user.value);
 
 function refreshUser() {
   user.value = Utils.getStore("user");
@@ -43,7 +45,11 @@ onUnmounted(() => {
 <template>
   <v-app-bar color="primary" density="comfortable">
     <v-app-bar-title>OC Vehicle Scheduling System</v-app-bar-title>
-    <v-btn v-if="user" variant="text" color="white" class="ml-4" :to="{ name: 'vehicles' }">Vehicles</v-btn>
+    <v-btn v-if="user" variant="text" color="white" class="ml-4" :to="{ name: 'requests' }">My Requests</v-btn>
+    <v-btn v-if="user && admin()" variant="text" color="white" class="ml-2" :to="{ name: 'requestServicing' }">
+      Need Vehicle
+    </v-btn>
+    <v-btn v-if="user" variant="text" color="white" class="ml-2" :to="{ name: 'vehicles' }">Vehicles</v-btn>
     <v-spacer />
     <v-menu v-if="user" v-model="menu">
       <template #activator="{ props }">

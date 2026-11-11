@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import db from "../models/index.js";
 import logger from "../config/logger.js";
 import { getAccessibleReservationOrNull } from "../authorization/reservationAccess.js";
@@ -5,6 +6,7 @@ import { getAccessibleReservationOrNull } from "../authorization/reservationAcce
 const Reservation = db.reservation;
 const Driver = db.driver;
 const Destination = db.destination;
+const Vehicle = db.vehicle;
 
 const exports = {};
 
@@ -123,6 +125,11 @@ function reservationId(req, res) {
 
 exports.findAll = async (req, res) => {
   const where = req.user.role === "admin" ? {} : { requestorUserId: req.user.id };
+
+  if (typeof req.query.status === "string" && req.query.status) {
+    where.status = req.query.status;
+  }
+
   const rows = await Reservation.findAll({
     where,
     order: [
@@ -202,6 +209,58 @@ exports.update = async (req, res) => {
     logger.error(err.message);
     return res.status(500).send({ message: "Unable to save the reservation." });
   }
+};
+
+exports.assign = async (req, res) => {
+  if (!Object.prototype.hasOwnProperty.call(req.body ?? {}, "vehicleId")) {
+    return res.status(400).send({ message: "vehicleId is required." });
+  }
+
+  const id = reservationId(req, res);
+
+  if (id == null) {
+    return undefined;
+  }
+
+  const row = await getAccessibleReservationOrNull(req, id);
+
+  if (!row) {
+    return res.status(404).send({ message: `Reservation with id=${id} not found.` });
+  }
+
+  if (req.body.vehicleId === null) {
+    await row.update({ status: "awaiting_vehicle", vehicleId: null });
+    return res.status(200).send(reservationPayload(row));
+  }
+
+  const vehicleId = Number(req.body.vehicleId);
+
+  if (!Number.isInteger(vehicleId)) {
+    return res.status(400).send({ message: "vehicleId must be a number or null." });
+  }
+
+  const vehicle = await Vehicle.findByPk(vehicleId);
+
+  if (!vehicle) {
+    return res.status(404).send({ message: `Vehicle with id=${vehicleId} not found.` });
+  }
+
+  const conflict = await Reservation.findOne({
+    where: {
+      vehicleId,
+      status: "reserved",
+      id: { [Op.ne]: row.id },
+      startAt: { [Op.lt]: row.endAt },
+      endAt: { [Op.gt]: row.startAt },
+    },
+  });
+
+  if (conflict) {
+    return res.status(409).send({ message: "Vehicle is not available for this time." });
+  }
+
+  await row.update({ status: "reserved", vehicleId });
+  return res.status(200).send(reservationPayload(row));
 };
 
 exports.listDrivers = async (_req, res) => {
