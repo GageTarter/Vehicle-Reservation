@@ -1,6 +1,6 @@
 # API Reference
 
-**Status:** Feature 10 on `feature-10-reservation-status-management`. Features 1, 2, 8, and 9 remain.
+**Status:** Feature 11 on `feature-11-weekly-reservation-calendar`. Features 1, 2, 8, 9, and 10 remain.
 
 Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/health`.
 
@@ -19,6 +19,7 @@ Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/
 | `PUT` | `/vehicles/reservations/:id` | Yes | Update a `requested` reservation owned by the caller | Feature 8 |
 | `PUT` | `/vehicles/reservations/:id/assignment` | Yes + admin | Assign a vehicle (`reserved`) or mark awaiting (`vehicleId` null) | Feature 9 |
 | `POST` | `/vehicles/reservations/pre-trip-notices` | Yes + admin | Send day-before pickup instruction emails | Feature 10 |
+| `GET` | `/vehicles/reservations/calendar` | Yes + admin | Reservations overlapping a Monday-start UTC week (`weekStart`) | Feature 11 |
 | `GET` | `/vehicles/drivers` | Yes | Approved drivers (`status` `approved`) | Feature 8 |
 | `GET` | `/vehicles/destinations` | Yes | Destinations for the request form | Feature 8 |
 | `GET` | `/api/health` | No | Process health check | Starter |
@@ -201,6 +202,17 @@ Header: `Authorization: Bearer <token>`. Admin only. Optional body `{ "now": "<I
 | `403` | Authenticated non-admin |
 
 Creating a reservation or changing its status also sends **Reservation status updated** through `backend/app/services/mailer.js`. Re-assignment that leaves `status` unchanged does not send another status email.
+
+### `GET /vehicles/reservations/calendar`
+
+Header: `Authorization: Bearer <token>`. Admin only. Query: `weekStart=YYYY-MM-DD` (must be a Monday, UTC week).
+
+| Status | When |
+|--------|------|
+| `200` | Array of reservations overlapping `[weekStart, weekStart+7days)` |
+| `400` | Missing or non-Monday `weekStart`: `{ "message": "weekStart must be a Monday (YYYY-MM-DD)." }` |
+| `401` | Missing or invalid session |
+| `403` | Authenticated non-admin |
 
 ## Conventions
 

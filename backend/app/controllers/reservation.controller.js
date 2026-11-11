@@ -279,6 +279,41 @@ exports.sendPreTripNotices = async (req, res) => {
   return res.status(200).send({ sent });
 };
 
+exports.calendar = async (req, res) => {
+  const weekStartRaw = req.query.weekStart;
+  const mondayMessage = { message: "weekStart must be a Monday (YYYY-MM-DD)." };
+
+  if (typeof weekStartRaw !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(weekStartRaw)) {
+    return res.status(400).send(mondayMessage);
+  }
+
+  const [year, month, day] = weekStartRaw.split("-").map((part) => Number(part));
+  const weekStart = new Date(Date.UTC(year, month - 1, day));
+
+  if (
+    weekStart.getUTCFullYear() !== year ||
+    weekStart.getUTCMonth() !== month - 1 ||
+    weekStart.getUTCDate() !== day ||
+    weekStart.getUTCDay() !== 1
+  ) {
+    return res.status(400).send(mondayMessage);
+  }
+
+  const weekEnd = new Date(Date.UTC(year, month - 1, day + 7));
+  const rows = await Reservation.findAll({
+    where: {
+      startAt: { [Op.lt]: weekEnd },
+      endAt: { [Op.gt]: weekStart },
+    },
+    order: [
+      ["startAt", "ASC"],
+      ["id", "ASC"],
+    ],
+  });
+
+  return res.status(200).send(rows.map(reservationPayload));
+};
+
 exports.listDrivers = async (_req, res) => {
   const rows = await Driver.findAll({
     where: { status: "approved" },

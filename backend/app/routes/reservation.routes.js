@@ -13,6 +13,7 @@ router.post(
   [authenticate, requireAdmin],
   reservation.sendPreTripNotices,
 );
+router.get("/reservations/calendar", [authenticate, requireAdmin], reservation.calendar);
 router.put("/reservations/:id/assignment", [authenticate, requireAdmin], reservation.assign);
 router.get("/reservations/:id", [authenticate], reservation.findOne);
 router.put("/reservations/:id", [authenticate], reservation.update);
