@@ -5,7 +5,7 @@
 **Status:** Draft  
 **Created:** 2026-10-25  
 **Input:** OC Vehicle Scheduling System requirements  
-**Depends on:** Feature 1 — User Authentication, Vehicle Reservation Management, Vehicle Assignment and Availability Management  
+**Depends on:** [Feature 1 — Google Authentication](feature-1-google-auth.md), [Feature 3 — Vehicle Management](feature-3-vehicle-management.md), [Feature 8 — Vehicle Reservation Requests](feature-8-vehicle-reservation-requests.md), [Feature 9 — Vehicle Assignment and Availability](feature-9-vehicle-assignment-and-availability.md)  
 **Related:** `features/reference/api.md`, `features/reference/data-model.md`, `features/reference/behavior.md`
 
 ---
@@ -378,36 +378,6 @@ Each scenario above must map to at least one automated test.
 | US-12.4 | Area administrator views reservation statuses | `frontend/tests/CheckoutReturn.test.js` | `it("Area administrator views reservation statuses")` |
 | US-12.4 | No reservations require checkout or return | `backend/tests/checkout.test.js` | `it("No reservations require checkout or return")` |
 | US-12.4 | No reservations require checkout or return | `frontend/tests/CheckoutReturn.test.js` | `it("No reservations require checkout or return")` |
-
----
-
-## Agent Implementation Request
-
-Copy when asking Cursor to implement this feature:
-
-```text
-Implement Feature 12 from @features/feature-12-vehicle-checkout-return-management.md.
-
-Before coding, inspect the existing project structure and shared feature references.
-
-Follow the layer order in @features/framework.md:
-models → routes → backend tests → frontend → frontend tests.
-
-Reuse the existing authentication, reservation, vehicle, and status models.
-Do not create duplicate reservation or vehicle tables.
-
-Implement checkout and return operations, validate status transitions, enforce requestor ownership and administrator permissions, and implement the required screen behavior.
-
-Map every Gherkin scenario in the Test Coverage Map to at least one automated test.
-
-Run the project's test suite before finishing.
-
-If API routes, payloads, schema, or product rules change, update the relevant shared reference files in the same branch.
-
-Complete the Definition of Done and merge checklist in @features/framework.md.
-
-Do not implement behavior outside this specification.
-```
 
 ---
 
