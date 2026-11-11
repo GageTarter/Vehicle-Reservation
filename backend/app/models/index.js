@@ -5,6 +5,7 @@ import sessionModel from "./session.model.js";
 import vehicleModel from "./vehicle.model.js";
 import reservationModel from "./reservation.model.js";
 import vehicleIssueModel from "./vehicleIssue.model.js";
+import maintenanceRequestModel from "./maintenanceRequest.model.js";
 
 const db = {};
 db.Sequelize = Sequelize;
@@ -15,6 +16,7 @@ db.session = sessionModel(sequelize, Sequelize);
 db.vehicle = vehicleModel(sequelize, Sequelize);
 db.reservation = reservationModel(sequelize, Sequelize);
 db.vehicleIssue = vehicleIssueModel(sequelize, Sequelize);
+db.maintenanceRequest = maintenanceRequestModel(sequelize, Sequelize);
 
 const assoc = { constraints: false };
 
@@ -37,5 +39,11 @@ db.vehicleIssue.belongsTo(db.reservation, { foreignKey: "reservation_id", ...ass
 
 db.user.hasMany(db.vehicleIssue, { foreignKey: "reported_by", ...assoc });
 db.vehicleIssue.belongsTo(db.user, { foreignKey: "reported_by", ...assoc });
+
+db.vehicle.hasMany(db.maintenanceRequest, { foreignKey: "vehicle_id", ...assoc });
+db.maintenanceRequest.belongsTo(db.vehicle, { foreignKey: "vehicle_id", ...assoc });
+
+db.vehicleIssue.hasMany(db.maintenanceRequest, { foreignKey: "issue_id", ...assoc });
+db.maintenanceRequest.belongsTo(db.vehicleIssue, { foreignKey: "issue_id", ...assoc });
 
 export default db;

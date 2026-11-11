@@ -39,3 +39,4 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | Canceling edit or delete stays on the account page and does not call the API. | `Account.vue` | Feature 2 |
 | Deleting the account removes that user and their sessions. The browser then removes `localStorage` key `user` and opens `login`. | `DELETE /vehicles/me` returns `{ "message": "Account deleted." }` | Feature 2 |
 | A requestor (`user` / `requestor`) can create, view, edit, and delete their own vehicle issues. Area/system admins update status only. | `/vehicleapi/issues` | Feature 13 |
+| Maintenance, area admin, and system admin may manage maintenance requests for vehicles in their area. | `/vehicleapi/maintenance-requests` | Feature 14 |

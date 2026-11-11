@@ -28,6 +28,14 @@ function openAccount() {
           >
             Vehicle issues
           </v-btn>
+          <v-btn
+            color="primary"
+            variant="tonal"
+            class="ml-2"
+            @click="router.push({ name: 'vehicleMaintenance' })"
+          >
+            Vehicle maintenance
+          </v-btn>
         </div>
       </v-col>
     </v-row>

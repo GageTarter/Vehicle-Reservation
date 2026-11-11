@@ -161,3 +161,15 @@ Mounted at `/vehicleapi` (also `/api/vehicleapi` for the kit frontend). Every ro
 | `PATCH` | `/vehicleapi/issues/:id/status` | Admin updates status (`Open`, `In Progress`, `Resolved`) |
 | `DELETE` | `/vehicleapi/issues/:id` | Requestor deletes their own issue |
 | `GET` | `/vehicleapi/vehicles/:id/issues` | Issue history for a vehicle |
+
+## Vehicle maintenance
+
+Mounted at `/vehicleapi`. Every route requires `Authorization: Bearer <token>`.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/vehicleapi/maintenance-requests` | List authorized maintenance requests |
+| `GET` | `/vehicleapi/maintenance-requests/:id` | View one request |
+| `POST` | `/vehicleapi/maintenance-requests` | Create a request (`status` starts `Open`) |
+| `PATCH` | `/vehicleapi/maintenance-requests/:id/status` | Update status (`Open`, `In Progress`, `Completed`) |
+| `GET` | `/vehicleapi/vehicles/:id/maintenance` | Maintenance history for a vehicle |

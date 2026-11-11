@@ -70,3 +70,13 @@ Deleting a user in Feature 2 also deletes every `sessions` row for that user. `g
 | `description` | TEXT | NOT NULL |
 | `reported_date` | DATETIME | NOT NULL |
 | `status` | VARCHAR | NOT NULL, default `Open` |
+
+### `maintenance_requests`
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `maintenance_request_id` | INTEGER | Primary key |
+| `vehicle_id` | INTEGER | NOT NULL |
+| `issue_id` | INTEGER | Nullable |
+| `description` | TEXT | NOT NULL |
+| `status` | VARCHAR | NOT NULL, default `Open` |
