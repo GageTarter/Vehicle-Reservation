@@ -61,45 +61,37 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.DATE,
         allowNull: true,
       },
-      requester_id: {
-        type: Sequelize.VIRTUAL,
-        get() {
-          return this.getDataValue("requestorUserId");
-        },
-        set(value) {
-          this.setDataValue("requestorUserId", value);
-        },
-      },
-      vehicle_id: {
-        type: Sequelize.VIRTUAL,
-        get() {
-          return this.getDataValue("vehicleId");
-        },
-        set(value) {
-          this.setDataValue("vehicleId", value);
-        },
-      },
-      start_datetime: {
-        type: Sequelize.VIRTUAL,
-        get() {
-          return this.getDataValue("startAt");
-        },
-        set(value) {
-          this.setDataValue("startAt", value);
-        },
-      },
-      end_datetime: {
-        type: Sequelize.VIRTUAL,
-        get() {
-          return this.getDataValue("endAt");
-        },
-        set(value) {
-          this.setDataValue("endAt", value);
-        },
-      },
     },
     {
       tableName: "reservations",
+      getterMethods: {
+        requester_id() {
+          return this.getDataValue("requestorUserId");
+        },
+        vehicle_id() {
+          return this.getDataValue("vehicleId");
+        },
+        start_datetime() {
+          return this.getDataValue("startAt");
+        },
+        end_datetime() {
+          return this.getDataValue("endAt");
+        },
+      },
+      setterMethods: {
+        requester_id(value) {
+          this.setDataValue("requestorUserId", value);
+        },
+        vehicle_id(value) {
+          this.setDataValue("vehicleId", value);
+        },
+        start_datetime(value) {
+          this.setDataValue("startAt", value);
+        },
+        end_datetime(value) {
+          this.setDataValue("endAt", value);
+        },
+      },
     }
   );
 

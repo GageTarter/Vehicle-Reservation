@@ -56,6 +56,17 @@ describe("Feature 14 — Vehicle Maintenance Management", () => {
       expect(list.text()).toContain("Open");
     });
 
+    it("Administrator views maintenance requests", async () => {
+      setUser("admin");
+      maintenanceServices.getRequests.mockResolvedValue({ data: [openRequest] });
+
+      const { wrapper } = await mountView();
+      await flushPromises();
+
+      expect(wrapper.text()).toContain("Brake inspection needed.");
+      expect(wrapper.text()).toContain("Create a maintenance request");
+    });
+
     it("Area administrator views maintenance requests", async () => {
       setUser("area_admin");
       maintenanceServices.getRequests.mockResolvedValue({ data: [openRequest] });
@@ -271,6 +282,9 @@ describe("Feature 14 — Vehicle Maintenance Management", () => {
       await flushPromises();
 
       expect(wrapper.text()).not.toContain("Update Status");
+      expect(wrapper.find("[data-testid='error-alert']").text()).toContain(
+        "You cannot view maintenance requests."
+      );
       expect(maintenanceServices.updateStatus).not.toHaveBeenCalled();
     });
   });

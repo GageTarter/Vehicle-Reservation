@@ -1,14 +1,13 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import Utils from "../config/utils.js";
+import { canManageMaintenance } from "../config/roles.js";
 import maintenanceServices from "../services/maintenanceServices.js";
 
 const STATUSES = ["Open", "In Progress", "Completed"];
 
 const user = computed(() => Utils.getStore("user"));
-const canManage = computed(() =>
-  ["maintenance", "area_admin", "system_admin"].includes(user.value?.role)
-);
+const canManage = computed(() => canManageMaintenance(user.value));
 
 const loading = ref(false);
 const successMessage = ref("");
@@ -29,6 +28,7 @@ function apiMessage(error, fallback) {
 
 async function loadRequests() {
   if (!canManage.value) {
+    errorMessage.value = "You cannot view maintenance requests.";
     return;
   }
 
