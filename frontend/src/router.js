@@ -4,6 +4,7 @@ import VehicleIssueReporting from "./views/VehicleIssueReporting.vue";
 import VehicleMaintenance from "./views/VehicleMaintenance.vue";
 import Login from "./views/Login.vue";
 import Account from "./views/Account.vue";
+import Requests from "./views/Requests.vue";
 import VehicleList from "./views/VehicleList.vue";
 import Utils from "./config/utils.js";
 
@@ -24,6 +25,11 @@ const router = createRouter({
       path: "/account",
       name: "account",
       component: Account,
+    },
+    {
+      path: "/requests",
+      name: "requests",
+      component: Requests,
     },
     {
       path: "/vehicles",

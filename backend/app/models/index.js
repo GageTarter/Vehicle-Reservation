@@ -2,8 +2,10 @@ import { Sequelize } from "sequelize";
 import sequelize from "../config/sequelizeInstance.js";
 import userModel from "./user.model.js";
 import sessionModel from "./session.model.js";
-import vehicleModel from "./vehicle.model.js";
+import driverModel from "./driver.model.js";
+import destinationModel from "./destination.model.js";
 import reservationModel from "./reservation.model.js";
+import vehicleModel from "./vehicle.model.js";
 import vehicleIssueModel from "./vehicleIssue.model.js";
 import maintenanceRequestModel from "./maintenanceRequest.model.js";
 
@@ -13,6 +15,8 @@ db.sequelize = sequelize;
 
 db.user = userModel(sequelize, Sequelize);
 db.session = sessionModel(sequelize, Sequelize);
+db.driver = driverModel(sequelize, Sequelize);
+db.destination = destinationModel(sequelize, Sequelize);
 db.vehicle = vehicleModel(sequelize, Sequelize);
 db.reservation = reservationModel(sequelize, Sequelize);
 db.vehicleIssue = vehicleIssueModel(sequelize, Sequelize);
@@ -25,11 +29,17 @@ db.session.belongsTo(db.user, { foreignKey: "userId" });
 db.user.hasMany(db.vehicle, { foreignKey: "userId", onDelete: "CASCADE" });
 db.vehicle.belongsTo(db.user, { foreignKey: "userId" });
 
-db.vehicle.hasMany(db.reservation, { foreignKey: "vehicle_id", ...assoc });
-db.reservation.belongsTo(db.vehicle, { foreignKey: "vehicle_id", ...assoc });
+db.user.hasMany(db.reservation, { foreignKey: "requestorUserId", ...assoc });
+db.reservation.belongsTo(db.user, { foreignKey: "requestorUserId", ...assoc });
 
-db.user.hasMany(db.reservation, { foreignKey: "requester_id", ...assoc });
-db.reservation.belongsTo(db.user, { foreignKey: "requester_id", ...assoc });
+db.driver.hasMany(db.reservation, { foreignKey: "driverId", ...assoc });
+db.reservation.belongsTo(db.driver, { foreignKey: "driverId", ...assoc });
+
+db.destination.hasMany(db.reservation, { foreignKey: "destinationId", ...assoc });
+db.reservation.belongsTo(db.destination, { foreignKey: "destinationId", ...assoc });
+
+db.vehicle.hasMany(db.reservation, { foreignKey: "vehicleId", ...assoc });
+db.reservation.belongsTo(db.vehicle, { foreignKey: "vehicleId", ...assoc });
 
 db.vehicle.hasMany(db.vehicleIssue, { foreignKey: "vehicle_id", ...assoc });
 db.vehicleIssue.belongsTo(db.vehicle, { foreignKey: "vehicle_id", ...assoc });

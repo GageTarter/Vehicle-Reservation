@@ -3,6 +3,7 @@ import issueRoutes from "./app/routes/issue.routes.js";
 import maintenanceRoutes from "./app/routes/maintenance.routes.js";
 import authRoutes from "./app/routes/auth.routes.js";
 import accountRoutes from "./app/routes/account.routes.js";
+import reservationRoutes from "./app/routes/reservation.routes.js";
 import vehicleRoutes from "./app/routes/vehicle.routes.js";
 import express from "express";
 import cors from "cors";
@@ -77,6 +78,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/vehicles", authRoutes);
 app.use("/vehicles", accountRoutes);
+app.use("/vehicles", reservationRoutes);
 app.use("/fleets", vehicleRoutes);
 app.use("/api", routes);
 app.use("/vehicleapi", issueRoutes);
