@@ -79,7 +79,7 @@ export function findAssetByRefOrName(assets, { ref, name }) {
  */
 export async function listAssetsWhere(restGet, assetType, where) {
   const { ok, status, text } = await restGet(
-    `/rest-1.v1/Data/${assetType}?sel=Name,Reference&where=${encodeURIComponent(where)}&page=1,0`,
+    `/rest-1.v1/Data/${assetType}?sel=Name,Reference&where=${encodeURIComponent(where)}&page=500,0`,
   );
 
   if (!ok) {

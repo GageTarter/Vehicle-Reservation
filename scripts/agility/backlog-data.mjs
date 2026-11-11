@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 export const rootDir = join(__dirname, "..", "..");
 
-export const DEFAULT_PROJECT = "Speckit App";
+export const DEFAULT_PROJECT = "T5 - Vehicles";
 
 const FEATURE_FILE_RE = /^feature-(\d+)-.+\.md$/i;
 
@@ -68,7 +68,7 @@ export function epicRef(featureNum) {
 export function parseUserStories(content) {
   const stories = [];
   const storyRegex =
-    /### US-\d+\.(\d+): ([^\n]+)\n\*\*As (?:a|the)\*\* ([^\n]+)\n\*\*I want(?: to)?\*\* ([^\n]+)\n\*\*So that\*\* ([^\n]+)/g;
+    /### US-\d+\.(\d+): ([^\n]+)\n\*\*As (?:an|a|the)\*\* ([^\n]+)\n\*\*I want(?: to)?\*\* ([^\n]+)\n\*\*So that\*\* ([^\n]+)/g;
 
   let match;
   while ((match = storyRegex.exec(content)) !== null) {
@@ -97,13 +97,20 @@ export function parseScenarios(content) {
   let current = null;
 
   for (const line of lines) {
+    if (line.trim() === "---" || /^## [^#]/.test(line)) {
+      if (current) {
+        scenarios.push(current);
+        current = null;
+      }
+      if (/^## [^#]/.test(line) && !line.startsWith("## Acceptance Criteria")) {
+        break;
+      }
+      continue;
+    }
+
     if (line.startsWith("### ") && !line.startsWith("#### ")) {
       const heading = line.slice(4).trim();
-      if (!heading.startsWith("US-") && !heading.startsWith("`") && !heading.startsWith("[")) {
-        section = heading;
-      } else {
-        section = heading;
-      }
+      section = heading;
       continue;
     }
 
@@ -119,7 +126,7 @@ export function parseScenarios(content) {
       continue;
     }
 
-    if (current && line.startsWith("*")) {
+    if (current && /^\*\s+(\*\*)?(Given|When|Then|And|But)\b/i.test(line)) {
       current.steps.push(line.replace(/^\*\s*/, "").trim());
     }
   }

@@ -2,27 +2,30 @@
 
 Export user stories and Gherkin acceptance criteria from `features/` into CSV files, or push via the Bulk JSON API.
 
+**Project Scope for this app:** `T5 - Vehicles` (`Scope:58962` on `https://www3.v1host.com/OklahomaChristianUniversity`).
+
 ## Generate CSV import files
 
 ```bash
 npm run agility:export
 # or:
-node scripts/export-agility-import.mjs --project "Your Project Name"
+node scripts/export-agility-import.mjs --project "T5 - Vehicles"
 ```
 
 Creates `docs/agility-import/PortfolioItem.csv`, `Story.csv`, and `Test.csv` for Excel import into Agility.
 
-Feature specs are **auto-discovered** from `features/feature-N-*.md` (epic title = `# Feature: …`). Before first export, set `DEFAULT_PROJECT` in `scripts/agility/backlog-data.mjs` (or pass `--project`) to your Agility Scope name.
+Feature specs are **auto-discovered** from `features/feature-N-*.md` (epic title = `# Feature: …`). Default Scope is `T5 - Vehicles` in `scripts/agility/backlog-data.mjs` (override with `--project`).
 
 ## Push via Agility Bulk API
 
-1. Copy `.env.agility.example` → `.env.agility` and set `AGILITY_BASE_URL`, `AGILITY_ACCESS_TOKEN`, `AGILITY_SCOPE`.
+1. Copy `.env.agility.example` → `.env.agility` and set `AGILITY_BASE_URL`, `AGILITY_ACCESS_TOKEN`, `AGILITY_SCOPE` (`T5 - Vehicles`). Do **not** commit `.env.agility`.
 2. Run:
 
 ```bash
-npm run agility:push                    # full create
-npm run agility:push -- --feature 1     # one feature
-npm run agility:push -- --feature 1 --upsert   # update existing
+npm run agility:push:dry-run
+npm run agility:verify
+npm run agility:push -- --feature 8            # create epic + stories + tests
+npm run agility:push -- --feature 8 --upsert   # update existing by Reference
 ```
 
-See the OC CS Speckit `docs/agility-import/README.md` in the source kit repo for full Excel import steps and upsert behavior, or expand this file as your team adopts Agility.
+Prefer `--upsert` after story/Gherkin edits. A second full create push duplicates assets.

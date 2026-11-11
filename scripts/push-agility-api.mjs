@@ -327,6 +327,7 @@ function buildEpicPayload(feature, scopeRef) {
     AssetType: "Epic",
     Name: feature.epic.name,
     Description: feature.epic.description,
+    Reference: feature.epic.ref,
   };
 }
 
@@ -420,10 +421,14 @@ async function upsertStoriesForFeature(feature, scopeRef, epicOid) {
 
 async function countAssetsInScope(assetType, scopeRef) {
   const { ok, text } = await restGet(
-    `/rest-1.v1/Data/${assetType}?sel=Name&where=${encodeURIComponent(scopeWhereClause(scopeRef))}&page=1,0`,
+    `/rest-1.v1/Data/${assetType}?sel=Name&where=${encodeURIComponent(scopeWhereClause(scopeRef))}&page=500,0`,
   );
   if (!ok) {
     return -1;
+  }
+  const totalMatch = text.match(/\btotal=["'](\d+)["']/i);
+  if (totalMatch) {
+    return Number(totalMatch[1]);
   }
   return (text.match(/<Asset /g) || []).length;
 }

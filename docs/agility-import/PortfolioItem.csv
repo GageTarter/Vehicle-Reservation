@@ -1,2 +1,10 @@
 AssetType,Name,Scope,Description,Reference
-Portfolio Item,Vehicle Management,Speckit App,Epic for features/feature-3-vehicle-management.md. Spec-driven backlog.,SK-F3-EPIC
+Portfolio Item,Google Authentication,T5 - Vehicles,Epic for features/feature-1-google-auth.md. Spec-driven backlog.,SK-F1-EPIC
+Portfolio Item,User Management,T5 - Vehicles,Epic for features/feature-2-user-management.md. Spec-driven backlog.,SK-F2-EPIC
+Portfolio Item,Vehicle Management,T5 - Vehicles,Epic for features/feature-3-vehicle-management.md. Spec-driven backlog.,SK-F3-EPIC
+Portfolio Item,Vehicle Reservation Requests,T5 - Vehicles,Epic for features/feature-8-vehicle-reservation-requests.md. Spec-driven backlog.,SK-F8-EPIC
+Portfolio Item,Vehicle Assignment and Availability,T5 - Vehicles,Epic for features/feature-9-vehicle-assignment-and-availability.md. Spec-driven backlog.,SK-F9-EPIC
+Portfolio Item,Reservation Status Management,T5 - Vehicles,Epic for features/feature-10-reservation-status-management.md. Spec-driven backlog.,SK-F10-EPIC
+Portfolio Item,Weekly Reservation Calendar,T5 - Vehicles,Epic for features/feature-11-weekly-reservation-calendar.md. Spec-driven backlog.,SK-F11-EPIC
+Portfolio Item,Vehicle Issue Reporting,T5 - Vehicles,Epic for features/feature-13- vehicle issue reporting.md. Spec-driven backlog.,SK-F13-EPIC
+Portfolio Item,Vehicle Maintenance Management,T5 - Vehicles,Epic for features/feature-14-Vehicle Maintenance Management.md. Spec-driven backlog.,SK-F14-EPIC

@@ -1,1 +1,691 @@
 AssetType,Name,Parent,Description,ExpectedResults,Reference
+Test,New Google user signs in,SK-F1-US1.1,"Given I am on the login page
+And no user exists for Google subject `google-sub-jane`
+When I sign in with a verified Google ID token for `jane@example.com` with subject `google-sub-jane`, given name `Jane`, and family name `Doe`
+Then the API returns `201` with a payload including `userId`, `email`, `fName`, `lName`, `token`, and `role`
+And the returned `email` is `jane@example.com`
+And the returned `role` is `user`
+And my user record is stored with a `googleId` `google-sub-jane` and no password
+And I am redirected to the home page
+And my session is stored in `localStorage` under the key `user`","And no user exists for Google subject `google-sub-jane`
+Then the API returns `201` with a payload including `userId`, `email`, `fName`, `lName`, `token`, and `role`
+And the returned `email` is `jane@example.com`
+And the returned `role` is `user`
+And my user record is stored with a `googleId` `google-sub-jane` and no password
+And I am redirected to the home page
+And my session is stored in `localStorage` under the key `user`",SK-F1-AC001
+Test,First sign-in ignores a role supplied in the request body,SK-F1-US1.1,"Given no user exists for Google subject `google-sub-sneaky`
+When I POST `/vehicles/auth/google` with a verified ID token for that subject and `""role"": ""admin""`
+Then the API returns `201`
+And the returned `role` is `user`
+And the stored user record has role `user`","Then the API returns `201`
+And the returned `role` is `user`
+And the stored user record has role `user`",SK-F1-AC002
+Test,Unverified Google email is rejected,SK-F1-US1.1,"Given no user exists for Google subject `google-sub-unverified`
+When I POST `/vehicles/auth/google` with an ID token whose `email_verified` claim is false
+Then the API returns `401` with `{ ""message"": ""Google sign-in failed."" }`
+And no user record is stored","Then the API returns `401` with `{ ""message"": ""Google sign-in failed."" }`
+And no user record is stored",SK-F1-AC003
+Test,User cancels the Google prompt,SK-F1-US1.1,"Given I am on the login page
+When I dismiss the Google sign-in prompt
+Then I remain on the login page
+And no API request is sent","Then I remain on the login page
+And no API request is sent",SK-F1-AC004
+Test,Returning user signs in with Google,SK-F1-US1.2,"Given I am on the login page
+And a user exists with `googleId` `google-sub-jane` and email `jane@example.com`
+When I sign in with a verified Google ID token for that same subject
+Then the API returns `200` with a payload containing `userId`, `email`, `token`, and `role`
+And a session row is created or reused in the database
+And I am redirected to the home page
+And my session is stored in `localStorage` under the key `user`","And a user exists with `googleId` `google-sub-jane` and email `jane@example.com`
+Then the API returns `200` with a payload containing `userId`, `email`, `token`, and `role`
+And a session row is created or reused in the database
+And I am redirected to the home page
+And my session is stored in `localStorage` under the key `user`",SK-F1-AC005
+Test,Invalid Google ID token is rejected,SK-F1-US1.2,"Given I am on the login page
+When I POST `/vehicles/auth/google` with an invalid ID token
+Then the API returns `401` with `{ ""message"": ""Google sign-in failed."" }`
+And I remain on the login page
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `401` with `{ ""message"": ""Google sign-in failed."" }`
+And I remain on the login page
+And the error is displayed in a `<v-alert type=""error"">`",SK-F1-AC006
+Test,Signed-in user visits login page,SK-F1-US1.3,"Given I have a valid session in `localStorage`
+When I navigate to the login page
+Then I am redirected to the home page",Then I am redirected to the home page,SK-F1-AC007
+Test,API request includes session token,SK-F1-US1.3,"Given I am signed in
+When the frontend makes an authenticated API request
+Then the request includes header `Authorization: Bearer <token>`",Then the request includes header `Authorization: Bearer <token>`,SK-F1-AC008
+Test,Expired or invalid session token,SK-F1-US1.3,"Given I am signed in with an expired or revoked token
+When the frontend makes an authenticated API request
+Then the API returns `401` with an unauthorized message
+And `localStorage` key `user` is cleared
+And I am redirected to the login page","Then the API returns `401` with an unauthorized message
+And `localStorage` key `user` is cleared
+And I am redirected to the login page",SK-F1-AC009
+Test,User signs out,SK-F1-US1.4,"Given I am signed in on the home page
+When I click Sign out
+Then the API invalidates my session token on the server
+And `localStorage` key `user` is removed
+And I am redirected to the login page","Then the API invalidates my session token on the server
+And `localStorage` key `user` is removed
+And I am redirected to the login page",SK-F1-AC010
+Test,Reusing a token after sign out fails,SK-F1-US1.4,"Given I have signed out
+When I replay my previous Bearer token against a protected route
+Then the API returns `401`",Then the API returns `401`,SK-F1-AC011
+Test,Unauthenticated user accesses a protected route,SK-F1-US1.5,"Given I have no session in `localStorage`
+When I navigate directly to the home page
+Then I am redirected to the login page",Then I am redirected to the login page,SK-F1-AC012
+Test,Protected API request without a token,SK-F1-US1.5,"Given I have no session token
+When I send a request to a route wrapped in `authenticate`
+Then the API returns `401` with `{ ""message"": ""Unauthorized! No token provided."" }`","Then the API returns `401` with `{ ""message"": ""Unauthorized! No token provided."" }`",SK-F1-AC013
+Test,Seeded admin signs in with Google and receives the admin role,SK-F1-US1.6,"Given an admin account has been created by the seed script for Google subject `google-sub-admin`
+When the admin signs in with a valid Google ID token for that subject
+Then the API returns `200`
+And the returned `role` is `admin`","Then the API returns `200`
+And the returned `role` is `admin`",SK-F1-AC014
+Test,User is rejected by the admin guard,SK-F1-US1.6,"Given I am signed in as a user
+When I send a request to a route wrapped in `requireAdmin`
+Then the API returns `403` with `{ ""message"": ""Forbidden! Admin access required."" }`","Then the API returns `403` with `{ ""message"": ""Forbidden! Admin access required."" }`",SK-F1-AC015
+Test,Admin passes the admin guard,SK-F1-US1.6,"Given I am signed in as an admin
+When I send a request to a route wrapped in `requireAdmin`
+Then the request is allowed through to the controller",Then the request is allowed through to the controller,SK-F1-AC016
+Test,User views account,SK-F2-US2.1,"Given I am signed in as `jane@example.com` with first name `Jane`, last name `Doe`, and role `user`
+And I am on the home page
+When I click on My account
+Then `GET /vehicles/me` returns `200` with `userId`, `email`, `fName`, `lName`, and `role`
+And the returned `email` is `jane@example.com`
+And the returned `fName` is `Jane`
+And the returned `lName` is `Doe`
+And the returned `role` is `user`
+And the account page shows those values","And I am on the home page
+Then `GET /vehicles/me` returns `200` with `userId`, `email`, `fName`, `lName`, and `role`
+And the returned `email` is `jane@example.com`
+And the returned `fName` is `Jane`
+And the returned `lName` is `Doe`
+And the returned `role` is `user`
+And the account page shows those values",SK-F2-AC001
+Test,Signed-out user opens account,SK-F2-US2.1,"Given I have no session in `localStorage`
+When I navigate directly to the account page
+Then I am redirected to the login page",Then I am redirected to the login page,SK-F2-AC002
+Test,Account request without a token,SK-F2-US2.1,"Given I have no session token
+When I send `GET /vehicles/me`
+Then the API returns `401` with `{ ""message"": ""Unauthorized! No token provided."" }`","Then the API returns `401` with `{ ""message"": ""Unauthorized! No token provided."" }`",SK-F2-AC003
+Test,User saves a new name,SK-F2-US2.2,"Given I am signed in on the account page
+And my first name is `Jane` and my last name is `Doe`
+When I change my first name to `Janet` and my last name to `Doe`
+And I click Save
+Then `PUT /vehicles/me` returns `200` with `fName` `Janet` and `lName` `Doe`
+And my `users` row stores `fName` `Janet` and `lName` `Doe`
+And my `email` and `role` are unchanged
+And `localStorage` key `user` shows `fName` `Janet` and `lName` `Doe`","And my first name is `Jane` and my last name is `Doe`
+And I click Save
+Then `PUT /vehicles/me` returns `200` with `fName` `Janet` and `lName` `Doe`
+And my `users` row stores `fName` `Janet` and `lName` `Doe`
+And my `email` and `role` are unchanged
+And `localStorage` key `user` shows `fName` `Janet` and `lName` `Doe`",SK-F2-AC004
+Test,Name update ignores role and email,SK-F2-US2.2,"Given I am signed in with role `user` and email `jane@example.com`
+When I `PUT /vehicles/me` with `fName` `Janet`, `lName` `Doe`, `""role"": ""admin""`, and `""email"": ""other@example.com""`
+Then the API returns `200`
+And the stored `role` is `user`
+And the stored `email` is `jane@example.com`","Then the API returns `200`
+And the stored `role` is `user`
+And the stored `email` is `jane@example.com`",SK-F2-AC005
+Test,Non-text name is rejected,SK-F2-US2.2,"Given I am signed in
+When I `PUT /vehicles/me` with `fName` set to a number
+Then the API returns `400` with `{ ""message"": ""First and last name must be text."" }`
+And my `users` row is unchanged","Then the API returns `400` with `{ ""message"": ""First and last name must be text."" }`
+And my `users` row is unchanged",SK-F2-AC006
+Test,User cancels edit,SK-F2-US2.2,"Given I am on the account page
+And I have opened edit
+When I click Cancel
+Then I remain on the account page
+And no API request is sent
+And my names are unchanged","And I have opened edit
+Then I remain on the account page
+And no API request is sent
+And my names are unchanged",SK-F2-AC007
+Test,User deletes their account,SK-F2-US2.3,"Given I am signed in on the account page
+When I confirm Delete account
+Then `DELETE /vehicles/me` returns `200` with `{ ""message"": ""Account deleted."" }`
+And my `users` row is removed
+And my `sessions` rows are removed
+And `localStorage` key `user` is removed
+And I am redirected to the login page","Then `DELETE /vehicles/me` returns `200` with `{ ""message"": ""Account deleted."" }`
+And my `users` row is removed
+And my `sessions` rows are removed
+And `localStorage` key `user` is removed
+And I am redirected to the login page",SK-F2-AC008
+Test,Reusing a token after delete fails,SK-F2-US2.3,"Given I have deleted my account
+When I replay my previous Bearer token against `GET /vehicles/me`
+Then the API returns `401`",Then the API returns `401`,SK-F2-AC009
+Test,User cancels delete,SK-F2-US2.3,"Given I am on the account page
+And the delete confirmation is open
+When I cancel delete
+Then I remain on the account page
+And my user record still exists
+And no API request is sent","And the delete confirmation is open
+Then I remain on the account page
+And my user record still exists
+And no API request is sent",SK-F2-AC010
+Test,User signs out,SK-F2-US2.4,"Given I am signed in on the account page
+When I click Sign out
+Then the API invalidates my session token on the server
+And `localStorage` key `user` is removed
+And I am redirected to the login page","Then the API invalidates my session token on the server
+And `localStorage` key `user` is removed
+And I am redirected to the login page",SK-F2-AC011
+Test,Reusing a token after sign out fails,SK-F2-US2.4,"Given I have signed out
+When I replay my previous Bearer token against a protected route
+Then the API returns `401`",Then the API returns `401`,SK-F2-AC012
+Test,User views existing vehicles,SK-F3-US3.1,"Given I am signed in on the dashboard as an authorized user
+When I open the vehicles list
+Then vehicles are displayed in created order",Then vehicles are displayed in created order,SK-F3-AC023
+Test,User has no existing vehicles,SK-F3-US3.1,"Given I am signed in on the dashboard
+When I open the vehicles list
+Then no vehicles should be displayed",Then no vehicles should be displayed,SK-F3-AC024
+Test,User edits a vehicle's information,SK-F3-US3.2,"Given I am signed in on the dashboard
+When I click Edit vehicle on an existing vehicle
+And I change any of the original values
+And I confirm the dialog
+Then the API returns `200` with `{ ""message"": ""vehicle was updated successfully."" }`
+And the vehicle is visible with updated information in the vehicles view
+And the edit-vehicle dialog closes","And I change any of the original values
+And I confirm the dialog
+Then the API returns `200` with `{ ""message"": ""vehicle was updated successfully."" }`
+And the vehicle is visible with updated information in the vehicles view
+And the edit-vehicle dialog closes",SK-F3-AC025
+Test,User edits a vehicle with any empty information area,SK-F3-US3.2,"Given I am signed in on the dashboard
+When I open the edit vehicle dialog
+And I leave a field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""All fields must be filled.""
+And no API request is sent","And I leave a field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""All fields must be filled.""
+And no API request is sent",SK-F3-AC026
+Test,User edits a vehicle with a name that is too long,SK-F3-US3.2,"Given I am signed in on the dashboard
+When I submit an vehicle name longer than 100 characters
+Then the API returns `400` with `{ ""message"": ""vehicle name must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle name must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC027
+Test,User edits a vehicle with a model that is too long,SK-F3-US3.2,"Given I am signed in on the dashboard
+When I submit an vehicle model longer than 100 characters
+Then the API returns `400` with `{ ""message"": ""vehicle model must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle model must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC028
+Test,User edits a vehicle with a year that is too long or too short,SK-F3-US3.2,"Given I am signed in on the dashboard
+When I submit an vehicle year longer or shorter than 4 digits
+Then the API returns `400` with `{ ""message"": ""vehicle year must be 4 digits."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle year must be 4 digits."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC029
+Test,User edits a vehicle with a vin that is too long or too short,SK-F3-US3.2,"Given I am signed in on the dashboard
+When I submit an vehicle vin longer or shorter than 17 characters
+Then the API returns `400` with `{ ""message"": ""vehicle vin must be 17 characters exactly."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle vin must be 17 characters exactly."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC030
+Test,User edits a vehicle with a purchase date that is not a valid date,SK-F3-US3.2,"Given I am signed in on the dashboard
+When I submit an vehicle purchase date that is not a valid date
+Then the API returns `400` with `{ ""message"": ""vehicle purchase date must be a valid date."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle purchase date must be a valid date."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC031
+Test,User edits a vehicle with a color that is too long,SK-F3-US3.2,"Given I am signed in on the dashboard
+When I submit an vehicle color longer than 100 characters
+Then the API returns `400` with `{ ""message"": ""vehicle color must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle color must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC032
+Test,User edits a vehicle with a passenger capacity that is too long,SK-F3-US3.2,"Given I am signed in on the dashboard
+When I submit an vehicle passenger capacity longer than 4 digits
+Then the API returns `400` with `{ ""message"": ""vehicle passenger capacity must be 4 digits or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle passenger capacity must be 4 digits or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC033
+Test,User edits a vehicle with a license plate number that is too long,SK-F3-US3.2,"Given I am signed in on the dashboard
+When I submit an vehicle license plate number longer than 7 digits
+Then the API returns `400` with `{ ""message"": ""vehicle license plate number must be 7 digits or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle license plate number must be 7 digits or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC034
+Test,User edits a vehicle with a license plate expiration that is not a valid date,SK-F3-US3.2,"Given I am signed in on the dashboard
+When I submit an vehicle license plate expiration that is not a valid date
+Then the API returns `400` with `{ ""message"": ""vehicle license plate expiration must be a valid date."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle license plate expiration must be a valid date."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC035
+Test,User removes an vehicle,SK-F3-US3.3,"Given I am signed in
+And there exists a vehicle named `2014 Nissan Pathfinder`
+When I click the delete icon on the `2014 Nissan Pathfinder` row
+And I confirm the delete dialog
+Then the API returns `200` or `204`
+And the vehicle is removed from the vehicles view","And there exists a vehicle named `2014 Nissan Pathfinder`
+And I confirm the delete dialog
+Then the API returns `200` or `204`
+And the vehicle is removed from the vehicles view",SK-F3-AC036
+Test,User creates a new vehicle,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I click + New vehicle
+And I enter vehicle make `Nissan`
+And I enter vehicle model `Pathfinder`
+And I enter vehicle year `2014`
+And I enter vehicle vin `1M2AR13Y8HM088054`
+And I enter vehicle purchase date `07/11/24`
+And I enter vehicle color `White`
+And I enter vehicle passenger capacity `6`
+And I enter vehicle license plate number `DWD947`
+And I enter vehicle license plate expiration `2026-8-14`
+And I enter vehicle area `Athletics`
+Then the API returns `201` with an vehicle object containing `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passengerCapacity`, `licensePlateNo`, `licensePlateExp`, and `area`
+And `2014 Nissan Pathfinder` appears in the vehicles view
+And the add-vehicle dialog closes","And I enter vehicle make `Nissan`
+And I enter vehicle model `Pathfinder`
+And I enter vehicle year `2014`
+And I enter vehicle vin `1M2AR13Y8HM088054`
+And I enter vehicle purchase date `07/11/24`
+And I enter vehicle color `White`
+And I enter vehicle passenger capacity `6`
+And I enter vehicle license plate number `DWD947`
+And I enter vehicle license plate expiration `2026-8-14`
+And I enter vehicle area `Athletics`
+Then the API returns `201` with an vehicle object containing `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passengerCapacity`, `licensePlateNo`, `licensePlateExp`, and `area`
+And `2014 Nissan Pathfinder` appears in the vehicles view
+And the add-vehicle dialog closes",SK-F3-AC001
+Test,User creates a vehicle with an empty make,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I open the new vehicle dialog
+And I leave the make field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle make is required.""
+And no API request is sent","And I leave the make field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle make is required.""
+And no API request is sent",SK-F3-AC002
+Test,User creates a vehicle with an empty model,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I open the new vehicle dialog
+And I leave the model field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle model is required.""
+And no API request is sent","And I leave the model field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle model is required.""
+And no API request is sent",SK-F3-AC003
+Test,User creates a vehicle with an empty year,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I open the new vehicle dialog
+And I leave the year field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle year is required.""
+And no API request is sent","And I leave the year field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle year is required.""
+And no API request is sent",SK-F3-AC004
+Test,User creates a vehicle with an empty vin,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I open the new vehicle dialog
+And I leave the vin field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle vin is required.""
+And no API request is sent","And I leave the vin field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle vin is required.""
+And no API request is sent",SK-F3-AC005
+Test,User creates a vehicle with an empty purchase date,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I open the new vehicle dialog
+And I leave the purchase date field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle purchase date is required.""
+And no API request is sent","And I leave the purchase date field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle purchase date is required.""
+And no API request is sent",SK-F3-AC006
+Test,User creates a vehicle with an empty color,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I open the new vehicle dialog
+And I leave the color field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle color is required.""
+And no API request is sent","And I leave the color field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle color is required.""
+And no API request is sent",SK-F3-AC007
+Test,User creates a vehicle with an empty passenger capacity,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I open the new vehicle dialog
+And I leave the passenger capacity field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle passenger capacity is required.""
+And no API request is sent","And I leave the passenger capacity field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle passenger capacity is required.""
+And no API request is sent",SK-F3-AC008
+Test,User creates a vehicle with an empty license plate number,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I open the new vehicle dialog
+And I leave the license plate number field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle license plate number is required.""
+And no API request is sent","And I leave the license plate number field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle license plate number is required.""
+And no API request is sent",SK-F3-AC009
+Test,User creates a vehicle with an empty license plate expiration,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I open the new vehicle dialog
+And I leave the license plate expiration field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle license plate expiration is required.""
+And no API request is sent","And I leave the license plate expiration field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle license plate expiration is required.""
+And no API request is sent",SK-F3-AC010
+Test,User creates a vehicle with an empty area,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I open the new vehicle dialog
+And I leave the area field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle area is required.""
+And no API request is sent","And I leave the area field empty or whitespace only
+And I attempt to confirm
+Then inline validation blocks the request
+And I see the message ""vehicle area is required.""
+And no API request is sent",SK-F3-AC011
+Test,User creates an vehicle with a make that is too long,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I submit an vehicle make longer than 100 characters
+Then the API returns `400` with `{ ""message"": ""vehicle make must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle make must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC012
+Test,User creates an vehicle with a model that is too long,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I submit an vehicle model longer than 100 characters
+Then the API returns `400` with `{ ""message"": ""vehicle model must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle model must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC013
+Test,User creates an vehicle with a year that is too long,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I submit an vehicle year longer than 4 digits
+Then the API returns `400` with `{ ""message"": ""vehicle year must be 4 digits or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle year must be 4 digits or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC014
+Test,User creates an vehicle with a vin that is too long,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I submit an vehicle vin longer than 17 characters
+Then the API returns `400` with `{ ""message"": ""vehicle vin must be 17 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle vin must be 17 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC015
+Test,User creates an vehicle with an invalid vin,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I submit an vehicle vin that is invalid
+Then the API returns `400` with `{ ""message"": ""vehicle vin is invalid."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle vin is invalid."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC016
+Test,User creates an vehicle with a purchase date that is not a valid date,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I submit an vehicle purchase date that is not a valid date
+Then the API returns `400` with `{ ""message"": ""vehicle purchase date must be a valid date."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle purchase date must be a valid date."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC017
+Test,User creates an vehicle with a color that is too long,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I submit an vehicle color longer than 100 characters
+Then the API returns `400` with `{ ""message"": ""vehicle color must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle color must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC018
+Test,User creates an vehicle with a passenger capacity that is too long,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I submit an vehicle passenger capacity longer than 4 digits
+Then the API returns `400` with `{ ""message"": ""vehicle passenger capacity must be 4 digits or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle passenger capacity must be 4 digits or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC019
+Test,User creates an vehicle with a license plate number that is too long,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I submit an vehicle license plate number longer than 7 digits
+Then the API returns `400` with `{ ""message"": ""vehicle license plate number must be 7 digits or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle license plate number must be 7 digits or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC020
+Test,User creates an vehicle with a license plate expiration that is not a valid date,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I submit an vehicle license plate expiration that is not a valid date
+Then the API returns `400` with `{ ""message"": ""vehicle license plate expiration must be a valid date."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle license plate expiration must be a valid date."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC021
+Test,User creates an vehicle with an area that is too long,SK-F3-US3.4,"Given I am signed in on the dashboard
+When I submit an vehicle area longer than 100 characters
+Then the API returns `400` with `{ ""message"": ""vehicle area must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`","Then the API returns `400` with `{ ""message"": ""vehicle area must be 100 characters or fewer."" }`
+And the error is displayed in a `<v-alert type=""error"">`",SK-F3-AC022
+Test,Requestor creates a reservation request,SK-F8-US8.1,"Given I am signed in as a user
+And an approved driver and a destination exist
+When I click + New Request
+And I enter a valid driver, destination, start, end, and number of people `12`
+And I confirm the dialog
+Then the API returns `201` with `status` `requested` and `vehicleId` `null`
+And the returned `requestorUserId` matches my user id
+And the request appears on My Requests
+And the dialog closes","And an approved driver and a destination exist
+And I enter a valid driver, destination, start, end, and number of people `12`
+And I confirm the dialog
+Then the API returns `201` with `status` `requested` and `vehicleId` `null`
+And the returned `requestorUserId` matches my user id
+And the request appears on My Requests
+And the dialog closes",SK-F8-AC001
+Test,Requestor omits the driver,SK-F8-US8.1,"Given I am signed in as a user
+When I open + New Request
+And I leave Driver empty
+And I attempt to submit
+Then inline validation blocks the request
+And I see ""Driver is required.""
+And no API request is sent","And I leave Driver empty
+And I attempt to submit
+Then inline validation blocks the request
+And I see ""Driver is required.""
+And no API request is sent",SK-F8-AC002
+Test,Client cannot set status or owner on create,SK-F8-US8.1,"Given I am signed in as a user
+When I send `POST /vehicles/reservations` with body including `""status"": ""reserved""` and `""requestorUserId"": 999`
+Then the API returns `201` with `status` `requested`
+And `requestorUserId` is my id, not `999`","Then the API returns `201` with `status` `requested`
+And `requestorUserId` is my id, not `999`",SK-F8-AC003
+Test,Unapproved driver is rejected,SK-F8-US8.1,"Given I am signed in as a user
+And a driver exists whose status is not `approved`
+When I send `POST /vehicles/reservations` with that `driverId`
+Then the API returns `400` with `{ ""message"": ""Driver must be on the approved drivers list."" }`","And a driver exists whose status is not `approved`
+Then the API returns `400` with `{ ""message"": ""Driver must be on the approved drivers list."" }`",SK-F8-AC004
+Test,Approved drivers and destinations are listed,SK-F8-US8.1,"Given I am signed in as a user
+And one driver is `approved` and another is not
+And a destination exists
+When I request `GET /vehicles/drivers` and `GET /vehicles/destinations`
+Then the driver list contains only the approved driver
+And the destination list contains that destination","And one driver is `approved` and another is not
+And a destination exists
+Then the driver list contains only the approved driver
+And the destination list contains that destination",SK-F8-AC005
+Test,End is not after start,SK-F8-US8.1,"Given I am signed in as a user
+When I submit a request whose `endAt` is not after `startAt`
+Then the API returns `400` with `{ ""message"": ""End must be after start."" }`","Then the API returns `400` with `{ ""message"": ""End must be after start."" }`",SK-F8-AC006
+Test,My Requests loads owned rows,SK-F8-US8.2,"Given I am signed in as a user
+And I own two reservations
+When I navigate to My Requests
+Then both of my reservations appear
+And each row shows destination, start, end, and status","And I own two reservations
+Then both of my reservations appear
+And each row shows destination, start, end, and status",SK-F8-AC007
+Test,User has no requests,SK-F8-US8.2,"Given I am signed in as a user
+And I have no reservations
+When I navigate to My Requests
+Then I see ""No requests yet. Create your first request.""","And I have no reservations
+Then I see ""No requests yet. Create your first request.""",SK-F8-AC008
+Test,Requestor cannot see another user's requests,SK-F8-US8.2,"Given user B owns a reservation
+And I am signed in as user A
+When I request `GET /vehicles/reservations`
+Then user B's reservation is not in the response
+And My Requests does not show user B's reservation","And I am signed in as user A
+Then user B's reservation is not in the response
+And My Requests does not show user B's reservation",SK-F8-AC009
+Test,Unauthenticated API request to reservations,SK-F8-US8.2,"Given I have no valid session token
+When I request `GET /vehicles/reservations`
+Then the API returns `401`",Then the API returns `401`,SK-F8-AC010
+Test,Requestor updates a requested reservation,SK-F8-US8.3,"Given I am signed in as a user
+And I own a reservation with status `requested`
+When I change `passengerCount` to `8` and save
+Then the API returns `200` with `passengerCount` `8`
+And My Requests shows the updated value","And I own a reservation with status `requested`
+Then the API returns `200` with `passengerCount` `8`
+And My Requests shows the updated value",SK-F8-AC011
+Test,Requestor cannot update another user's reservation,SK-F8-US8.3,"Given I am signed in as user A
+And a reservation exists that belongs to user B
+When I send `PUT /vehicles/reservations/:id` with user B's id
+Then the API returns `404` with `{ ""message"": ""Reservation with id=<id> not found."" }`
+And user B's row is unchanged","And a reservation exists that belongs to user B
+Then the API returns `404` with `{ ""message"": ""Reservation with id=<id> not found."" }`
+And user B's row is unchanged",SK-F8-AC012
+Test,Requestor cannot update after status leaves requested,SK-F8-US8.3,"Given I am signed in as a user
+And I own a reservation whose `status` is `reserved`
+When I send `PUT /vehicles/reservations/:id` with a new `passengerCount`
+Then the API returns `400` with `{ ""message"": ""Only requested reservations can be updated."" }`","And I own a reservation whose `status` is `reserved`
+Then the API returns `400` with `{ ""message"": ""Only requested reservations can be updated."" }`",SK-F8-AC013
+Test,Admin lists all reservations,SK-F8-US8.4,"Given I am signed in as an admin
+And user A and user B each own a reservation
+When I request `GET /vehicles/reservations`
+Then the response includes both reservations","And user A and user B each own a reservation
+Then the response includes both reservations",SK-F8-AC014
+Test,Admin assigns a free vehicle,SK-F9-US9.1,"Given I am signed in as an admin
+And a reservation exists with status `requested`
+And a vehicle exists with no overlapping `reserved` trip
+When I send `PUT /vehicles/reservations/:id/assignment` with that `vehicleId`
+Then the API returns `200` with `status` `reserved` and that `vehicleId`","And a reservation exists with status `requested`
+And a vehicle exists with no overlapping `reserved` trip
+Then the API returns `200` with `status` `reserved` and that `vehicleId`",SK-F9-AC001
+Test,Requestor cannot assign a vehicle,SK-F9-US9.1,"Given I am signed in as a user
+And I own a reservation
+When I send `PUT /vehicles/reservations/:id/assignment` with a `vehicleId`
+Then the API returns `403`","And I own a reservation
+Then the API returns `403`",SK-F9-AC002
+Test,Admin cannot double-book a reserved vehicle,SK-F9-US9.2,"Given I am signed in as an admin
+And vehicle `7` is `reserved` for Monday 9:00–12:00
+And another reservation is `requested` for Monday 11:00–13:00
+When I assign vehicle `7` to the second reservation
+Then the API returns `409` with `{ ""message"": ""Vehicle is not available for this time."" }`
+And the second reservation remains `requested` with `vehicleId` null","And vehicle `7` is `reserved` for Monday 9:00–12:00
+And another reservation is `requested` for Monday 11:00–13:00
+Then the API returns `409` with `{ ""message"": ""Vehicle is not available for this time."" }`
+And the second reservation remains `requested` with `vehicleId` null",SK-F9-AC003
+Test,Back-to-back trips are allowed,SK-F9-US9.2,"Given I am signed in as an admin
+And vehicle `7` is `reserved` until Monday 12:00
+And another reservation starts Monday 12:00
+When I assign vehicle `7` to the second reservation
+Then the API returns `200` with `status` `reserved`","And vehicle `7` is `reserved` until Monday 12:00
+And another reservation starts Monday 12:00
+Then the API returns `200` with `status` `reserved`",SK-F9-AC004
+Test,Admin marks a request awaiting vehicle,SK-F9-US9.3,"Given I am signed in as an admin
+And a reservation exists with status `requested`
+When I send `PUT /vehicles/reservations/:id/assignment` with `""vehicleId"": null`
+Then the API returns `200` with `status` `awaiting_vehicle` and `vehicleId` `null`","And a reservation exists with status `requested`
+Then the API returns `200` with `status` `awaiting_vehicle` and `vehicleId` `null`",SK-F9-AC005
+Test,Admin lists requests that need a vehicle,SK-F9-US9.4,"Given I am signed in as an admin
+And one reservation is `awaiting_vehicle` and another is `requested`
+When I request `GET /vehicles/reservations?status=awaiting_vehicle`
+Then the response contains only the `awaiting_vehicle` row","And one reservation is `awaiting_vehicle` and another is `requested`
+Then the response contains only the `awaiting_vehicle` row",SK-F9-AC006
+Test,Need Vehicle view empty state,SK-F9-US9.4,"Given I am signed in as an admin
+And no reservation is `awaiting_vehicle`
+When I open Need Vehicle
+Then I see ""No requests need a vehicle.""","And no reservation is `awaiting_vehicle`
+Then I see ""No requests need a vehicle.""",SK-F9-AC007
+Test,Creating a request emails requested status,SK-F10-US10.1,"Given I am signed in as a user with email `jane@example.com`
+When I create a valid reservation
+Then the mailer is called once
+And the recipient is `jane@example.com`
+And the subject is Reservation status updated
+And the body includes `requested`","Then the mailer is called once
+And the recipient is `jane@example.com`
+And the subject is Reservation status updated
+And the body includes `requested`",SK-F10-AC001
+Test,Assigning a vehicle emails reserved status,SK-F10-US10.1,"Given a reservation is `requested`
+When an admin assigns a free vehicle
+Then the mailer is called with subject Reservation status updated
+And the body includes `reserved`","Then the mailer is called with subject Reservation status updated
+And the body includes `reserved`",SK-F10-AC002
+Test,Marking awaiting vehicle emails that status,SK-F10-US10.1,"Given a reservation is `requested`
+When an admin sets `vehicleId` to `null`
+Then the mailer is called
+And the body includes `awaiting_vehicle`","Then the mailer is called
+And the body includes `awaiting_vehicle`",SK-F10-AC003
+Test,Admin sends pre-trip notices the day before a reserved trip,SK-F10-US10.2,"Given I am signed in as an admin
+And a `reserved` reservation starts tomorrow relative to `now`
+And `preTripEmailSentAt` is null
+When I send `POST /vehicles/reservations/pre-trip-notices` with that `now`
+Then the API returns `200` with `""sent"": 1`
+And the mailer subject is Vehicle pickup instructions
+And `preTripEmailSentAt` is set","And a `reserved` reservation starts tomorrow relative to `now`
+And `preTripEmailSentAt` is null
+Then the API returns `200` with `""sent"": 1`
+And the mailer subject is Vehicle pickup instructions
+And `preTripEmailSentAt` is set",SK-F10-AC004
+Test,Pre-trip notice is not sent twice,SK-F10-US10.2,"Given I am signed in as an admin
+And a `reserved` reservation starts tomorrow and already has `preTripEmailSentAt` set
+When I send `POST /vehicles/reservations/pre-trip-notices`
+Then the API returns `200` with `""sent"": 0`","And a `reserved` reservation starts tomorrow and already has `preTripEmailSentAt` set
+Then the API returns `200` with `""sent"": 0`",SK-F10-AC005
+Test,Requestor cannot send pre-trip notices,SK-F10-US10.2,"Given I am signed in as a user
+When I send `POST /vehicles/reservations/pre-trip-notices`
+Then the API returns `403`",Then the API returns `403`,SK-F10-AC006
+Test,Re-assigning the same reserved vehicle does not send a second status email,SK-F10-US10.3,"Given a reservation is already `reserved` for vehicle `7`
+When an admin assigns vehicle `7` again
+Then `status` remains `reserved`
+And no additional Reservation status updated email is sent","Then `status` remains `reserved`
+And no additional Reservation status updated email is sent",SK-F10-AC007
+Test,Admin loads a week with reservations,SK-F11-US11.1,"Given I am signed in as an admin
+And a reservation starts Wednesday of the week beginning `2026-11-16`
+When I request `GET /vehicles/reservations/calendar?weekStart=2026-11-16`
+Then the API returns `200` including that reservation’s `id`, `status`, and `vehicleId`
+And the Weekly calendar shows that reservation under Wed","And a reservation starts Wednesday of the week beginning `2026-11-16`
+Then the API returns `200` including that reservation’s `id`, `status`, and `vehicleId`
+And the Weekly calendar shows that reservation under Wed",SK-F11-AC001
+Test,Empty week,SK-F11-US11.1,"Given I am signed in as an admin
+And no reservation overlaps the week of `2026-11-16`
+When I open Weekly calendar for that week
+Then I see ""No reservations this week.""","And no reservation overlaps the week of `2026-11-16`
+Then I see ""No reservations this week.""",SK-F11-AC002
+Test,weekStart that is not Monday is rejected,SK-F11-US11.1,"Given I am signed in as an admin
+When I request `GET /vehicles/reservations/calendar?weekStart=2026-11-17`
+Then the API returns `400` with `{ ""message"": ""weekStart must be a Monday (YYYY-MM-DD)."" }`","Then the API returns `400` with `{ ""message"": ""weekStart must be a Monday (YYYY-MM-DD)."" }`",SK-F11-AC003
+Test,Admin opens the next week,SK-F11-US11.2,"Given I am signed in as an admin on Weekly calendar for `2026-11-16`
+When I click Next week
+Then the client requests `weekStart=2026-11-23`
+And the caption shows that week","Then the client requests `weekStart=2026-11-23`
+And the caption shows that week",SK-F11-AC004
+Test,Requestor is forbidden from the calendar API,SK-F11-US11.3,"Given I am signed in as a user
+When I request `GET /vehicles/reservations/calendar?weekStart=2026-11-16`
+Then the API returns `403`",Then the API returns `403`,SK-F11-AC005
+Test,Unauthenticated calendar request,SK-F11-US11.3,"Given I have no valid session token
+When I request `GET /vehicles/reservations/calendar?weekStart=2026-11-16`
+Then the API returns `401`",Then the API returns `401`,SK-F11-AC006
+Test,Requestor reports a vehicle issue,SK-F13-US13.1,,,SK-F13-AC001
+Test,Requestor reports an issue associated with a reservation,SK-F13-US13.1,,,SK-F13-AC002
+Test,Requestor submits an incomplete issue report,SK-F13-US13.1,,,SK-F13-AC003
+Test,Requestor reports an issue against another user's reservation,SK-F13-US13.1,,,SK-F13-AC004
+Test,Requestor views their reported issues,SK-F13-US13.2,,,SK-F13-AC005
+Test,Requestor edits a reported issue,SK-F13-US13.3,,,SK-F13-AC006
+Test,Requestor cannot edit another user's issue,SK-F13-US13.3,,,SK-F13-AC007
+Test,Requestor deletes a reported issue,SK-F13-US13.4,,,SK-F13-AC008
+Test,Requestor cannot delete another user's issue,SK-F13-US13.4,,,SK-F13-AC009
+Test,Area administrator views issues for their area,SK-F13-US13.5,,,SK-F13-AC010
+Test,Area administrator attempts to view an issue outside their area,SK-F13-US13.5,,,SK-F13-AC011
+Test,System administrator views all vehicle issues,SK-F13-US13.5,,,SK-F13-AC012
+Test,Area administrator updates an issue status,SK-F13-US13.6,,,SK-F13-AC013
+Test,Administrator resolves an issue,SK-F13-US13.6,,,SK-F13-AC014
+Test,Requestor attempts to update an issue status,SK-F13-US13.6,,,SK-F13-AC015
+Test,Administrator views vehicle issue history,SK-F13-US13.7,,,SK-F13-AC016
+Test,Vehicle has no reported issues,SK-F13-US13.7,,,SK-F13-AC017
+Test,Maintenance user views authorized maintenance requests,SK-F14-US14.1,,,SK-F14-AC001
+Test,Area administrator views maintenance requests,SK-F14-US14.1,,,SK-F14-AC002
+Test,No maintenance requests are available,SK-F14-US14.1,,,SK-F14-AC003
+Test,Maintenance user creates a maintenance request,SK-F14-US14.2,,,SK-F14-AC004
+Test,Maintenance user creates a request linked to an issue,SK-F14-US14.2,,,SK-F14-AC005
+Test,Maintenance user creates a request without an issue,SK-F14-US14.2,,,SK-F14-AC006
+Test,Maintenance user submits a request without a description,SK-F14-US14.2,,,SK-F14-AC007
+Test,Maintenance user selects a vehicle that does not exist,SK-F14-US14.2,,,SK-F14-AC008
+Test,Maintenance user selects an issue belonging to another vehicle,SK-F14-US14.2,,,SK-F14-AC009
+Test,Maintenance user updates a request to In Progress,SK-F14-US14.3,,,SK-F14-AC010
+Test,Maintenance user completes a maintenance request,SK-F14-US14.3,,,SK-F14-AC011
+Test,User submits an invalid maintenance status,SK-F14-US14.3,,,SK-F14-AC012
+Test,Unauthorized user attempts to update a maintenance request,SK-F14-US14.3,,,SK-F14-AC013
+Test,Maintenance user views maintenance requests for a vehicle,SK-F14-US14.4,,,SK-F14-AC014
+Test,Vehicle has no maintenance requests,SK-F14-US14.4,,,SK-F14-AC015

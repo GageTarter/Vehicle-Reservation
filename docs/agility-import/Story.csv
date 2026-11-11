@@ -1,1 +1,274 @@
 AssetType,Name,Scope,Description,Reference,Super,Parent
+Story,US-1.1: Sign in with Google (new account),T5 - Vehicles,"As a/the new user
+I want sign in with my Google account
+So that the app creates my user record from my Google name and email.
+
+Spec: features/feature-1-google-auth.md
+Story ID: SK-F1-US1.1
+Branch: feature/1-*",SK-F1-US1.1,SK-F1-EPIC,Google Authentication
+Story,US-1.2: Sign in with Google (existing account),T5 - Vehicles,"As a/the registered user or admin
+I want sign in with the same Google account
+So that I can access the screens my role allows with a session
+
+Spec: features/feature-1-google-auth.md
+Story ID: SK-F1-US1.2
+Branch: feature/1-*",SK-F1-US1.2,SK-F1-EPIC,Google Authentication
+Story,US-1.3: Stay signed in across page loads,T5 - Vehicles,"As a/the signed-in user
+I want my session to persist in the browser
+So that refreshing the page does not force me to sign in again
+
+Spec: features/feature-1-google-auth.md
+Story ID: SK-F1-US1.3
+Branch: feature/1-*",SK-F1-US1.3,SK-F1-EPIC,Google Authentication
+Story,US-1.4: Sign out,T5 - Vehicles,"As a/the signed-in user
+I want sign out
+So that no one else can use my account on a shared device
+
+Spec: features/feature-1-google-auth.md
+Story ID: SK-F1-US1.4
+Branch: feature/1-*",SK-F1-US1.4,SK-F1-EPIC,Google Authentication
+Story,US-1.5: Block unauthenticated access,T5 - Vehicles,"As a/the application
+I want require a valid session for every non-auth screen and API route
+So that protected data is never served to anonymous callers
+
+Spec: features/feature-1-google-auth.md
+Story ID: SK-F1-US1.5
+Branch: feature/1-*",SK-F1-US1.5,SK-F1-EPIC,Google Authentication
+Story,US-1.6: Distinguish admins from users,T5 - Vehicles,"As a/the application
+I want carry a role on every session and expose a reusable admin guard
+So that Features that edit data can only be accessed by admin
+
+Spec: features/feature-1-google-auth.md
+Story ID: SK-F1-US1.6
+Branch: feature/1-*",SK-F1-US1.6,SK-F1-EPIC,Google Authentication
+Story,US-2.1: View my account,T5 - Vehicles,"As a/the signed-in user
+I want view my account
+So that I can see my account information
+
+Spec: features/feature-2-user-management.md
+Story ID: SK-F2-US2.1
+Branch: feature/2-*",SK-F2-US2.1,SK-F2-EPIC,User Management
+Story,US-2.2: Edit my name,T5 - Vehicles,"As a/the signed-in user
+I want edit my first and last name and save the changes
+So that the information reflects the most accurate data
+
+Spec: features/feature-2-user-management.md
+Story ID: SK-F2-US2.2
+Branch: feature/2-*",SK-F2-US2.2,SK-F2-EPIC,User Management
+Story,US-2.3: Delete my account,T5 - Vehicles,"As a/the signed-in user
+I want to delete my account
+So that my account and login is no longer in the system
+
+Spec: features/feature-2-user-management.md
+Story ID: SK-F2-US2.3
+Branch: feature/2-*",SK-F2-US2.3,SK-F2-EPIC,User Management
+Story,US-2.4: Sign out,T5 - Vehicles,"As a/the signed-in user
+I want sign out
+So that no one else can use my account on a shared device
+
+Spec: features/feature-2-user-management.md
+Story ID: SK-F2-US2.4
+Branch: feature/2-*",SK-F2-US2.4,SK-F2-EPIC,User Management
+Story,US-3.1: View created vehicles,T5 - Vehicles,"As a/the Authorized User
+I want view the list of created vehicles
+So that I can keep track of which vehicles the software knows about
+
+Spec: features/feature-3-vehicle-management.md
+Story ID: SK-F3-US3.1
+Branch: feature/3-*",SK-F3-US3.1,SK-F3-EPIC,Vehicle Management
+Story,US-3.2: Edit existing vehicles,T5 - Vehicles,"As a/the Authorized User
+I want be able to edit the values of any created vehicle
+So that I can change the values, such as the vehicle make, model, and year, of any created vehicle, to be different than what was inputted on creation
+
+Spec: features/feature-3-vehicle-management.md
+Story ID: SK-F3-US3.2
+Branch: feature/3-*",SK-F3-US3.2,SK-F3-EPIC,Vehicle Management
+Story,US-3.3: Delete existing vehicles,T5 - Vehicles,"As a/the Authorized User
+I want delete any of the existing vehicles
+So that I can no longer see or include them in the vehicle list
+
+Spec: features/feature-3-vehicle-management.md
+Story ID: SK-F3-US3.3
+Branch: feature/3-*",SK-F3-US3.3,SK-F3-EPIC,Vehicle Management
+Story,US-3.4: Add new vehicles,T5 - Vehicles,"As a/the Authorized user
+I want add a new vehicle
+So that I can create a new vehicle and change its values
+
+Spec: features/feature-3-vehicle-management.md
+Story ID: SK-F3-US3.4
+Branch: feature/3-*",SK-F3-US3.4,SK-F3-EPIC,Vehicle Management
+Story,US-8.1: Create a reservation request,T5 - Vehicles,"As a/the signed-in requestor (`role` `user`)
+I want submit a vehicle reservation request with trip details and an approved driver
+So that the fleet office can service my trip
+
+Spec: features/feature-8-vehicle-reservation-requests.md
+Story ID: SK-F8-US8.1
+Branch: feature/8-*",SK-F8-US8.1,SK-F8-EPIC,Vehicle Reservation Requests
+Story,US-8.2: View my requests,T5 - Vehicles,"As a/the signed-in requestor
+I want see all of my reservation requests and their statuses
+So that I know which trips are pending or assigned
+
+Spec: features/feature-8-vehicle-reservation-requests.md
+Story ID: SK-F8-US8.2
+Branch: feature/8-*",SK-F8-US8.2,SK-F8-EPIC,Vehicle Reservation Requests
+Story,US-8.3: Edit a pending request,T5 - Vehicles,"As a/the signed-in requestor
+I want update a request that is still `requested`
+So that I can correct trip details before assignment
+
+Spec: features/feature-8-vehicle-reservation-requests.md
+Story ID: SK-F8-US8.3
+Branch: feature/8-*",SK-F8-US8.3,SK-F8-EPIC,Vehicle Reservation Requests
+Story,US-8.4: Admin can list every request,T5 - Vehicles,"As a/the admin
+I want list all reservation requests
+So that later features can assign vehicles and manage status
+
+Spec: features/feature-8-vehicle-reservation-requests.md
+Story ID: SK-F8-US8.4
+Branch: feature/8-*",SK-F8-US8.4,SK-F8-EPIC,Vehicle Reservation Requests
+Story,US-9.1: Assign an available vehicle,T5 - Vehicles,"As a/the admin
+I want assign a vehicle that is free for the trip window
+So that the request becomes **reserved**
+
+Spec: features/feature-9-vehicle-assignment-and-availability.md
+Story ID: SK-F9-US9.1
+Branch: feature/9-*",SK-F9-US9.1,SK-F9-EPIC,Vehicle Assignment and Availability
+Story,US-9.2: Reject overlapping assignment,T5 - Vehicles,"As a/the application
+I want refuse a vehicle that already has a `reserved` trip overlapping this start/end
+So that two trips cannot hold the same vehicle at once
+
+Spec: features/feature-9-vehicle-assignment-and-availability.md
+Story ID: SK-F9-US9.2
+Branch: feature/9-*",SK-F9-US9.2,SK-F9-EPIC,Vehicle Assignment and Availability
+Story,US-9.3: Mark awaiting vehicle,T5 - Vehicles,"As a/the admin
+I want mark a request as awaiting a vehicle when none is available
+So that it appears on the need-vehicle queue
+
+Spec: features/feature-9-vehicle-assignment-and-availability.md
+Story ID: SK-F9-US9.3
+Branch: feature/9-*",SK-F9-US9.3,SK-F9-EPIC,Vehicle Assignment and Availability
+Story,US-9.4: Need-vehicle queue,T5 - Vehicles,"As a/the admin
+I want see requests that need a vehicle
+So that I can service the queue
+
+Spec: features/feature-9-vehicle-assignment-and-availability.md
+Story ID: SK-F9-US9.4
+Branch: feature/9-*",SK-F9-US9.4,SK-F9-EPIC,Vehicle Assignment and Availability
+Story,US-10.1: Email on status change,T5 - Vehicles,"As a/the requestor
+I want an email when my reservation status changes
+So that I know whether the trip is requested, awaiting a vehicle, or reserved
+
+Spec: features/feature-10-reservation-status-management.md
+Story ID: SK-F10-US10.1
+Branch: feature/10-*",SK-F10-US10.1,SK-F10-EPIC,Reservation Status Management
+Story,US-10.2: Day-before pickup instructions,T5 - Vehicles,"As a/the requestor
+I want pickup instructions the day before my trip
+So that I know how to get the vehicle, keys, and parking
+
+Spec: features/feature-10-reservation-status-management.md
+Story ID: SK-F10-US10.2
+Branch: feature/10-*",SK-F10-US10.2,SK-F10-EPIC,Reservation Status Management
+Story,US-10.3: Do not email when status is unchanged,T5 - Vehicles,"As a/the application
+I want skip mail when an update does not change `status`
+So that requestors are not spammed
+
+Spec: features/feature-10-reservation-status-management.md
+Story ID: SK-F10-US10.3
+Branch: feature/10-*",SK-F10-US10.3,SK-F10-EPIC,Reservation Status Management
+Story,US-11.1: View this week's schedule,T5 - Vehicles,"As a/the admin
+I want see a weekly calendar of reservations
+So that I can see each request, its status, and its vehicle
+
+Spec: features/feature-11-weekly-reservation-calendar.md
+Story ID: SK-F11-US11.1
+Branch: feature/11-*",SK-F11-US11.1,SK-F11-EPIC,Weekly Reservation Calendar
+Story,US-11.2: Move to another week,T5 - Vehicles,"As a/the admin
+I want go to the previous or next week
+So that I can inspect other trip windows
+
+Spec: features/feature-11-weekly-reservation-calendar.md
+Story ID: SK-F11-US11.2
+Branch: feature/11-*",SK-F11-US11.2,SK-F11-EPIC,Weekly Reservation Calendar
+Story,US-11.3: Requestors cannot open the calendar,T5 - Vehicles,"As a/the application
+I want the calendar API and route limited to admins
+So that requestors only see their own list
+
+Spec: features/feature-11-weekly-reservation-calendar.md
+Story ID: SK-F11-US11.3
+Branch: feature/11-*",SK-F11-US11.3,SK-F11-EPIC,Weekly Reservation Calendar
+Story,US-13.1: Report a vehicle issue,T5 - Vehicles,"As a/the requestor
+I want report an issue with a vehicle before, during, or after a trip
+So that the appropriate administrator knows about the problem
+
+Spec: features/feature-13- vehicle issue reporting.md
+Story ID: SK-F13-US13.1
+Branch: feature/13-*",SK-F13-US13.1,SK-F13-EPIC,Vehicle Issue Reporting
+Story,US-13.2: View my reported issues,T5 - Vehicles,"As a/the requestor
+I want view the issues I reported
+So that I can confirm what was submitted
+
+Spec: features/feature-13- vehicle issue reporting.md
+Story ID: SK-F13-US13.2
+Branch: feature/13-*",SK-F13-US13.2,SK-F13-EPIC,Vehicle Issue Reporting
+Story,US-13.3: Edit a reported issue,T5 - Vehicles,"As a/the requestor
+I want edit an issue I reported
+So that I can correct the type, description, vehicle, or reservation
+
+Spec: features/feature-13- vehicle issue reporting.md
+Story ID: SK-F13-US13.3
+Branch: feature/13-*",SK-F13-US13.3,SK-F13-EPIC,Vehicle Issue Reporting
+Story,US-13.4: Delete a reported issue,T5 - Vehicles,"As a/the requestor
+I want delete an issue I reported
+So that I can remove a report that was submitted in error
+
+Spec: features/feature-13- vehicle issue reporting.md
+Story ID: SK-F13-US13.4
+Branch: feature/13-*",SK-F13-US13.4,SK-F13-EPIC,Vehicle Issue Reporting
+Story,US-13.5: View reported vehicle issues,T5 - Vehicles,"As a/the area administrator
+I want view issues reported for vehicles in my area
+So that I can review problems and determine what action is needed
+
+Spec: features/feature-13- vehicle issue reporting.md
+Story ID: SK-F13-US13.5
+Branch: feature/13-*",SK-F13-US13.5,SK-F13-EPIC,Vehicle Issue Reporting
+Story,US-13.6: Update vehicle issue status,T5 - Vehicles,"As a/the area administrator
+I want update the status of a reported vehicle issue
+So that the system shows whether the issue is still open, being addressed, or resolved
+
+Spec: features/feature-13- vehicle issue reporting.md
+Story ID: SK-F13-US13.6
+Branch: feature/13-*",SK-F13-US13.6,SK-F13-EPIC,Vehicle Issue Reporting
+Story,US-13.7: View vehicle issue history,T5 - Vehicles,"As a/the area administrator
+I want view previously reported issues for a vehicle
+So that I can identify recurring problems and review the vehicle's history
+
+Spec: features/feature-13- vehicle issue reporting.md
+Story ID: SK-F13-US13.7
+Branch: feature/13-*",SK-F13-US13.7,SK-F13-EPIC,Vehicle Issue Reporting
+Story,US-14.1: View maintenance requests,T5 - Vehicles,"As a/the maintenance user
+I want view maintenance requests for vehicles in my assigned area
+So that I can keep track of vehicle problems that need attention
+
+Spec: features/feature-14-Vehicle Maintenance Management.md
+Story ID: SK-F14-US14.1
+Branch: feature/14-*",SK-F14-US14.1,SK-F14-EPIC,Vehicle Maintenance Management
+Story,US-14.2: Create a maintenance request,T5 - Vehicles,"As a/the maintenance user
+I want create a maintenance request for a vehicle
+So that vehicle problems can be documented and addressed
+
+Spec: features/feature-14-Vehicle Maintenance Management.md
+Story ID: SK-F14-US14.2
+Branch: feature/14-*",SK-F14-US14.2,SK-F14-EPIC,Vehicle Maintenance Management
+Story,US-14.3: Update maintenance request status,T5 - Vehicles,"As a/the maintenance user
+I want update the status of a maintenance request
+So that the system reflects the progress of maintenance work
+
+Spec: features/feature-14-Vehicle Maintenance Management.md
+Story ID: SK-F14-US14.3
+Branch: feature/14-*",SK-F14-US14.3,SK-F14-EPIC,Vehicle Maintenance Management
+Story,US-14.4: View vehicle maintenance information,T5 - Vehicles,"As a/the maintenance user
+I want view maintenance requests associated with a vehicle
+So that I can review the vehicle's maintenance history
+
+Spec: features/feature-14-Vehicle Maintenance Management.md
+Story ID: SK-F14-US14.4
+Branch: feature/14-*",SK-F14-US14.4,SK-F14-EPIC,Vehicle Maintenance Management
