@@ -101,7 +101,7 @@ Header: `Authorization: Bearer <token>`.
 
 ## Fleet vehicles
 
-Mounted at `/fleets`. Every route requires `Authorization: Bearer <token>`. A vehicle belongs to the signed-in user. Another user's id returns `404`.
+Mounted at `/fleets`. Every route requires `Authorization: Bearer <token>`. A vehicle belongs to the signed-in user. Another user's id returns `404`. Create, update, and delete also require `role` `admin`.
 
 JSON fields: `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passengerCapacity`, `licensePlateNo`, `licensePlateExp`, `area`. Responses also include `id`. `userId` is not returned. The stored `name` is `${year} ${make} ${model}` and is not a request field.
 
@@ -119,6 +119,7 @@ JSON fields: `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passenger
 | `201` | Created. Body is the vehicle JSON |
 | `400` | A required field is blank, too long, not a valid date, or the VIN fails the check. A duplicate year, make, and model for that user returns `{ "message": "A vehicle with that year, make, and model already exists." }` |
 | `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin`. Body: `{ "message": "Forbidden! Admin access required." }` |
 
 ### `PUT /fleets/vehicles/:id`
 
@@ -127,6 +128,7 @@ JSON fields: `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passenger
 | `200` | `{ "message": "vehicle was updated successfully." }` |
 | `400` | `vehicleId` is not a number, a field is blank (`All fields must be filled.`), or a length, date, or VIN rule fails. Year must be exactly 4 digits. VIN must be exactly 17 characters and valid |
 | `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin`. Body: `{ "message": "Forbidden! Admin access required." }` |
 | `404` | `{ "message": "Vehicle with id=${id} not found." }` |
 
 ### `DELETE /fleets/vehicles/:id`
@@ -136,6 +138,7 @@ JSON fields: `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passenger
 | `204` | Deleted. Empty body |
 | `400` | `{ "message": "vehicleId must be a number." }` |
 | `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin`. Body: `{ "message": "Forbidden! Admin access required." }` |
 | `404` | `{ "message": "Vehicle with id=${id} not found." }` |
 
 ## Conventions

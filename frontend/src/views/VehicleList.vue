@@ -1,6 +1,7 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import VehicleForm from "../components/VehicleForm.vue";
+import Utils from "../config/utils.js";
 import vehicleServices from "../services/vehicleServices.js";
 
 const emptyForm = () => ({
@@ -16,6 +17,8 @@ const emptyForm = () => ({
   area: "",
 });
 
+const user = ref(Utils.getStore("user"));
+const isAdmin = computed(() => user.value?.role === "admin");
 const vehicles = ref([]);
 const loading = ref(false);
 const listError = ref("");
@@ -190,7 +193,7 @@ onMounted(loadVehicles);
   <v-container class="py-8">
     <v-row align="center" class="mb-4">
       <v-col><h1 class="text-h4">Vehicles</h1></v-col>
-      <v-col cols="auto">
+      <v-col v-if="isAdmin" cols="auto">
         <v-btn color="primary" variant="elevated" class="oc-cta" @click="openAddDialog">+ New vehicle</v-btn>
       </v-col>
     </v-row>
@@ -213,7 +216,7 @@ onMounted(loadVehicles);
           <th class="text-left">License Plate Number</th>
           <th class="text-left">License Plate Expiration</th>
           <th class="text-left">Area</th>
-          <th class="text-left">Actions</th>
+          <th v-if="isAdmin" class="text-left">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -229,7 +232,7 @@ onMounted(loadVehicles);
           <td>{{ vehicle.licensePlateNo }}</td>
           <td>{{ vehicle.licensePlateExp }}</td>
           <td>{{ vehicle.area }}</td>
-          <td>
+          <td v-if="isAdmin">
             <div class="d-flex align-center ga-6">
               <v-btn icon size="small" variant="text" aria-label="Edit vehicle" @click="openEditDialog(vehicle)">
                 <v-icon size="small">mdi-pencil</v-icon>

@@ -22,7 +22,7 @@ const nissan = {
   area: "Athletics",
 };
 
-async function createUser(suffix, role = "user") {
+async function createUser(suffix, role = "admin") {
   const user = await db.user.create({
     googleId: `google-${suffix}`,
     email: `${suffix}@example.com`,
@@ -232,6 +232,14 @@ describe("Feature 3 — Vehicle Management", () => {
       expect(response.body).toEqual({ message: "vehicle area must be 100 characters or fewer." });
     });
 
+    it("rejects a create from a signed-in user who is not the admin", async () => {
+      const { token } = await createUser("member", "user");
+      const response = await createVehicle(token);
+
+      expect(response.status).toBe(403);
+      expect(response.body).toEqual({ message: "Forbidden! Admin access required." });
+    });
+
     it("rejects a create with no token", async () => {
       const response = await request(app).post("/fleets/vehicles").send(nissan);
 
@@ -419,6 +427,19 @@ describe("Feature 3 — Vehicle Management", () => {
       expect(response.status).toBe(404);
     });
 
+    it("rejects an edit from a signed-in user who is not the admin", async () => {
+      const owner = await createUser("edit-admin");
+      const member = await createUser("edit-member", "user");
+      const created = await createVehicle(owner.token);
+      const response = await request(app)
+        .put(`/fleets/vehicles/${created.body.id}`)
+        .set(authed(member.token))
+        .send(nissan);
+
+      expect(response.status).toBe(403);
+      expect(response.body).toEqual({ message: "Forbidden! Admin access required." });
+    });
+
     it("returns 400 for a non-numeric vehicle id", async () => {
       const { token } = await createUser("bad-id");
       const response = await request(app).put("/fleets/vehicles/abc").set(authed(token)).send(nissan);
@@ -446,6 +467,16 @@ describe("Feature 3 — Vehicle Management", () => {
       const response = await request(app).delete(`/fleets/vehicles/${created.body.id}`).set(authed(other.token));
 
       expect(response.status).toBe(404);
+    });
+
+    it("rejects a delete from a signed-in user who is not the admin", async () => {
+      const owner = await createUser("delete-admin");
+      const member = await createUser("delete-member", "user");
+      const created = await createVehicle(owner.token);
+      const response = await request(app).delete(`/fleets/vehicles/${created.body.id}`).set(authed(member.token));
+
+      expect(response.status).toBe(403);
+      expect(response.body).toEqual({ message: "Forbidden! Admin access required." });
     });
   });
 });
