@@ -1,6 +1,6 @@
 # API Reference
 
-**Status:** Feature 8 on `feature/8-vehicle-reservation-requests`. Feature 1 and 2 routes remain.
+**Status:** Feature 9 on `feature/9-vehicle-assignment-and-availability`. Features 1, 2, and 8 remain.
 
 Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/health`.
 
@@ -13,10 +13,11 @@ Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/
 | `GET` | `/vehicles/me` | Yes | Return the signed-in user's account | Feature 2 |
 | `PUT` | `/vehicles/me` | Yes | Update `fName` and `lName` for the signed-in user | Feature 2 |
 | `DELETE` | `/vehicles/me` | Yes | Delete the signed-in user and that user's sessions | Feature 2 |
-| `GET` | `/vehicles/reservations` | Yes | List own reservations, or every reservation when `role` is `admin` | Feature 8 |
+| `GET` | `/vehicles/reservations` | Yes | List own reservations, or every reservation when `role` is `admin`. Optional `?status=` filter | Feature 8, Feature 9 |
 | `POST` | `/vehicles/reservations` | Yes | Create a request with `status` `requested` and `vehicleId` null | Feature 8 |
 | `GET` | `/vehicles/reservations/:id` | Yes | Fetch one reservation the caller may read | Feature 8 |
 | `PUT` | `/vehicles/reservations/:id` | Yes | Update a `requested` reservation owned by the caller | Feature 8 |
+| `PUT` | `/vehicles/reservations/:id/assignment` | Yes + admin | Assign a vehicle (`reserved`) or mark awaiting (`vehicleId` null) | Feature 9 |
 | `GET` | `/vehicles/drivers` | Yes | Approved drivers (`status` `approved`) | Feature 8 |
 | `GET` | `/vehicles/destinations` | Yes | Destinations for the request form | Feature 8 |
 | `GET` | `/api/health` | No | Process health check | Starter |
@@ -172,6 +173,21 @@ JSON fields: `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passenger
 | `401` | Missing, expired, or unknown token |
 | `403` | Signed-in role is not `admin`. Body: `{ "message": "Forbidden! Admin access required." }` |
 | `404` | `{ "message": "Vehicle with id=${id} not found." }` |
+
+### `PUT /vehicles/reservations/:id/assignment`
+
+Header: `Authorization: Bearer <token>`. Admin only.
+
+Assign body: `{ "vehicleId": 7 }`. Awaiting body: `{ "vehicleId": null }`.
+
+| Status | When |
+|--------|------|
+| `200` | Status/vehicle updated |
+| `400` | `vehicleId` missing from the body, or not a number/`null` |
+| `401` | Missing or invalid session |
+| `403` | Authenticated non-admin |
+| `404` | Reservation or vehicle not found |
+| `409` | `{ "message": "Vehicle is not available for this time." }` — overlapping `reserved` trip |
 
 ## Conventions
 
