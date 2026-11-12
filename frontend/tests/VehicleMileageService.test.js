@@ -1,6 +1,6 @@
 /**
  * Feature 15 — Vehicle Mileage and Service Log Management
- * Spec: features/feature-15- Vehicle Mileage and Service Log Management
+ * Spec: features/feature-15-vehicle-mileage-and-service-log-management.md
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { flushPromises } from "@vue/test-utils";

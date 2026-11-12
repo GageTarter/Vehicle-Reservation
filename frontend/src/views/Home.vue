@@ -1,10 +1,13 @@
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import Utils from "../config/utils.js";
+import { canManageMaintenance, canManageMileage } from "../config/roles.js";
 
 const router = useRouter();
 const user = ref(Utils.getStore("user"));
+const showMaintenance = computed(() => canManageMaintenance(user.value));
+const showMileage = computed(() => canManageMileage(user.value));
 
 function openAccount() {
   router.push({ name: "account" });
@@ -34,6 +37,7 @@ function openRequests() {
             Vehicle issues
           </v-btn>
           <v-btn
+            v-if="showMaintenance"
             color="primary"
             variant="tonal"
             class="ml-2"
@@ -42,6 +46,7 @@ function openRequests() {
             Vehicle maintenance
           </v-btn>
           <v-btn
+            v-if="showMileage"
             color="primary"
             variant="tonal"
             class="ml-2"
