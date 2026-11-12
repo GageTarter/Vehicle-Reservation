@@ -1,6 +1,6 @@
 /**
  * Feature 15 — Vehicle Mileage and Service Log Management
- * Spec: features/feature-15- Vehicle Mileage and Service Log Management
+ * Spec: features/feature-15-vehicle-mileage-and-service-log-management.md
  */
 import app from "../server.js";
 import db from "../app/models/index.js";
