@@ -1,29 +1,24 @@
 {
-  "name": "speckit-app-backend",
+  "name": "vehicles-t5-backend",
   "version": "1.0.0",
   "type": "module",
-  "description": "Speckit App — Node.js REST API",
+  "description": "Vehicles app — Node.js REST API (OC CS Speckit)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --forceExit",
+    "create-admin": "node app/scripts/create-admin.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
-    "seed:admin": "node app/scripts/seed-admin.js",
-    "bundle": "node scripts/make-deploy.mjs"
+    "bundle": "rm -rf deploy && mkdir deploy && cp -r app server.js package.json package-lock.json vehicle-t5-backend.service .env deploy"
   },
-  "keywords": [
-    "node.js",
-    "express",
-    "sequelize"
-  ],
+  "keywords": ["node.js", "express", "sequelize"],
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "google-auth-library": "^11.3.2",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "mysql2": "^3.12.0",
