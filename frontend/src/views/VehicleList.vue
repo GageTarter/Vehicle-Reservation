@@ -205,6 +205,7 @@ onMounted(loadVehicles);
     <v-table v-if="!loading && vehicles.length > 0">
       <thead>
         <tr>
+          <th class="text-left">ID</th>
           <th class="text-left">Make</th>
           <th class="text-left">Model</th>
           <th class="text-left">Year</th>
@@ -220,6 +221,7 @@ onMounted(loadVehicles);
       </thead>
       <tbody>
         <tr v-for="vehicle in vehicles" :key="vehicle.id">
+          <td>{{ vehicle.id }}</td>
           <td>{{ vehicle.make }}<span class="d-sr-only">{{ displayName(vehicle) }}</span></td>
           <td>{{ vehicle.model }}</td>
           <td>{{ vehicle.year }}</td>

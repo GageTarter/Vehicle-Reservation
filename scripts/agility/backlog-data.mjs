@@ -68,7 +68,7 @@ export function epicRef(featureNum) {
 export function parseUserStories(content) {
   const stories = [];
   const storyRegex =
-    /### US-\d+\.(\d+): ([^\n]+)\n\*\*As (?:a|the)\*\* ([^\n]+)\n\*\*I want(?: to)?\*\* ([^\n]+)\n\*\*So that\*\* ([^\n]+)/g;
+    /### US-\d+\.(\d+): ([^\n]+)\n\*\*As (?:a|an|the)\*\* ([^\n]+)\n\*\*I want(?: to)?\*\* ([^\n]+)\n\*\*So that\*\* ([^\n]+)/g;
 
   let match;
   while ((match = storyRegex.exec(content)) !== null) {
@@ -119,8 +119,8 @@ export function parseScenarios(content) {
       continue;
     }
 
-    if (current && line.startsWith("*")) {
-      current.steps.push(line.replace(/^\*\s*/, "").trim());
+    if (current && /^\s*[-*]\s+/.test(line)) {
+      current.steps.push(line.replace(/^\s*[-*]\s+/, "").trim());
     }
   }
 
@@ -145,10 +145,43 @@ export function formatGherkin(scenario) {
   return scenario.steps.map((step) => step.replace(/\*\*/g, "")).join("\n");
 }
 
+/** Agility Description / ExpectedResults are rich text; plain newlines do not show in the UI. */
+export function toAgilityRichText(text) {
+  const raw = String(text ?? "").trim();
+  if (!raw) {
+    return "";
+  }
+  if (/<[a-z][\s\S]*>/i.test(raw)) {
+    return raw;
+  }
+
+  return raw
+    .split(/\n+/)
+    .map((line) => {
+      const escaped = line
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      return `<p>${escaped}</p>`;
+    })
+    .join("");
+}
+
 export function formatExpectedResults(scenario) {
-  const thenSteps = scenario.steps
-    .filter((step) => /^Then|^And/i.test(step.replace(/\*\*/g, "")))
-    .map((step) => step.replace(/\*\*/g, ""));
+  const thenSteps = [];
+  let inThen = false;
+
+  for (const step of scenario.steps) {
+    const clean = step.replace(/\*\*/g, "");
+    if (/^Then\b/i.test(clean)) {
+      inThen = true;
+    } else if (/^(Given|When)\b/i.test(clean)) {
+      inThen = false;
+    }
+    if (inThen && /^(Then|And)\b/i.test(clean)) {
+      thenSteps.push(clean);
+    }
+  }
 
   return thenSteps.length > 0 ? thenSteps.join("\n") : formatGherkin(scenario);
 }
@@ -214,8 +247,8 @@ export function buildBacklog(project = DEFAULT_PROJECT, options = {}) {
       const test = {
         ref,
         name: scenario.title,
-        description: formatGherkin(scenario),
-        expectedResults: formatExpectedResults(scenario),
+        description: toAgilityRichText(formatGherkin(scenario)),
+        expectedResults: toAgilityRichText(formatExpectedResults(scenario)),
         parentRef,
       };
 
@@ -232,7 +265,7 @@ export function buildBacklog(project = DEFAULT_PROJECT, options = {}) {
       return {
         ref,
         name: `${storyId(feature.num, story.num)}: ${story.title}`,
-        description: storyDescription(story, feature, ref),
+        description: toAgilityRichText(storyDescription(story, feature, ref)),
         tests: testsByStory.get(story.num) ?? [],
       };
     });
@@ -242,7 +275,7 @@ export function buildBacklog(project = DEFAULT_PROJECT, options = {}) {
       epic: {
         ref: epicReference,
         name: feature.epic,
-        description: `Epic for ${feature.file}. Spec-driven backlog.`,
+        description: toAgilityRichText(`Epic for ${feature.file}. Spec-driven backlog.`),
         specLink: feature.file,
       },
       stories: featureStories,
