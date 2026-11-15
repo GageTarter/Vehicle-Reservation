@@ -48,6 +48,24 @@ No password column.
 | `createdAt` | DATE | Sequelize timestamp. List order |
 | `updatedAt` | DATE | Sequelize timestamp |
 
+### `drivers`
+
+Shared catalogue. No `userId` and no association with `users`.
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `id` | INTEGER PK | Auto-increment |
+| `name` | STRING(100) | Required |
+| `lastName` | STRING(100) | Required. List order, then `name` |
+| `driverID` | STRING(100) | Required. Trimmed text such as `CMSC-1113-01`. Not unique in the database. The add dialog blocks a `driverID` already in the loaded list |
+| `licenseState` | STRING(100) | Required |
+| `licenseExp` | DATEONLY | Required. Calendar-checked, stored as `YYYY-MM-DD` |
+| `approvedDate` | DATEONLY | Required. Same rules as `licenseExp` |
+| `area` | STRING(100) | Required |
+| `status` | STRING(100) | Required |
+| `createdAt` | DATE | Sequelize timestamp |
+| `updatedAt` | DATE | Sequelize timestamp |
+
 ## Associations
 
 - `User hasMany Session` on `userId`

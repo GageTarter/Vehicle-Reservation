@@ -10,6 +10,7 @@ import Requests from "./views/Requests.vue";
 import RequestServicing from "./views/RequestServicing.vue";
 import Calendar from "./views/Calendar.vue";
 import VehicleList from "./views/VehicleList.vue";
+import DriverList from "./views/driverList.vue";
 import Utils from "./config/utils.js";
 import { isSystemAdmin } from "./config/roles.js";
 

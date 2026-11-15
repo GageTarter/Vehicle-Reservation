@@ -176,6 +176,60 @@ JSON fields: `make`, `model`, `year`, `vin`, `purchaseDate`, `color`, `passenger
 | `403` | Signed-in role is not `admin`. Body: `{ "message": "Forbidden! Admin access required." }` |
 | `404` | `{ "message": "Vehicle with id=${id} not found." }` |
 
+## Drivers
+
+Mounted at `/driverapi`. Every route requires `Authorization: Bearer <token>`. Drivers are a shared catalogue with no owner. Every signed-in user can list them. Create, update, and delete require `role` `admin`.
+
+JSON fields: `name`, `lastName`, `driverID`, `licenseState`, `licenseExp`, `approvedDate`, `area`, `status`. Responses also include `id`. `driverID` is text (for example `CMSC-1113-01`), trimmed before storing. Dates are returned as `YYYY-MM-DD`.
+
+```json
+{ "name": "Judah", "lastName": "Campbell", "driverID": "CMSC-1113-01", "licenseState": "Oklahoma", "licenseExp": "2028-01-01", "approvedDate": "2004-09-23", "area": "Athletics", "status": "Approved" }
+```
+
+Create and update use the same rules. Every field is required.
+
+| Rule | Body |
+|------|------|
+| Blank `name`, `lastName`, `driverID`, `licenseState`, `licenseExp`, `approvedDate`, `area`, or `status` | `{ "message": "driver <field> is required." }` (for example `driver ID is required.`) |
+| `name`, `lastName`, `driverID`, `licenseState`, or `status` over 100 characters | `{ "message": "driver <field> must be 100 characters or fewer." }` |
+| `licenseExp` not a valid date (`YYYY-M-D` or `M/D/YY`) | `{ "message": "driver license expiration must be a valid date." }` |
+| `approvedDate` not a valid date | `{ "message": "driver approved date must be a valid date." }` |
+
+### `GET /driverapi/drivers`
+
+| Status | When |
+|--------|------|
+| `200` | Every driver, sorted by `lastName` then `name` ascending. Empty catalogue returns `[]` |
+| `401` | Missing, expired, or unknown token |
+
+### `POST /driverapi/drivers`
+
+| Status | When |
+|--------|------|
+| `201` | Created. Body is the driver JSON |
+| `400` | A validation rule above fails |
+| `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin`. Body: `{ "message": "Admin privileges are required." }` |
+
+### `PUT /driverapi/drivers/:id`
+
+| Status | When |
+|--------|------|
+| `200` | `{ "message": "driver was updated successfully." }` |
+| `400` | `{ "message": "driver id must be a number." }`, or a validation rule above fails |
+| `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin`. Body: `{ "message": "Admin privileges are required." }` |
+| `404` | `{ "message": "driver not found." }` |
+
+### `DELETE /driverapi/drivers/:id`
+
+| Status | When |
+|--------|------|
+| `204` | Deleted. Empty body |
+| `400` | `{ "message": "driver id must be a number." }` |
+| `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin`. Body: `{ "message": "Admin privileges are required." }` |
+| `404` | `{ "message": "driver not found." }` |
 ### `PUT /vehicles/reservations/:id/assignment`
 
 Header: `Authorization: Bearer <token>`. Admin only.
@@ -220,6 +274,7 @@ Header: `Authorization: Bearer <token>`. Admin only. Query: `weekStart=YYYY-MM-D
 - Errors: `{ "message": "..." }`.
 - Authenticated routes: `Authorization: Bearer <token>`.
 - `requireAdmin` rejects a non-admin with `403` and `{ "message": "Forbidden! Admin access required." }`.
+- `requireAdminPrivileges` (driver routes) rejects a non-admin with `403` and `{ "message": "Admin privileges are required." }`.
 
 ## Vehicle issues
 
