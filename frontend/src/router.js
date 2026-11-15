@@ -1,19 +1,100 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "./views/Home.vue";
+import VehicleMileageService from "./views/VehicleMileageService.vue";
+import VehicleIssueReporting from "./views/VehicleIssueReporting.vue";
+import VehicleMaintenance from "./views/VehicleMaintenance.vue";
+import Login from "./views/Login.vue";
+import Account from "./views/Account.vue";
+import CheckoutReturn from "./views/CheckoutReturn.vue";
+import Requests from "./views/Requests.vue";
+import RequestServicing from "./views/RequestServicing.vue";
+import Calendar from "./views/Calendar.vue";
+import VehicleList from "./views/VehicleList.vue";
+import DriverList from "./views/driverList.vue";
+import Utils from "./config/utils.js";
+import { isSystemAdmin } from "./config/roles.js";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: "/login",
+      name: "login",
+      component: Login,
+    },
     {
       path: "/",
       name: "home",
       component: Home,
     },
     {
+      path: "/account",
+      name: "account",
+      component: Account,
+    },
+    {
+      path: "/requests",
+      name: "requests",
+      component: Requests,
+    },
+    {
+      path: "/request-servicing",
+      name: "requestServicing",
+      component: RequestServicing,
+    },
+    {
+      path: "/calendar",
+      name: "calendar",
+      component: Calendar,
+    },
+    {
+      path: "/vehicles",
+      name: "vehicles",
+      component: VehicleList,
+    },
+    {
+      path: "/issues",
+      name: "vehicleIssueReporting",
+      component: VehicleIssueReporting,
+    },
+    {
+      path: "/maintenance",
+      name: "vehicleMaintenance",
+      component: VehicleMaintenance,
+    },
+    {
+      path: "/mileage-service",
+      name: "vehicleMileageService",
+      component: VehicleMileageService,
+    },
+    {
+      path: "/checkout-return",
+      name: "checkoutReturn",
+      component: CheckoutReturn,
+    },
+    {
       path: "/:pathMatch(.*)*",
       redirect: { name: "home" },
     },
   ],
+});
+
+router.beforeEach((to) => {
+  const user = Utils.getStore("user");
+
+  if (!user && to.name !== "login") {
+    return { name: "login" };
+  }
+
+  if (user && to.name === "login") {
+    return { name: "home" };
+  }
+
+  if ((to.name === "requestServicing" || to.name === "calendar") && !isSystemAdmin(user)) {
+    return { name: "home" };
+  }
+
+  return true;
 });
 
 export default router;
