@@ -316,6 +316,7 @@ describe("Vehicles menu", () => {
         { path: "/", name: "home", component: { template: "<div>Home</div>" } },
         { path: "/login", name: "login", component: { template: "<div>Login</div>" } },
         { path: "/vehicles", name: "vehicles", component: { template: "<div>Vehicles</div>" } },
+        { path: "/drivers", name: "drivers", component: { template: "<div>Drivers</div>" } },
       ],
     });
     await router.push("/");

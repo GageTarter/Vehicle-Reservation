@@ -41,3 +41,11 @@ export function requireAdmin(req, res, next) {
 
   return next();
 }
+
+export function requireAdminPrivileges(req, res, next) {
+  if (req.user?.role !== "admin") {
+    return res.status(403).send({ message: "Admin privileges are required." });
+  }
+
+  return next();
+}

@@ -1,6 +1,6 @@
 # Behavior & Rules Reference
 
-**Living snapshot** of product rules currently implemented through Feature 3 vehicle management.
+**Living snapshot** of product rules currently implemented through Feature 4 driver management.
 
 These files answer: *"What rules does the app enforce right now?"*  
 They do **not** authorize new scope — implement only from `features/feature-*.md`.
@@ -28,11 +28,15 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | Anonymous visitors cannot open protected screens. A signed-in visitor cannot stay on `login`. | `router.beforeEach` | Feature 1 |
 | Dismissing the Google prompt stays on `login` and does not call the API. | Login catches cancellation before `authServices.googleSignIn`. | Feature 1 |
 | Home shows the first name and the role, and offers **My account**. A signed-in user also sees the menu. | `Home.vue`, `MenuBar.vue` | Feature 1, Feature 2, Feature 3 |
-| The menu title is **Vehicle Management System**. The only nav item is **Vehicles**, shown when a user is stored. Sign out clears the session and opens `login`. | `MenuBar.vue` | Feature 3 |
+| The menu title is **Vehicle Management System**. The nav items are **Vehicles** and **Drivers**, shown when a user is stored. Sign out clears the session and opens `login`. | `MenuBar.vue` | Feature 3, Feature 4 |
 | Vehicles are listed oldest first. The screen columns are make, model, year, VIN, purchase date, color, passenger capacity, license plate number, license plate expiration, area, and actions. | `GET /fleets/vehicles` order `createdAt` ASC | Feature 3 |
 | Create and edit use the same ten fields, including `area` as typed text. The button label is **+ New vehicle**. | `VehicleList.vue`, `VehicleForm.vue` | Feature 3 |
 | An empty create shows the field's required message and does not call the API. An empty edit shows **All fields must be filled.** and does not call the API. Length, date, and VIN failures come from the API and show in a `v-alert`. | `VehicleForm.vue`, `vehicle.validation.js` | Feature 3 |
 | Every signed-in user can list only their own vehicles. Only `role` `admin` can create, edit, or delete, and only their own rows. | `vehicle.routes.js`, `vehicleAccess.js` | Feature 3 |
+| Drivers are one shared catalogue. Every signed-in user sees every driver, sorted by last name then first name. Only `role` `admin` sees **+ New driver**, **Edit driver**, and **Delete driver**, and only an admin can create, edit, or delete. | `GET /driverapi/drivers`, `driver.routes.js`, `driverList.vue` | Feature 4 |
+| The driver screen columns are name, last name, driver ID, license state, license expiration, approved date, area, status, and actions. Each row also carries `Last, First` for screen readers. | `driverList.vue` | Feature 4 |
+| Create and edit use the same eight required fields. **Area** is a dropdown filled from `GET /areaapi/areas` (each area's `name`). Until that endpoint exists, the list is empty and the area can be typed. | `DriverForm.vue`, `areaServices.js` | Feature 4 |
+| A blank field on create or edit shows that field's required message and does not call the API. On create, a driver ID already in the list shows **driver id is in use. Enter a different driver id.** and does not call the API. Length and date failures come from the API and show in a `v-alert`. | `driverList.vue`, `driver.validation.js` | Feature 4 |
 | The account page shows email, first name, last name, and role from `GET /vehicles/me`. | `Account.vue` | Feature 2 |
 | A signed-in user can change only `fName` and `lName`. `email`, `googleId`, and `role` in the body are ignored. A successful save updates `localStorage` key `user`. | `PUT /vehicles/me` | Feature 2 |
 | `fName` and `lName` must be strings. Empty strings are allowed. A missing or non-string name is rejected. | `400` `{ "message": "First and last name must be text." }` | Feature 2 |

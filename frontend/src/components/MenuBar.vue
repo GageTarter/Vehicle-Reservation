@@ -44,6 +44,7 @@ onUnmounted(() => {
   <v-app-bar v-if="user" color="primary" density="comfortable">
     <v-app-bar-title>Vehicle Management System</v-app-bar-title>
     <v-btn variant="text" color="white" class="ml-4" :to="{ name: 'vehicles' }">Vehicles</v-btn>
+    <v-btn variant="text" color="white" :to="{ name: 'drivers' }">Drivers</v-btn>
     <v-spacer />
     <v-menu v-model="menu">
       <template #activator="{ props }">

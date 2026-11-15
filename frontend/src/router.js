@@ -3,6 +3,7 @@ import Home from "./views/Home.vue";
 import Login from "./views/Login.vue";
 import Account from "./views/Account.vue";
 import VehicleList from "./views/VehicleList.vue";
+import DriverList from "./views/driverList.vue";
 import Utils from "./config/utils.js";
 
 const router = createRouter({
@@ -27,6 +28,11 @@ const router = createRouter({
       path: "/vehicles",
       name: "vehicles",
       component: VehicleList,
+    },
+    {
+      path: "/drivers",
+      name: "drivers",
+      component: DriverList,
     },
     {
       path: "/:pathMatch(.*)*",

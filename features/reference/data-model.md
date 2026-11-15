@@ -1,6 +1,6 @@
 # Data Model Reference
 
-**Status:** Feature 1 tables `users` and `sessions`. Feature 2 adds no columns. Feature 3 adds `vehicles`.
+**Status:** Feature 1 tables `users` and `sessions`. Feature 2 adds no columns. Feature 3 adds `vehicles`. Feature 4 adds `drivers`.
 
 ## Tables
 
@@ -45,6 +45,24 @@ No password column.
 | `licensePlateExp` | STRING(10) | Required. Same date rules as `purchaseDate` |
 | `area` | STRING(100) | Required typed string |
 | `createdAt` | DATE | Sequelize timestamp. List order |
+| `updatedAt` | DATE | Sequelize timestamp |
+
+### `drivers`
+
+Shared catalogue. No `userId` and no association with `users`.
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `id` | INTEGER PK | Auto-increment |
+| `name` | STRING(100) | Required |
+| `lastName` | STRING(100) | Required. List order, then `name` |
+| `driverID` | STRING(100) | Required. Trimmed text such as `CMSC-1113-01`. Not unique in the database. The add dialog blocks a `driverID` already in the loaded list |
+| `licenseState` | STRING(100) | Required |
+| `licenseExp` | DATEONLY | Required. Calendar-checked, stored as `YYYY-MM-DD` |
+| `approvedDate` | DATEONLY | Required. Same rules as `licenseExp` |
+| `area` | STRING(100) | Required |
+| `status` | STRING(100) | Required |
+| `createdAt` | DATE | Sequelize timestamp |
 | `updatedAt` | DATE | Sequelize timestamp |
 
 ## Associations
