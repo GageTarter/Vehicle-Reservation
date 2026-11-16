@@ -45,7 +45,18 @@ export async function createVehicle(overrides = {}) {
 export async function createReservation(overrides = {}) {
   const driverId =
     overrides.driverId ??
-    (await db.driver.create({ name: `Checkout driver ${Date.now()}`, status: "approved" })).id;
+    (
+      await db.driver.create({
+        name: `Checkout driver ${Date.now()}`,
+        lastName: "Approved",
+        driverID: `CHK-${Date.now()}`,
+        licenseState: "OK",
+        licenseExp: "2027-09-23",
+        approvedDate: "2024-01-15",
+        area: "Athletics",
+        status: "approved",
+      })
+    ).id;
   const destinationId =
     overrides.destinationId ??
     (await db.destination.create({ name: `Checkout dest ${Date.now()}` })).id;

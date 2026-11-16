@@ -13,7 +13,7 @@
 | `fName` | STRING | Required; from `given_name` at sign-in; may be `""`. Feature 2 may replace it |
 | `lName` | STRING | Required; from `family_name` at sign-in; may be `""`. Feature 2 may replace it |
 | `email` | STRING | Required, unique; from the verified token |
-| `role` | STRING(20) | Required; `user` or `admin`; default `user` |
+| `role` | STRING(20) | Required. One of `user`, `admin`, `area_admin`, `maintenance`. Google sign-in defaults to `user`. Feature 2 changes it only through `PUT /vehicles/users/:id/role` |
 
 No password column.
 
@@ -62,7 +62,7 @@ Shared catalogue. No `userId` and no association with `users`.
 | `licenseExp` | DATEONLY | Required. Calendar-checked, stored as `YYYY-MM-DD` |
 | `approvedDate` | DATEONLY | Required. Same rules as `licenseExp` |
 | `area` | STRING(100) | Required |
-| `status` | STRING(100) | Required |
+| `status` | STRING(100) | Required. Feature 8 lists a driver on a request only when this is `approved` |
 | `createdAt` | DATE | Sequelize timestamp |
 | `updatedAt` | DATE | Sequelize timestamp |
 
@@ -76,18 +76,6 @@ Shared catalogue. No `userId` and no association with `users`.
 Wired in `backend/app/models/index.js`.
 
 Deleting a user in Feature 2 also deletes every `sessions` row for that user. `googleId`, `email`, and `role` are not updated by Feature 2.
-
-### `drivers`
-
-Minimum table until Feature 4. Feature 8 uses it to require an approved driver.
-
-| Field | Type | Rules |
-|-------|------|-------|
-| `id` | INTEGER PK | Auto-increment |
-| `name` | STRING(100) | Required |
-| `status` | STRING(32) | Required; `approved` may be selected on a request |
-| `createdAt` | DATE | Sequelize timestamp |
-| `updatedAt` | DATE | Sequelize timestamp |
 
 ### `destinations`
 

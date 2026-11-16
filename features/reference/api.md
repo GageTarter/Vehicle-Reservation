@@ -13,6 +13,8 @@ Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/
 | `GET` | `/vehicles/me` | Yes | Return the signed-in user's account | Feature 2 |
 | `PUT` | `/vehicles/me` | Yes | Update `fName` and `lName` for the signed-in user | Feature 2 |
 | `DELETE` | `/vehicles/me` | Yes | Delete the signed-in user and that user's sessions | Feature 2 |
+| `GET` | `/vehicles/users` | `admin` or `area_admin` | List every user | Feature 2 |
+| `PUT` | `/vehicles/users/:id/role` | `admin` or `area_admin` | Set that user's one role | Feature 2 |
 | `GET` | `/vehicles/reservations` | Yes | List own reservations, or every reservation when `role` is `admin`. Optional `?status=` filter | Feature 8, Feature 9 |
 | `POST` | `/vehicles/reservations` | Yes | Create a request with `status` `requested` and `vehicleId` null | Feature 8 |
 | `GET` | `/vehicles/reservations/:id` | Yes | Fetch one reservation the caller may read | Feature 8 |
@@ -107,6 +109,38 @@ Header: `Authorization: Bearer <token>`.
 |--------|------|
 | `200` | That user and every session for that user are deleted. Body: `{ "message": "Account deleted." }` |
 | `401` | Missing, expired, or unknown token, using the same messages as `GET /vehicles/me` |
+
+### `GET /vehicles/users`
+
+Header: `Authorization: Bearer <token>`. Caller must be `admin` or `area_admin`.
+
+Success (`200`): an array of the `GET /vehicles/me` account shape, ordered by `email` ascending.
+
+| Status | When |
+|--------|------|
+| `401` | Missing token: `{ "message": "Unauthorized! No token provided." }` |
+| `403` | Signed-in role is not `admin` or `area_admin`. Body: `{ "message": "Forbidden! User management access required." }` |
+
+### `PUT /vehicles/users/:id/role`
+
+Header: `Authorization: Bearer <token>`. Caller must be `admin` or `area_admin`.
+
+Request:
+
+```json
+{ "role": "maintenance" }
+```
+
+`role` must be `user`, `admin`, `area_admin`, or `maintenance`. `email`, `googleId`, `fName`, and `lName` in the body are ignored.
+
+Success (`200`): the account shape for that user.
+
+| Status | When |
+|--------|------|
+| `400` | `role` is missing or not one of the four values. Body: `{ "message": "Role must be user, admin, area_admin, or maintenance." }` |
+| `401` | Missing token: `{ "message": "Unauthorized! No token provided." }` |
+| `403` | Signed-in role is not `admin` or `area_admin`. Body: `{ "message": "Forbidden! User management access required." }` |
+| `404` | No user for `:id`. Body: `{ "message": "User with id=<id> not found." }` |
 
 ### `POST /vehicles/reservations` and `PUT /vehicles/reservations/:id`
 

@@ -38,6 +38,10 @@ export function canManageMileage(user) {
   return isMaintenance(user) || isAreaAdmin(user) || isSystemAdmin(user);
 }
 
+export function canManageUsers(user) {
+  return roleOf(user) === "admin" || roleOf(user) === "area_admin";
+}
+
 export function canManageAreaTools(user) {
   return isAreaAdmin(user) || isSystemAdmin(user);
 }
