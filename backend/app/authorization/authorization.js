@@ -39,6 +39,14 @@ export async function authenticate(req, res, next) {
   return next();
 }
 
+export function requireUserManager(req, res, next) {
+  if (req.user?.role !== "admin" && req.user?.role !== "area_admin") {
+    return res.status(403).send({ message: "Forbidden! User management access required." });
+  }
+
+  return next();
+}
+
 export function requireAdmin(req, res, next) {
   if (req.user?.role !== "admin") {
     return res.status(403).send({ message: "Forbidden! Admin access required." });

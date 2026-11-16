@@ -41,7 +41,16 @@ async function createUserWithSession(role, email) {
 
 async function createDriver() {
   sequence += 1;
-  return db.driver.create({ name: `Driver ${sequence}`, status: "approved" });
+  return db.driver.create({
+    name: `Driver ${sequence}`,
+    lastName: "Approved",
+    driverID: `DRV-${sequence}`,
+    licenseState: "OK",
+    licenseExp: "2027-09-23",
+    approvedDate: "2024-01-15",
+    area: "Athletics",
+    status: "approved",
+  });
 }
 
 async function createDestination() {

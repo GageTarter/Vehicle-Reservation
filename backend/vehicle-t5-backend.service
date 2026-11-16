@@ -1,0 +1,13 @@
+[Unit]
+Description=Vehicle Speckit team 5 Node.js API (OC CS Speckit)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/nodeapps/2026/project4/t5/
+ExecStart=npm run start
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

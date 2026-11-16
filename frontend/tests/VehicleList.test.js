@@ -317,6 +317,8 @@ describe("Vehicles menu", () => {
         { path: "/", name: "home", component: { template: "<div>Home</div>" } },
         { path: "/login", name: "login", component: { template: "<div>Login</div>" } },
         { path: "/vehicles", name: "vehicles", component: { template: "<div>Vehicles</div>" } },
+        { path: "/drivers", name: "drivers", component: { template: "<div>Drivers</div>" } },
+        { path: "/users", name: "users", component: { template: "<div>Users</div>" } },
         { path: "/requests", name: "requests", component: { template: "<div>Requests</div>" } },
         {
           path: "/request-servicing",
