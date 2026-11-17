@@ -1,4 +1,4 @@
-# Feature: destination Management //IN PROGRESS
+# Feature: destination Management
 
 **Feature ID:** 5
 **Branch pattern:** `feature-5-destination-management`
@@ -163,7 +163,7 @@ Follow [ui-style-system.mdc](../.cursor/rules/ui-style-system.mdc). Primary labe
 *   **Route:** `/destinations` → `frontend/src/views/destinationList.vue` (existing `router.js`).
 *   **Heading:** **destinations**
 *   **Purpose:** One screen where every signed-in user browses every destination, and an admin creates, edits, and deletes destinations (**SC-002**).
-*   **Primary action:** **+ New destination** (`oc-cta`) — opens the add dialog (US-5.1). //made it here
+*   **Primary action:** **+ New destination** (`oc-cta`) — opens the add dialog (US-5.1).
 *   **Table columns:** Name, AddressLine1, AddressLine2, City, State, Zip. Each row shows that destination's name, addressLine1, addressLine2, city, state, and zip (US-5.2).
 *   **Row actions (icon-only, `size="small"`):**
     *   **Edit destination** — `aria-label="Edit destination"`; opens the edit dialog (US-5.3).
@@ -188,7 +188,7 @@ destination ID is a required field the user fills (Gherkin example `CMSC-1113-01
 *   Existing `MenuBar` **destinations** button (`:to="{ name: 'destinations' }"`) is how US-5.2 "open the destinations menu" is reached. This feature does not add a new nav item.
 *   MenuBar stays hidden on login (Feature 1). estinations navigation stays on Feature 5.
 
-## Data Model Requirements //here
+## Data Model Requirements
 
 ### `destinations` table
 | Field | Type | Rules |
@@ -350,7 +350,6 @@ This feature does not associate **destination** with **User**. destinations have
 *   **Then** no destinations should be displayed
 
 ### US-5.3 — Correct a destination's name, address line 1, address line 2, city, state, or zip
-
 #### Scenario: User edits a destination's information
 *   **Given** I am signed in as an admin on the dashboard
 *   **When** I click **Edit destination** on an existing destination
@@ -482,7 +481,6 @@ This feature does not associate **destination** with **User**. destinations have
 *   **And** the destination is unchanged
 
 ### US-5.4 Remove a destination
-
 #### Scenario: User removes a destination
 *   **Given** I am signed in as an admin
 *   **And** I have access to destination `Oklahoma Christian University`
@@ -561,9 +559,9 @@ Each scenario above must map to at least one automated test.
 Copy when asking Cursor to implement this feature (`@` this file):
 
 ```text
-Implement Feature 5 from @features/feature-2-destination-management.md on branch `feature-5-destination-management`.
+Implement Feature 5 from @features/feature-5-destination-management.md on branch `feature-5-destination-management`.
 
-Follow layer order in @features/framework.md (models → routes → backend tests → frontend → frontend tests).
+Follow layer order in @feacdtures/framework.md (models → routes → backend tests → frontend → frontend tests).
 Map every Gherkin scenario in the Test Coverage Map; run `npm test` before finishing.
 If API routes, payloads, schema, or product rules changed per this spec, update @features/reference/api.md, @features/reference/data-model.md, and/or @features/reference/behavior.md in the same PR to match shipped code.
 Complete Definition of Done and the merge checklist in @features/framework.md.

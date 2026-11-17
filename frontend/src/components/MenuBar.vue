@@ -8,6 +8,7 @@ import { isSystemAdmin } from "../config/roles.js";
 const router = useRouter();
 const user = ref(Utils.getStore("user"));
 const menu = ref(false);
+const managementMenu = ref(false);
 const signingOut = ref(false);
 const admin = () => isSystemAdmin(user.value);
 
@@ -52,7 +53,28 @@ onUnmounted(() => {
     <v-btn v-if="user && admin()" variant="text" color="white" class="ml-2" :to="{ name: 'calendar' }">
       Weekly calendar
     </v-btn>
-    <v-btn v-if="user" variant="text" color="white" class="ml-2" :to="{ name: 'vehicles' }">Vehicles</v-btn>
+    <v-menu v-if="user && admin()" v-model="managementMenu">
+      <template #activator="{ props }">
+        <v-btn
+          variant="text"
+          color="white"
+          class="ml-2"
+          aria-label="Open management menu"
+          v-bind="props"
+        >
+          Management
+          <v-icon end size="small" icon="mdi-menu-down" />
+        </v-btn>
+      </template>
+      <v-list density="compact" class="management-menu" min-width="160">
+        <v-list-item :to="{ name: 'vehicles' }" @click="managementMenu = false">
+          <v-list-item-title class="text-body-2">Vehicles</v-list-item-title>
+        </v-list-item>
+        <v-list-item :to="{ name: 'drivers' }" @click="managementMenu = false">
+          <v-list-item-title class="text-body-2">Drivers</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
     <v-spacer />
     <v-menu v-if="user" v-model="menu">
       <template #activator="{ props }">
@@ -79,3 +101,11 @@ onUnmounted(() => {
     </v-menu>
   </v-app-bar>
 </template>
+
+<style scoped>
+.management-menu :deep(.v-list-item-title) {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.017857em;
+}
+</style>

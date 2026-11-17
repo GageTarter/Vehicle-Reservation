@@ -53,6 +53,11 @@ const router = createRouter({
       component: VehicleList,
     },
     {
+      path: "/drivers",
+      name: "drivers",
+      component: DriverList,
+    },
+    {
       path: "/issues",
       name: "vehicleIssueReporting",
       component: VehicleIssueReporting,

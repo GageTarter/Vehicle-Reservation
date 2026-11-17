@@ -309,7 +309,7 @@ describe("Vehicles menu", () => {
     authServices.logoutUser.mockResolvedValue({ data: {} });
   });
 
-  it("shows Vehicles to a signed-in user and hides it after sign-out", async () => {
+  it("shows Management to an admin and hides it after sign-out", async () => {
     Utils.setStore("user", { ...jane });
     const router = createRouter({
       history: createMemoryHistory(),
@@ -317,6 +317,7 @@ describe("Vehicles menu", () => {
         { path: "/", name: "home", component: { template: "<div>Home</div>" } },
         { path: "/login", name: "login", component: { template: "<div>Login</div>" } },
         { path: "/vehicles", name: "vehicles", component: { template: "<div>Vehicles</div>" } },
+        { path: "/drivers", name: "drivers", component: { template: "<div>Drivers</div>" } },
         { path: "/requests", name: "requests", component: { template: "<div>Requests</div>" } },
         {
           path: "/request-servicing",
@@ -336,13 +337,14 @@ describe("Vehicles menu", () => {
     const wrapper = mount(Shell, { global: { plugins: [vuetify, router] } });
 
     expect(wrapper.text()).toContain("OC Vehicle Scheduling System");
-    expect(wrapper.text()).toContain("Vehicles");
+    expect(wrapper.text()).toContain("Management");
+    expect(wrapper.find("[aria-label='Open management menu']").exists()).toBe(true);
 
     Utils.removeItem("user");
     window.dispatchEvent(new Event("user-logged-out"));
     await flushPromises();
 
     expect(wrapper.text()).toContain("OC Vehicle Scheduling System");
-    expect(wrapper.text()).not.toContain("Vehicles");
+    expect(wrapper.text()).not.toContain("Management");
   });
 });
