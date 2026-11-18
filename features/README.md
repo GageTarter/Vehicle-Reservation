@@ -16,8 +16,20 @@ No application code may be written unless it maps to a requirement in one of the
 
 | ID | File | Branch | Depends on |
 |----|------|--------|------------|
-| 1 | [feature-1-google-auth.md](./feature-1-google-auth.md) | `features/1-google-auth` | — |
-| 2 | [feature-2-user-management.md](./feature-2-user-management.md) | `features/2-user-management` | Feature 1 |
+| 1 | [feature-1-google-auth.md](./feature-1-google-auth.md) *(on `origin/features/1-google-auth`)* | `features/1-google-auth` | — |
+| 2 | [feature-2-user-management.md](./feature-2-user-management.md) *(on `origin/features/2-user-management`)* | `features/2-user-management` | Feature 1 |
+| 3 | [feature-3-vehicle-management.md](./feature-3-vehicle-management.md) *(on `origin/feature-3-vehicle-management`)* | `feature/3-vehicle-management` | Feature 1 |
+| 4 | [feature-4-driver-management.md](./feature-4-driver-management.md) *(stub on `origin/feature-4-driver-management`)* | `feature/4-driver-management` | Feature 1 |
+| 5 | [feature-5-destination-management.md](./feature-5-destination-management.md) *(stub on `origin/feature-5-destination-management`)* | `feature/5-destination-management` | Feature 1 |
+| 6 | [feature-6-area-management.md](./feature-6-area-management.md) *(stub on `origin/feature-6-area-management`)* | `feature/6-area-management` | Feature 1 |
+| 8 | [feature-8-vehicle-reservation-requests.md](./feature-8-vehicle-reservation-requests.md) | `feature/8-vehicle-reservation-requests` | Features 1–5 |
+| 9 | [feature-9-vehicle-assignment-and-availability.md](./feature-9-vehicle-assignment-and-availability.md) | `feature/9-vehicle-assignment-and-availability` | Features 3, 8 |
+| 10 | [feature-10-reservation-status-management.md](./feature-10-reservation-status-management.md) | `feature/10-reservation-status-management` | Features 6, 8, 9 |
+| 11 | [feature-11-weekly-reservation-calendar.md](./feature-11-weekly-reservation-calendar.md) | `feature/11-weekly-reservation-calendar` | Features 8, 9 |
+| 12 | *Reserved: checkout / return* | `feature-12-vehicle-checkout-return-management` | Feature 9+ |
+| 13 | *Reserved: issue reporting* | `feature-13-vehicle-issue-reporting` | Feature 12 |
+
+Feature 7 is unused. Integrate Features 1–6 onto `dev` before implementing 8–11. Do not implement 8–11 on `main`.
 
 New features: follow [framework.md](./framework.md#feature-spec-template) — **Status**, **Input**, **FR-00N**, **SC-00N**, **Key Entities**, Gherkin, **Agent implementation request**, **Definition of Done**.
 
