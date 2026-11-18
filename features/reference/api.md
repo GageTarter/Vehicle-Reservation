@@ -24,6 +24,14 @@ Auth routes are mounted at `/vehicles`. The starter health check stays at `/api/
 | `GET` | `/vehicles/reservations/calendar` | Yes + admin | Reservations overlapping a Monday-start UTC week (`weekStart`) | Feature 11 |
 | `GET` | `/vehicles/drivers` | Yes | Approved drivers (`status` `approved`) | Feature 8 |
 | `GET` | `/vehicles/destinations` | Yes | Destinations for the request form | Feature 8 |
+| `GET` | `/destinationapi/destinations` | Yes | List every destination | Feature 5 |
+| `POST` | `/destinationapi/destinations` | Admin | Create a destination | Feature 5 |
+| `PUT` | `/destinationapi/destinations/:id` | Admin | Update a destination | Feature 5 |
+| `DELETE` | `/destinationapi/destinations/:id` | Admin | Delete a destination | Feature 5 |
+| `GET` | `/areaapi/areas` | Yes | List every area | Feature 6 |
+| `POST` | `/areaapi/areas` | Admin | Create an area | Feature 6 |
+| `PUT` | `/areaapi/areas/:id` | Admin | Update an area | Feature 6 |
+| `DELETE` | `/areaapi/areas/:id` | Admin | Delete an area | Feature 6 |
 | `GET` | `/api/health` | No | Process health check | Starter |
 
 ### `POST /vehicles/auth/google`
@@ -308,7 +316,95 @@ Header: `Authorization: Bearer <token>`. Admin only. Query: `weekStart=YYYY-MM-D
 - Errors: `{ "message": "..." }`.
 - Authenticated routes: `Authorization: Bearer <token>`.
 - `requireAdmin` rejects a non-admin with `403` and `{ "message": "Forbidden! Admin access required." }`.
-- `requireAdminPrivileges` (driver routes) rejects a non-admin with `403` and `{ "message": "Admin privileges are required." }`.
+- `requireAdminPrivileges` (driver, destination, and area write routes) rejects a non-admin with `403` and `{ "message": "Admin privileges are required." }`.
+
+## Destinations
+
+Mounted at `/destinationapi`. Every route requires `Authorization: Bearer <token>`. Destinations are a shared catalogue with no owner. Every signed-in user can list them. Create, update, and delete require `role` `admin`.
+
+### `GET /destinationapi/destinations`
+
+| Status | When |
+|--------|------|
+| `200` | Every destination, sorted by `name` ascending. Empty catalogue returns `[]` |
+| `401` | Missing, expired, or unknown token |
+
+### `POST /destinationapi/destinations`
+
+| Status | When |
+|--------|------|
+| `201` | Created. Body is the destination JSON |
+| `400` | Validation fails |
+| `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin` |
+
+### `PUT /destinationapi/destinations/:id`
+
+| Status | When |
+|--------|------|
+| `200` | `{ "message": "destination was updated successfully." }` |
+| `400` | Non-numeric id or validation fails |
+| `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin` |
+| `404` | `{ "message": "destination not found." }` |
+
+### `DELETE /destinationapi/destinations/:id`
+
+| Status | When |
+|--------|------|
+| `204` | Deleted. Empty body |
+| `400` | Non-numeric id |
+| `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin` |
+| `404` | `{ "message": "destination not found." }` |
+
+## Areas
+
+Mounted at `/areaapi`. Every route requires `Authorization: Bearer <token>`. Areas are a shared catalogue with no owner. Every signed-in user can list them. Create, update, and delete require `role` `admin`.
+
+**Create/update body:** `{ "name": "Athletics" }`
+
+| Rule | Message |
+|------|---------|
+| Blank or whitespace-only `name` | `{ "message": "Area name is required." }` |
+| `name` over 100 characters | `{ "message": "Area name must be 100 characters or fewer." }` |
+| Duplicate `name` | `{ "message": "Area name is in use. Enter a different area name." }` |
+
+### `GET /areaapi/areas`
+
+| Status | When |
+|--------|------|
+| `200` | Every area, sorted by `name` ascending. Empty catalogue returns `[]` |
+| `401` | Missing, expired, or unknown token |
+
+### `POST /areaapi/areas`
+
+| Status | When |
+|--------|------|
+| `201` | Created. Body includes `id` and `name` |
+| `400` | A validation rule above fails |
+| `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin`. Body: `{ "message": "Admin privileges are required." }` |
+
+### `PUT /areaapi/areas/:id`
+
+| Status | When |
+|--------|------|
+| `200` | `{ "message": "Area was updated successfully." }` |
+| `400` | `{ "message": "Area id must be a number." }`, or a validation rule above fails |
+| `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin`. Body: `{ "message": "Admin privileges are required." }` |
+| `404` | `{ "message": "Area not found." }` |
+
+### `DELETE /areaapi/areas/:id`
+
+| Status | When |
+|--------|------|
+| `204` | Deleted. Empty body |
+| `400` | `{ "message": "Area id must be a number." }` |
+| `401` | Missing, expired, or unknown token |
+| `403` | Signed-in role is not `admin`. Body: `{ "message": "Admin privileges are required." }` |
+| `404` | `{ "message": "Area not found." }` |
 
 ## Vehicle issues
 

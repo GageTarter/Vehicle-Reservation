@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import VehicleForm from "../components/VehicleForm.vue";
 import Utils from "../config/utils.js";
+import areaServices from "../services/areaServices.js";
 import vehicleServices from "../services/vehicleServices.js";
 
 const emptyForm = () => ({
@@ -20,6 +21,7 @@ const emptyForm = () => ({
 const user = ref(Utils.getStore("user"));
 const isAdmin = computed(() => user.value?.role === "admin");
 const vehicles = ref([]);
+const areas = ref([]);
 const loading = ref(false);
 const listError = ref("");
 const formDialogOpen = ref(false);
@@ -52,6 +54,15 @@ async function loadVehicles() {
     listError.value = serverMessage(error, "Failed to fetch vehicles.");
   } finally {
     loading.value = false;
+  }
+}
+
+async function loadAreas() {
+  try {
+    const response = await areaServices.getAll();
+    areas.value = response.data.map((area) => area.name);
+  } catch {
+    areas.value = [];
   }
 }
 
@@ -186,7 +197,10 @@ async function confirmDelete() {
   }
 }
 
-onMounted(loadVehicles);
+onMounted(() => {
+  loadVehicles();
+  loadAreas();
+});
 </script>
 
 <template>
@@ -250,7 +264,7 @@ onMounted(loadVehicles);
       <v-card rounded="lg">
         <v-card-title>{{ isAddMode ? "Add Vehicle" : "Edit Vehicle" }}</v-card-title>
         <v-card-text>
-          <VehicleForm v-model="form" :is-add-mode="isAddMode" @submit="saveVehicle" />
+          <VehicleForm v-model="form" :is-add-mode="isAddMode" :areas="areas" @submit="saveVehicle" />
           <v-alert v-if="inlineError" type="error" density="compact" class="mt-2">{{ inlineError }}</v-alert>
           <v-alert v-if="formError" type="error" density="compact" class="mt-2">{{ formError }}</v-alert>
         </v-card-text>

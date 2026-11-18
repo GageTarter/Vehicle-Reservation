@@ -79,12 +79,28 @@ Deleting a user in Feature 2 also deletes every `sessions` row for that user. `g
 
 ### `destinations`
 
-Minimum table until Feature 5.
+Shared catalogue. No `userId`. Feature 5 extends the Feature 8 stub. Feature 8 still lists `{ id, name }` from `GET /vehicles/destinations`.
 
 | Field | Type | Rules |
 |-------|------|-------|
 | `id` | INTEGER PK | Auto-increment |
-| `name` | STRING(100) | Required |
+| `name` | STRING(100) | Required. Unique |
+| `addressLine1` | STRING(100) | Required |
+| `addressLine2` | STRING(100) | Optional; blank stores `null` |
+| `city` | STRING(100) | Required |
+| `state` | STRING(100) | Required |
+| `zip` | STRING(5) | Required; exactly 5 digits |
+| `createdAt` | DATE | Sequelize timestamp |
+| `updatedAt` | DATE | Sequelize timestamp |
+
+### `areas`
+
+Shared catalogue. No `userId`. Feature 6.
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `id` | INTEGER PK | Auto-increment |
+| `name` | STRING(100) | Required. Unique. At most 100 characters |
 | `createdAt` | DATE | Sequelize timestamp |
 | `updatedAt` | DATE | Sequelize timestamp |
 

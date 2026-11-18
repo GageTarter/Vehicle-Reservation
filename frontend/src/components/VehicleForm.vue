@@ -8,6 +8,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  areas: {
+    type: Array,
+    default: () => [],
+  },
 });
 
 const emit = defineEmits(["update:modelValue", "submit"]);
@@ -51,7 +55,7 @@ function toIsoDate(value) {
 }
 
 function updateField(key, value) {
-  const next = dateFields.has(key) ? toIsoDate(value) : value;
+  const next = dateFields.has(key) ? toIsoDate(value) : value ?? "";
   emit("update:modelValue", { ...props.modelValue, [key]: next });
 }
 
@@ -89,6 +93,16 @@ const fields = [
           v-if="dateFields.has(key)"
           :label="label"
           :model-value="toIsoDate(modelValue[key]) || null"
+          :rules="[requiredRule(key)]"
+          density="comfortable"
+          rounded="lg"
+          @update:model-value="updateField(key, $event)"
+        />
+        <v-combobox
+          v-else-if="key === 'area'"
+          :label="label"
+          :items="areas"
+          :model-value="modelValue[key]"
           :rules="[requiredRule(key)]"
           density="comfortable"
           rounded="lg"

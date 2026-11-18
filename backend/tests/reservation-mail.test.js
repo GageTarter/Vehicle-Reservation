@@ -16,6 +16,7 @@ const { default: app } = await import("../server.js");
 const db = (await import("../app/models/index.js")).default;
 const authConfig = (await import("../app/config/auth.config.js")).default;
 const { kitVehicleFields, syncTestDatabase } = await import("./helpers.js");
+const { destinationFields } = await import("./catalogueFixtures.js");
 
 let sequence = 0;
 
@@ -55,7 +56,9 @@ async function createDriver() {
 
 async function createDestination() {
   sequence += 1;
-  return db.destination.create({ name: `City ${sequence}` });
+  return db.destination.create(
+    destinationFields({ stamp: String(sequence), name: `City ${sequence}` }),
+  );
 }
 
 function tripBody(driverId, destinationId, overrides = {}) {
