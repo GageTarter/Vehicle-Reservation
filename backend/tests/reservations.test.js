@@ -32,7 +32,7 @@ async function createUserWithSession(role) {
   return { user, token };
 }
 
-async function createDriver(status = "approved") {
+async function createDriver(status = "Approved") {
   sequence += 1;
   return db.driver.create({
     name: `Driver ${sequence}`,
@@ -109,7 +109,7 @@ describe("Feature 8 — Vehicle Reservation Requests", () => {
 
     it("Unapproved driver is rejected", async () => {
       const { token } = await createUserWithSession("user");
-      const driver = await createDriver("pending");
+      const driver = await createDriver("Pending");
       const destination = await createDestination();
 
       const response = await request(app)
@@ -123,8 +123,8 @@ describe("Feature 8 — Vehicle Reservation Requests", () => {
 
     it("Approved drivers and destinations are listed", async () => {
       const { token } = await createUserWithSession("user");
-      const approved = await createDriver("approved");
-      await createDriver("pending");
+      const approved = await createDriver("Approved");
+      await createDriver("Pending");
       const destination = await createDestination();
 
       const drivers = await request(app).get("/vehicles/drivers").set("Authorization", `Bearer ${token}`);
@@ -133,7 +133,7 @@ describe("Feature 8 — Vehicle Reservation Requests", () => {
         .set("Authorization", `Bearer ${token}`);
 
       expect(drivers.status).toBe(200);
-      expect(drivers.body).toEqual([{ id: approved.id, name: approved.name, status: "approved" }]);
+      expect(drivers.body).toEqual([{ id: approved.id, name: approved.name, status: "Approved" }]);
       expect(destinations.status).toBe(200);
       expect(destinations.body).toEqual([{ id: destination.id, name: destination.name }]);
     });

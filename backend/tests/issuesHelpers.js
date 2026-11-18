@@ -77,7 +77,7 @@ export async function createReservation(overrides = {}) {
         licenseExp: "2027-09-23",
         approvedDate: "2024-01-15",
         area: "Athletics",
-        status: "approved",
+        status: "Approved",
       })
     ).id;
   const destinationId =

@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { Op, col, fn, where } from "sequelize";
 import db from "../models/index.js";
 import logger from "../config/logger.js";
 import { getAccessibleReservationOrNull } from "../authorization/reservationAccess.js";
@@ -67,7 +67,7 @@ async function readTrip(body) {
   const driverId = parsePositiveInt(body?.driverId);
   const driver = driverId ? await Driver.findByPk(driverId) : null;
 
-  if (!driver || driver.status !== "approved") {
+  if (!driver || String(driver.status ?? "").toLowerCase() !== "approved") {
     return { error: { status: 400, message: "Driver must be on the approved drivers list." } };
   }
 
@@ -316,7 +316,7 @@ exports.calendar = async (req, res) => {
 
 exports.listDrivers = async (_req, res) => {
   const rows = await Driver.findAll({
-    where: { status: "approved" },
+    where: where(fn("LOWER", col("status")), "approved"),
     order: [["name", "ASC"]],
   });
 

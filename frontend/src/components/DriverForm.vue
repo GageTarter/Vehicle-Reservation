@@ -24,6 +24,7 @@ const requiredMessage = {
 };
 
 const dateFields = new Set(["licenseExp", "approvedDate"]);
+const statusOptions = ["Approved", "Pending", "Denied"];
 
 function toIsoDate(value) {
   if (value instanceof Date && !Number.isNaN(value.getTime())) {
@@ -75,6 +76,16 @@ const fields = [
           v-else-if="key === 'area'"
           :label="label"
           :items="areas"
+          :model-value="modelValue[key]"
+          :rules="[requiredRule(key)]"
+          density="comfortable"
+          rounded="lg"
+          @update:model-value="updateField(key, $event)"
+        />
+        <v-select
+          v-else-if="key === 'status'"
+          :label="label"
+          :items="statusOptions"
           :model-value="modelValue[key]"
           :rules="[requiredRule(key)]"
           density="comfortable"
