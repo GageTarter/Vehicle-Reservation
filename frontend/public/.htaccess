@@ -13,6 +13,11 @@
 </IfModule>
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  RewriteRule ^vehicles(/.*)?$ http://127.0.0.1:3200/vehicles$1 [P,L]
+  RewriteRule ^fleets(/.*)?$ http://127.0.0.1:3200/fleets$1 [P,L]
+  RewriteRule ^driverapi(/.*)?$ http://127.0.0.1:3200/driverapi$1 [P,L]
+  RewriteRule ^vehicleapi(/.*)?$ http://127.0.0.1:3200/vehicleapi$1 [P,L]
+  RewriteRule ^api(/.*)?$ http://127.0.0.1:3200/api$1 [P,L]
   RewriteBase /seiv2026/p4/t5/
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
