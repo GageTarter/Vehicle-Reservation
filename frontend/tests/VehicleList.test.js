@@ -321,6 +321,7 @@ describe("Vehicles menu", () => {
         { path: "/drivers", name: "drivers", component: { template: "<div>Drivers</div>" } },
         { path: "/users", name: "users", component: { template: "<div>Users</div>" } },
         { path: "/requests", name: "requests", component: { template: "<div>Requests</div>" } },
+        { path: "/checkout-return", name: "checkoutReturn", component: { template: "<div>Checkout</div>" } },
         {
           path: "/request-servicing",
           name: "requestServicing",
@@ -331,6 +332,9 @@ describe("Vehicles menu", () => {
           name: "calendar",
           component: { template: "<div>Weekly calendar</div>" },
         },
+        { path: "/issues", name: "vehicleIssueReporting", component: { template: "<div>Issues</div>" } },
+        { path: "/maintenance", name: "vehicleMaintenance", component: { template: "<div>Maintenance</div>" } },
+        { path: "/mileage-service", name: "vehicleMileageService", component: { template: "<div>Mileage</div>" } },
       ],
     });
     await router.push("/");

@@ -456,11 +456,16 @@ describe("Destinations menu", () => {
         { path: "/", name: "home", component: { template: "<div>Home</div>" } },
         { path: "/login", name: "login", component: { template: "<div>Login</div>" } },
         { path: "/requests", name: "requests", component: { template: "<div>Requests</div>" } },
+        { path: "/checkout-return", name: "checkoutReturn", component: { template: "<div>Checkout</div>" } },
         { path: "/request-servicing", name: "requestServicing", component: { template: "<div>Need</div>" } },
         { path: "/calendar", name: "calendar", component: { template: "<div>Calendar</div>" } },
         { path: "/vehicles", name: "vehicles", component: { template: "<div>Vehicles</div>" } },
         { path: "/drivers", name: "drivers", component: { template: "<div>Drivers</div>" } },
         { path: "/destinations", name: "destinations", component: { template: "<div>Destinations</div>" } },
+        { path: "/users", name: "users", component: { template: "<div>Users</div>" } },
+        { path: "/issues", name: "vehicleIssueReporting", component: { template: "<div>Issues</div>" } },
+        { path: "/maintenance", name: "vehicleMaintenance", component: { template: "<div>Maintenance</div>" } },
+        { path: "/mileage-service", name: "vehicleMileageService", component: { template: "<div>Mileage</div>" } },
       ],
     });
     await router.push("/");
@@ -471,12 +476,12 @@ describe("Destinations menu", () => {
     await wrapper.get("[aria-label='Open management menu']").trigger("click");
     await flushPromises();
 
-    const managementLabels = [...document.querySelectorAll(".management-menu a")].map((item) =>
-      item.textContent.trim(),
-    );
+    const managementLabels = [...document.querySelectorAll(".v-overlay--active a")]
+      .map((item) => item.textContent.trim())
+      .filter((label) => ["Vehicles", "Drivers", "Destinations", "Users"].includes(label));
 
-    expect(managementLabels).toEqual(["Vehicles", "Drivers", "Destinations"]);
-    expect(managementLabels.at(-1)).toBe("Destinations");
+    expect(managementLabels).toEqual(["Vehicles", "Drivers", "Destinations", "Users"]);
+    expect(managementLabels.at(-1)).toBe("Users");
     wrapper.unmount();
     document.body.innerHTML = "";
   });

@@ -17,6 +17,7 @@ const user = ref(Utils.getStore("user"));
 const menu = ref(false);
 const tripsOpen = ref(false);
 const fleetOpen = ref(false);
+const managementMenu = ref(false);
 const signingOut = ref(false);
 
 const admin = computed(() => isSystemAdmin(user.value));
@@ -24,7 +25,6 @@ const showUsers = computed(() => canManageUsers(user.value));
 const showIssues = computed(
   () => canReportIssue(user.value) || canReviewIssues(user.value)
 );
-const managementMenu = ref(false);
 const showMaintenance = computed(() => canManageMaintenance(user.value));
 const showMileage = computed(() => canManageMileage(user.value));
 const showFleet = computed(
@@ -71,71 +71,76 @@ onUnmounted(() => {
     <v-app-bar-title style="cursor: pointer" @click="goHome">
       OC Vehicle Scheduling System
     </v-app-bar-title>
-    <v-btn v-if="user" variant="text" color="white" class="ml-4" :to="{ name: 'vehicles' }">
-      Vehicles
-    </v-btn>
-    <v-btn v-if="user" variant="text" color="white" class="ml-2" :to="{ name: 'drivers' }">
-      Drivers
-    </v-btn>
-<v-btn v-if="showUsers" variant="text" color="white" class="ml-2" :to="{ name: 'users' }">
-  Users
-</v-btn>
-<v-menu v-if="user" v-model="tripsOpen">
-  <template #activator="{ props }">
-    <v-btn variant="text" color="white" class="ml-2" v-bind="props">Trips</v-btn>
-  </template>
-  <v-list>
-    <v-list-item :to="{ name: 'requests' }" title="My Requests" />
-    <v-list-item :to="{ name: 'checkoutReturn' }" title="Checkout and Return" />
-    <v-list-item v-if="admin" :to="{ name: 'requestServicing' }" title="Need Vehicle" />
-    <v-list-item v-if="admin" :to="{ name: 'calendar' }" title="Weekly calendar" />
-  </v-list>
-</v-menu>
-<v-menu v-if="user && showFleet" v-model="fleetOpen">
-  <template #activator="{ props }">
-    <v-btn variant="text" color="white" class="ml-2" v-bind="props">Fleet</v-btn>
-  </template>
-  <v-list>
-    <v-list-item v-if="showIssues" :to="{ name: 'vehicleIssueReporting' }" title="Vehicle issues" />
-    <v-list-item
-      v-if="showMaintenance"
-      :to="{ name: 'vehicleMaintenance' }"
-      title="Vehicle maintenance"
-    />
-    <v-list-item
-      v-if="showMileage"
-      :to="{ name: 'vehicleMileageService' }"
-      title="Mileage and service logs"
-    />
-  </v-list>
-</v-menu>
-<v-menu v-if="user && admin" v-model="managementMenu">
-  <template #activator="{ props }">
-    <v-btn
-      variant="text"
-      color="white"
-      class="ml-2"
-      aria-label="Open management menu"
-      v-bind="props"
-    >
-      Management
-      <v-icon end size="small" icon="mdi-menu-down" />
-    </v-btn>
-  </template>
-  <v-list density="compact" class="management-menu" min-width="160">
-    <v-list-item :to="{ name: 'vehicles' }" @click="managementMenu = false">
-      <v-list-item-title class="text-body-2">Vehicles</v-list-item-title>
-    </v-list-item>
-    <v-list-item :to="{ name: 'drivers' }" @click="managementMenu = false">
-      <v-list-item-title class="text-body-2">Drivers</v-list-item-title>
-    </v-list-item>
-    <v-list-item :to="{ name: 'destinations' }" @click="managementMenu = false">
-      <v-list-item-title class="text-body-2">Destinations</v-list-item-title>
-    </v-list-item>
-  </v-list>
-</v-menu>
-      </v-list>
-    </v-menu>
+    <div v-if="user" class="nav-center">
+      <v-menu v-model="tripsOpen">
+        <template #activator="{ props }">
+          <v-btn variant="text" color="white" class="ml-2" v-bind="props">Trips</v-btn>
+        </template>
+        <v-list>
+          <v-list-item :to="{ name: 'requests' }" title="My Requests" />
+          <v-list-item :to="{ name: 'checkoutReturn' }" title="Checkout and Return" />
+          <v-list-item v-if="admin" :to="{ name: 'requestServicing' }" title="Need Vehicle" />
+          <v-list-item v-if="admin" :to="{ name: 'calendar' }" title="Weekly calendar" />
+        </v-list>
+      </v-menu>
+      <v-menu v-if="showFleet" v-model="fleetOpen">
+        <template #activator="{ props }">
+          <v-btn variant="text" color="white" class="ml-2" v-bind="props">Fleet</v-btn>
+        </template>
+        <v-list>
+          <v-list-item v-if="showIssues" :to="{ name: 'vehicleIssueReporting' }" title="Vehicle issues" />
+          <v-list-item
+            v-if="showMaintenance"
+            :to="{ name: 'vehicleMaintenance' }"
+            title="Vehicle maintenance"
+          />
+          <v-list-item
+            v-if="showMileage"
+            :to="{ name: 'vehicleMileageService' }"
+            title="Mileage and service logs"
+          />
+        </v-list>
+      </v-menu>
+      <v-menu v-if="admin || showUsers" v-model="managementMenu">
+        <template #activator="{ props }">
+          <v-btn
+            variant="text"
+            color="white"
+            class="ml-2"
+            aria-label="Open management menu"
+            v-bind="props"
+          >
+            Management
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+            v-if="admin"
+            :to="{ name: 'vehicles' }"
+            title="Vehicles"
+            @click="managementMenu = false"
+          />
+          <v-list-item
+            v-if="admin"
+            :to="{ name: 'drivers' }"
+            title="Drivers"
+            @click="managementMenu = false"
+          />
+          <v-list-item
+            v-if="admin"
+            :to="{ name: 'destinations' }"
+            title="Destinations"
+            @click="managementMenu = false"
+          />
+          <v-list-item
+            v-if="showUsers"
+            :to="{ name: 'users' }"
+            title="Users"
+            @click="managementMenu = false"
+          />
+        </v-list>
+      </v-menu>
+    </div>
     <v-spacer />
     <v-menu v-if="user" v-model="menu">
       <template #activator="{ props }">
@@ -167,9 +172,11 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.management-menu :deep(.v-list-item-title) {
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.017857em;
+.nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
 }
 </style>
