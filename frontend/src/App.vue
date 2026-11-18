@@ -1,32 +1,10 @@
 <script setup>
-import { onMounted, onUnmounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
 import MenuBar from "./components/MenuBar.vue";
-import Utils from "./config/utils.js";
-
-const route = useRoute();
-const user = ref(Utils.getStore("user"));
-
-function refreshUser() {
-  user.value = Utils.getStore("user");
-}
-
-watch(() => route.fullPath, refreshUser);
-
-onMounted(() => {
-  window.addEventListener("user-logged-in", refreshUser);
-  window.addEventListener("user-logged-out", refreshUser);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("user-logged-in", refreshUser);
-  window.removeEventListener("user-logged-out", refreshUser);
-});
 </script>
 
 <template>
   <v-app>
-    <MenuBar v-if="user && route.name !== 'login'" />
+    <MenuBar />
     <v-main>
       <router-view />
     </v-main>

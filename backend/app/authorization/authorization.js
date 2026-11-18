@@ -30,13 +30,34 @@ export async function authenticate(req, res, next) {
     return res.status(401).send({ message: "Unauthorized! Invalid or expired token." });
   }
 
-  req.user = { id: session.user.id, role: session.user.role };
+  req.user = {
+    id: session.user.id,
+    role: session.user.role,
+    area_id: session.user.area_id,
+    email: session.user.email,
+  };
+  return next();
+}
+
+export function requireUserManager(req, res, next) {
+  if (req.user?.role !== "admin" && req.user?.role !== "area_admin") {
+    return res.status(403).send({ message: "Forbidden! User management access required." });
+  }
+
   return next();
 }
 
 export function requireAdmin(req, res, next) {
   if (req.user?.role !== "admin") {
     return res.status(403).send({ message: "Forbidden! Admin access required." });
+  }
+
+  return next();
+}
+
+export function requireAdminPrivileges(req, res, next) {
+  if (req.user?.role !== "admin") {
+    return res.status(403).send({ message: "Admin privileges are required." });
   }
 
   return next();

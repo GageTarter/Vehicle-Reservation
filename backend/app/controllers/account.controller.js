@@ -3,6 +3,8 @@ import db from "../models/index.js";
 const User = db.user;
 const Session = db.session;
 
+const ROLES = new Set(["user", "admin", "area_admin", "maintenance"]);
+
 const exports = {};
 
 function accountPayload(user) {
@@ -41,6 +43,33 @@ exports.updateMe = async (req, res) => {
   }
 
   await user.update({ fName: req.body.fName, lName: req.body.lName });
+  return res.status(200).send(accountPayload(user));
+};
+
+exports.findAll = async (_req, res) => {
+  const rows = await User.findAll({ order: [["email", "ASC"]] });
+
+  return res.status(200).send(rows.map(accountPayload));
+};
+
+exports.updateRole = async (req, res) => {
+  const id = Number(req.params.id);
+
+  if (!Number.isInteger(id) || id < 1 || String(req.params.id) !== String(id)) {
+    return res.status(404).send({ message: `User with id=${req.params.id} not found.` });
+  }
+
+  if (!ROLES.has(req.body?.role)) {
+    return res.status(400).send({ message: "Role must be user, admin, area_admin, or maintenance." });
+  }
+
+  const user = await User.findByPk(id);
+
+  if (!user) {
+    return res.status(404).send({ message: `User with id=${id} not found.` });
+  }
+
+  await user.update({ role: req.body.role });
   return res.status(200).send(accountPayload(user));
 };
 

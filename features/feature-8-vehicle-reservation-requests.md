@@ -68,6 +68,7 @@
 - **FR-012**: Requestors MAY update a row only while `status` is `requested`. Any other status → `400` with `{ "message": "Only requested reservations can be updated." }`.
 - **FR-013**: List order MUST be `startAt` ASC, then `id` ASC.
 - **FR-014**: This feature MUST deliver My Requests UI for requestors and MUST NOT assign vehicles or send email.
+- **FR-015**: `GET /vehicles/drivers` MUST return only drivers with `status` `approved`. `GET /vehicles/destinations` MUST return every destination. Both require `authenticate`. The request form uses these lists.
 
 ---
 
@@ -131,6 +132,8 @@ Mount prefix is `/vehicles` (Features 1–2). Flat JSON. No `{ success, data }` 
 | `POST` | `/vehicles/reservations` | Yes | Create a request (`201`) |
 | `GET` | `/vehicles/reservations/:id` | Yes | Fetch one accessible reservation |
 | `PUT` | `/vehicles/reservations/:id` | Yes | Update a `requested` row owned by the caller |
+| `GET` | `/vehicles/drivers` | Yes | Approved drivers for the request form |
+| `GET` | `/vehicles/destinations` | Yes | Destinations for the request form |
 
 **Create / update body:**
 ```json
@@ -263,6 +266,20 @@ Allowed `status` values this feature writes: `requested` only. Later features ma
 *   **Then** the API returns `201` with `status` `requested`
 *   **And** `requestorUserId` is my id, not `999`
 
+#### Scenario: Unapproved driver is rejected
+*   **Given** I am signed in as a user
+*   **And** a driver exists whose status is not `approved`
+*   **When** I send `POST /vehicles/reservations` with that `driverId`
+*   **Then** the API returns `400` with `{ "message": "Driver must be on the approved drivers list." }`
+
+#### Scenario: Approved drivers and destinations are listed
+*   **Given** I am signed in as a user
+*   **And** one driver is `approved` and another is not
+*   **And** a destination exists
+*   **When** I request `GET /vehicles/drivers` and `GET /vehicles/destinations`
+*   **Then** the driver list contains only the approved driver
+*   **And** the destination list contains that destination
+
 #### Scenario: End is not after start
 *   **Given** I am signed in as a user
 *   **When** I submit a request whose `endAt` is not after `startAt`
@@ -340,6 +357,8 @@ Allowed `status` values this feature writes: `requested` only. Later features ma
 | US-8.1 | Requestor creates a reservation request | `backend/tests/reservations.test.js`, `frontend/tests/Requests.test.js` | `Requestor creates a reservation request` |
 | US-8.1 | Requestor omits the driver | `frontend/tests/Requests.test.js` | `Requestor omits the driver` |
 | US-8.1 | Client cannot set status or owner on create | `backend/tests/reservations.test.js` | `Client cannot set status or owner on create` |
+| US-8.1 | Unapproved driver is rejected | `backend/tests/reservations.test.js` | `Unapproved driver is rejected` |
+| US-8.1 | Approved drivers and destinations are listed | `backend/tests/reservations.test.js` | `Approved drivers and destinations are listed` |
 | US-8.1 | End is not after start | `backend/tests/reservations.test.js` | `End is not after start` |
 | US-8.2 | My Requests loads owned rows | `backend/tests/reservations.test.js`, `frontend/tests/Requests.test.js` | `My Requests loads owned rows` |
 | US-8.2 | User has no requests | `frontend/tests/Requests.test.js` | `User has no requests` |
