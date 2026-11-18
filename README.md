@@ -48,14 +48,18 @@ Works on **macOS, Windows, and Linux** — use `npm run …` for all tooling (PD
 
 | Branch | Purpose |
 |--------|---------|
-| `main` | Starter kit only — no feature implementation |
-| `dev` | Integration |
-| `feature/N-*` | One feature at a time |
+| `dev` | **Default / integration** — open PRs here; CI runs on `dev` |
+| `main` | Starter kit only — no feature implementation; do not merge features here |
+| `feature/N-*` | One feature at a time, branched from `dev` |
 
 ```bash
-git checkout -b dev
+git fetch origin
+git checkout dev
+git pull origin dev
 git checkout -b feature/1-short-name
 ```
+
+Repo admins: set the GitHub default branch to `dev` (Settings → General → Default branch).
 
 ## Next steps
 
