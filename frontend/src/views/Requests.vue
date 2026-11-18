@@ -283,7 +283,7 @@ onMounted(async () => {
         <v-card-actions>
           <v-spacer />
           <v-btn @click="dialog = false">Cancel</v-btn>
-          <v-btn color="primary" class="oc-cta" :loading="saving" @click="submit">
+          <v-btn color="primary" variant="elevated" class="oc-cta" :loading="saving" @click="submit">
             {{ editingId ? "Save" : "Submit" }}
           </v-btn>
         </v-card-actions>

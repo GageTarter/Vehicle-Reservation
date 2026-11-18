@@ -12,7 +12,7 @@ export function approvedDriverFields(overrides = {}) {
     licenseExp: "2028-01-01",
     approvedDate: "2020-01-01",
     area: "Athletics",
-    status: "approved",
+    status: "Approved",
     ...rest,
   };
 }

@@ -55,7 +55,7 @@ const jane = {
   token: "session-token",
 };
 
-const textFields = ["name", "lastName", "driverID", "licenseState", "status"];
+const textFields = ["name", "lastName", "driverID", "licenseState"];
 const mounted = [];
 
 async function mountDrivers() {
@@ -113,6 +113,7 @@ async function fillDriver(overrides = {}) {
   form.licenseExp = values.licenseExp;
   form.approvedDate = values.approvedDate;
   form.area = values.area;
+  form.status = values.status;
 }
 
 async function submitAdd(overrides) {
@@ -316,18 +317,18 @@ describe("Feature 4 — Driver Management", () => {
     it("User edits a driver's information", async () => {
       driverServices.getAll
         .mockResolvedValueOnce({ data: [judah] })
-        .mockResolvedValue({ data: [{ ...judah, status: "Suspended" }] });
+        .mockResolvedValue({ data: [{ ...judah, status: "Denied" }] });
       driverServices.update.mockResolvedValue({ data: { message: "driver was updated successfully." } });
       const wrapper = await mountDrivers();
 
       await wrapper.get("[aria-label='Edit driver']").trigger("click");
       await flushPromises();
-      await plainTextInputs()[4].setValue("Suspended");
+      wrapper.vm.form.status = "Denied";
       await buttonByText("Save driver").trigger("click");
       await flushPromises();
 
-      expect(driverServices.update).toHaveBeenCalledWith(1, expect.objectContaining({ status: "Suspended", driverID: "CMSC-1113-01" }));
-      expect(wrapper.text()).toContain("Suspended");
+      expect(driverServices.update).toHaveBeenCalledWith(1, expect.objectContaining({ status: "Denied", driverID: "CMSC-1113-01" }));
+      expect(wrapper.text()).toContain("Denied");
       expect(dialogIsOpen("Edit driver")).toBe(false);
     });
 
