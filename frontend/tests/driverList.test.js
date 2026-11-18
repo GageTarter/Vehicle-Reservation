@@ -403,13 +403,16 @@ describe("Drivers menu", () => {
     localStorage.clear();
   });
 
-  it("opens the drivers view from the menu", async () => {
-    Utils.setStore("user", { ...jane, role: "user" });
+  it("opens the drivers view from the management menu", async () => {
+    Utils.setStore("user", { ...jane });
     const router = createRouter({
       history: createMemoryHistory(),
       routes: [
         { path: "/", name: "home", component: { template: "<div>Home</div>" } },
         { path: "/login", name: "login", component: { template: "<div>Login</div>" } },
+        { path: "/requests", name: "requests", component: { template: "<div>Requests</div>" } },
+        { path: "/request-servicing", name: "requestServicing", component: { template: "<div>Need</div>" } },
+        { path: "/calendar", name: "calendar", component: { template: "<div>Calendar</div>" } },
         { path: "/vehicles", name: "vehicles", component: { template: "<div>Vehicles</div>" } },
         { path: "/drivers", name: "drivers", component: { template: "<div>Drivers page</div>" } },
       ],
@@ -417,10 +420,34 @@ describe("Drivers menu", () => {
     await router.push("/");
     await router.isReady();
     const Shell = { components: { MenuBar }, template: "<v-app><MenuBar /></v-app>" };
+    const wrapper = mount(Shell, { attachTo: document.body, global: { plugins: [vuetify, router] } });
+
+    await wrapper.get("[aria-label='Open management menu']").trigger("click");
+    await flushPromises();
+
+    const link = [...document.querySelectorAll("a")].find((item) => item.textContent.trim() === "Drivers");
+
+    expect(link.getAttribute("href")).toBe("/drivers");
+  });
+
+  it("hides Management from a signed-in user who is not an admin", async () => {
+    Utils.setStore("user", { ...jane, role: "user" });
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: "/", name: "home", component: { template: "<div>Home</div>" } },
+        { path: "/login", name: "login", component: { template: "<div>Login</div>" } },
+        { path: "/requests", name: "requests", component: { template: "<div>Requests</div>" } },
+        { path: "/vehicles", name: "vehicles", component: { template: "<div>Vehicles</div>" } },
+        { path: "/drivers", name: "drivers", component: { template: "<div>Drivers</div>" } },
+      ],
+    });
+    await router.push("/");
+    await router.isReady();
+    const Shell = { components: { MenuBar }, template: "<v-app><MenuBar /></v-app>" };
     const wrapper = mount(Shell, { global: { plugins: [vuetify, router] } });
 
-    const link = wrapper.findAll("a").find((item) => item.text() === "Drivers");
-
-    expect(link.attributes("href")).toBe("/drivers");
+    expect(wrapper.text()).not.toContain("Management");
+    expect(wrapper.find("[aria-label='Open management menu']").exists()).toBe(false);
   });
 });

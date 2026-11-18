@@ -3,6 +3,7 @@ import Home from "./views/Home.vue";
 import VehicleMileageService from "./views/VehicleMileageService.vue";
 import VehicleIssueReporting from "./views/VehicleIssueReporting.vue";
 import VehicleMaintenance from "./views/VehicleMaintenance.vue";
+import DestinationList from "./views/destinationList.vue";
 import Login from "./views/Login.vue";
 import Account from "./views/Account.vue";
 import CheckoutReturn from "./views/CheckoutReturn.vue";
@@ -58,6 +59,11 @@ const router = createRouter({
       name: "drivers",
       component: DriverList,
     },
+    {
+      path: "/destinations",
+      name: "destinations",
+      component: DestinationList,
+    },  
     {
       path: "/users",
       name: "users",
