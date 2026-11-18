@@ -459,8 +459,9 @@ describe("Destinations menu", () => {
         { path: "/checkout-return", name: "checkoutReturn", component: { template: "<div>Checkout</div>" } },
         { path: "/request-servicing", name: "requestServicing", component: { template: "<div>Need</div>" } },
         { path: "/calendar", name: "calendar", component: { template: "<div>Calendar</div>" } },
-        { path: "/vehicles", name: "vehicles", component: { template: "<div>Vehicles</div>" } },
         { path: "/drivers", name: "drivers", component: { template: "<div>Drivers</div>" } },
+        { path: "/areas", name: "areas", component: { template: "<div>Areas</div>" } },
+        { path: "/vehicles", name: "vehicles", component: { template: "<div>Vehicles</div>" } },
         { path: "/destinations", name: "destinations", component: { template: "<div>Destinations</div>" } },
         { path: "/users", name: "users", component: { template: "<div>Users</div>" } },
         { path: "/issues", name: "vehicleIssueReporting", component: { template: "<div>Issues</div>" } },
@@ -478,9 +479,9 @@ describe("Destinations menu", () => {
 
     const managementLabels = [...document.querySelectorAll(".v-overlay--active a")]
       .map((item) => item.textContent.trim())
-      .filter((label) => ["Vehicles", "Drivers", "Destinations", "Users"].includes(label));
+      .filter((label) => ["Drivers", "Areas", "Vehicles", "Destinations", "Users"].includes(label));
 
-    expect(managementLabels).toEqual(["Vehicles", "Drivers", "Destinations", "Users"]);
+    expect(managementLabels).toEqual(["Drivers", "Areas", "Vehicles", "Destinations", "Users"]);
     expect(managementLabels.at(-1)).toBe("Users");
     wrapper.unmount();
     document.body.innerHTML = "";

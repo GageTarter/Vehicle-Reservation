@@ -4,6 +4,7 @@ import VehicleMileageService from "./views/VehicleMileageService.vue";
 import VehicleIssueReporting from "./views/VehicleIssueReporting.vue";
 import VehicleMaintenance from "./views/VehicleMaintenance.vue";
 import DestinationList from "./views/destinationList.vue";
+import AreaList from "./views/areaList.vue";
 import Login from "./views/Login.vue";
 import Account from "./views/Account.vue";
 import CheckoutReturn from "./views/CheckoutReturn.vue";
@@ -63,7 +64,12 @@ const router = createRouter({
       path: "/destinations",
       name: "destinations",
       component: DestinationList,
-    },  
+    },
+    {
+      path: "/areas",
+      name: "areas",
+      component: AreaList,
+    },
     {
       path: "/users",
       name: "users",

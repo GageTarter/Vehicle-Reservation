@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import db from "../app/models/index.js";
 import authConfig from "../app/config/auth.config.js";
 import { kitVehicleFields } from "./helpers.js";
+import { destinationFields } from "./catalogueFixtures.js";
 
 export const ISSUES_BASE = "/vehicleapi/issues";
 
@@ -81,7 +82,10 @@ export async function createReservation(overrides = {}) {
     ).id;
   const destinationId =
     overrides.destinationId ??
-    (await persist("destination", { name: `City ${suffix}` })).id;
+    (await persist(
+      "destination",
+      destinationFields({ stamp: suffix, name: `City ${suffix}` }),
+    )).id;
 
   return persist("reservation", {
     status: "reserved",

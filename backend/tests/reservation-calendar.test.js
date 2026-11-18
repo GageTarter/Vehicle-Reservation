@@ -8,6 +8,7 @@ import app from "../server.js";
 import db from "../app/models/index.js";
 import authConfig from "../app/config/auth.config.js";
 import { syncTestDatabase } from "./helpers.js";
+import { destinationFields } from "./catalogueFixtures.js";
 
 let sequence = 0;
 
@@ -47,7 +48,9 @@ async function createDriver() {
 
 async function createDestination() {
   sequence += 1;
-  return db.destination.create({ name: `City ${sequence}` });
+  return db.destination.create(
+    destinationFields({ stamp: String(sequence), name: `City ${sequence}` }),
+  );
 }
 
 describe("Feature 11 — Weekly Reservation Calendar", () => {

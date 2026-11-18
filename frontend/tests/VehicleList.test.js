@@ -9,6 +9,7 @@ import VehicleList from "../src/views/VehicleList.vue";
 import MenuBar from "../src/components/MenuBar.vue";
 import Utils from "../src/config/utils.js";
 import vehicleServices from "../src/services/vehicleServices.js";
+import areaServices from "../src/services/areaServices.js";
 import authServices from "../src/services/authServices.js";
 import { vuetify } from "./testUtils.js";
 
@@ -18,6 +19,12 @@ vi.mock("../src/services/vehicleServices.js", () => ({
     create: vi.fn(),
     update: vi.fn(),
     remove: vi.fn(),
+  },
+}));
+
+vi.mock("../src/services/areaServices.js", () => ({
+  default: {
+    getAll: vi.fn(),
   },
 }));
 
@@ -110,6 +117,7 @@ describe("Feature 3 — Vehicle Management", () => {
     localStorage.clear();
     Utils.setStore("user", { ...jane });
     vehicleServices.getAll.mockResolvedValue({ data: [] });
+    areaServices.getAll.mockResolvedValue({ data: [{ id: 1, name: "Athletics" }] });
     authServices.logoutUser.mockResolvedValue({ data: {} });
   });
 
@@ -201,6 +209,15 @@ describe("Feature 3 — Vehicle Management", () => {
 
       expect(document.body.textContent).toContain("vehicle area is required.");
       expect(vehicleServices.create).not.toHaveBeenCalled();
+    });
+
+    it("offers areas from the areas list in the area dropdown", async () => {
+      const wrapper = await mountVehicles();
+      await wrapper.get("button").trigger("click");
+      await flushPromises();
+
+      expect(areaServices.getAll).toHaveBeenCalled();
+      expect(wrapper.findComponent({ name: "VehicleForm" }).props("areas")).toEqual(["Athletics"]);
     });
 
     it("User creates an vehicle with a make that is too long", async () => {
@@ -317,8 +334,10 @@ describe("Vehicles menu", () => {
         { path: "/", name: "home", component: { template: "<div>Home</div>" } },
         { path: "/login", name: "login", component: { template: "<div>Login</div>" } },
         { path: "/vehicles", name: "vehicles", component: { template: "<div>Vehicles</div>" } },
-        { path: "/destinations", name: "destinations", component: { template: "<div>Destinations</div>" } },
         { path: "/drivers", name: "drivers", component: { template: "<div>Drivers</div>" } },
+        { path: "/areas", name: "areas", component: { template: "<div>Areas</div>" } },
+        { path: "/vehicles", name: "vehicles", component: { template: "<div>Vehicles</div>" } },
+        { path: "/destinations", name: "destinations", component: { template: "<div>Destinations</div>" } },
         { path: "/users", name: "users", component: { template: "<div>Users</div>" } },
         { path: "/requests", name: "requests", component: { template: "<div>Requests</div>" } },
         { path: "/checkout-return", name: "checkoutReturn", component: { template: "<div>Checkout</div>" } },

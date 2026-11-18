@@ -116,14 +116,20 @@ onUnmounted(() => {
         <v-list>
           <v-list-item
             v-if="admin"
-            :to="{ name: 'vehicles' }"
-            title="Vehicles"
+            :to="{ name: 'drivers' }"
+            title="Drivers"
             @click="managementMenu = false"
           />
           <v-list-item
             v-if="admin"
-            :to="{ name: 'drivers' }"
-            title="Drivers"
+            :to="{ name: 'areas' }"
+            title="Areas"
+            @click="managementMenu = false"
+          />
+          <v-list-item
+            v-if="admin"
+            :to="{ name: 'vehicles' }"
+            title="Vehicles"
             @click="managementMenu = false"
           />
           <v-list-item

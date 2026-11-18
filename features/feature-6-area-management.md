@@ -166,7 +166,7 @@ Follow [ui-style-system.mdc](../.cursor/rules/ui-style-system.mdc). Primary labe
 
 **App chrome**
 
-*   Existing `MenuBar` **areas** button (`:to="{ name: 'areas' }"`) is how US-6.2 "open the areas menu" is reached. This feature does not add a new nav item.
+*   Areas is reached from the **Management** dropdown (`:to="{ name: 'areas' }"`), ordered **Drivers**, **Areas**, **Vehicles**, **Destinations**, **Users**.
 *   MenuBar stays hidden on login (Feature 1). Area navigation stays on Feature 6.
 
 ## Data Model Requirements

@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import db from "../app/models/index.js";
 import authConfig from "../app/config/auth.config.js";
 import { kitVehicleFields } from "./helpers.js";
+import { destinationFields } from "./catalogueFixtures.js";
 
 export const CHECKOUT_BASE = "/vehicleapi/reservations";
 
@@ -57,9 +58,12 @@ export async function createReservation(overrides = {}) {
         status: "approved",
       })
     ).id;
+  const stamp = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   const destinationId =
     overrides.destinationId ??
-    (await db.destination.create({ name: `Checkout dest ${Date.now()}` })).id;
+    (await db.destination.create(
+      destinationFields({ stamp, name: `Checkout dest ${stamp}` }),
+    )).id;
 
   return db.reservation.create({
     status: "Assigned",
