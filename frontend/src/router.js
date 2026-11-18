@@ -3,6 +3,7 @@ import Home from "./views/Home.vue";
 import VehicleMileageService from "./views/VehicleMileageService.vue";
 import VehicleIssueReporting from "./views/VehicleIssueReporting.vue";
 import VehicleMaintenance from "./views/VehicleMaintenance.vue";
+import DestinationList from "./views/destinationList.vue";
 import Login from "./views/Login.vue";
 import Account from "./views/Account.vue";
 import CheckoutReturn from "./views/CheckoutReturn.vue";
@@ -11,8 +12,9 @@ import RequestServicing from "./views/RequestServicing.vue";
 import Calendar from "./views/Calendar.vue";
 import VehicleList from "./views/VehicleList.vue";
 import DriverList from "./views/driverList.vue";
+import Users from "./views/Users.vue";
 import Utils from "./config/utils.js";
-import { isSystemAdmin } from "./config/roles.js";
+import { canManageUsers, isSystemAdmin } from "./config/roles.js";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -58,6 +60,16 @@ const router = createRouter({
       component: DriverList,
     },
     {
+      path: "/destinations",
+      name: "destinations",
+      component: DestinationList,
+    },  
+    {
+      path: "/users",
+      name: "users",
+      component: Users,
+    },
+    {
       path: "/issues",
       name: "vehicleIssueReporting",
       component: VehicleIssueReporting,
@@ -96,6 +108,10 @@ router.beforeEach((to) => {
   }
 
   if ((to.name === "requestServicing" || to.name === "calendar") && !isSystemAdmin(user)) {
+    return { name: "home" };
+  }
+
+  if (to.name === "users" && !canManageUsers(user)) {
     return { name: "home" };
   }
 

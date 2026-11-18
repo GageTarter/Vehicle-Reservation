@@ -12,6 +12,14 @@ const accountServices = {
   deleteAccount() {
     return apiClient.delete("vehicles/me");
   },
+
+  getUsers() {
+    return apiClient.get("vehicles/users");
+  },
+
+  updateUserRole(id, body) {
+    return apiClient.put(`vehicles/users/${id}/role`, body);
+  },
 };
 
 export default accountServices;

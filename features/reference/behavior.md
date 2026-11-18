@@ -17,7 +17,7 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | `email_verified` must be `true` or the sign-in is rejected and no user row is created. | `401` `{ "message": "Google sign-in failed." }` | Feature 1 |
 | The first verified `sub` creates a `user`. Later sign-ins for that `sub` reuse the account. | `201` on create, `200` on return. A repeated `sub` is not a duplicate-email `400`. | Feature 1 |
 | Self-service sign-in cannot choose a role. | Request `role` is ignored. New rows are `user`. | Feature 1 |
-| Admin accounts come from `backend/app/scripts/seed-admin.js` (`npm run seed:admin`). | Seed sets `role` to `admin` for a known `googleId`. There is no promote endpoint. | Feature 1 |
+| The seed script creates the first admin. An `admin` or `area_admin` can later set one role. | `npm run seed:admin` sets the first `admin`. `PUT /vehicles/users/:id/role` writes only `role`. | Feature 1, Feature 2 |
 | A session lasts 24 hours and is reused when the same user signs in again before it expires. | JWT `expiresIn: 86400` and `sessions.expirationDate`. The token is stored on the session row. | Feature 1 |
 | Every authenticated request resolves to one user. | `authenticate` sets `req.user = { id, role }` from the joined `users` row. | Feature 1 |
 | Missing bearer token | `401` `{ "message": "Unauthorized! No token provided." }` | Feature 1 |
@@ -28,7 +28,7 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | Anonymous visitors cannot open protected screens. A signed-in visitor cannot stay on `login`. | `router.beforeEach` | Feature 1 |
 | Dismissing the Google prompt stays on `login` and does not call the API. | Login catches cancellation before `authServices.googleSignIn`. | Feature 1 |
 | Home shows the first name and the role, and offers **My account**. A signed-in user also sees the menu. | `Home.vue`, `MenuBar.vue` | Feature 1, Feature 2, Feature 3 |
-| The menu title is **Vehicle Management System**. The nav items are **Vehicles** and **Drivers**, shown when a user is stored. Sign out clears the session and opens `login`. | `MenuBar.vue` | Feature 3, Feature 4 |
+| The menu shows **Vehicles** and **Drivers** to a signed-in user, and **Users** only when `role` is `admin` or `area_admin`. | `MenuBar.vue` | Feature 2, Feature 3, Feature 4 |
 | Vehicles are listed oldest first. The screen columns are make, model, year, VIN, purchase date, color, passenger capacity, license plate number, license plate expiration, area, and actions. | `GET /fleets/vehicles` order `createdAt` ASC | Feature 3 |
 | Create and edit use the same ten fields, including `area` as typed text. The button label is **+ New vehicle**. | `VehicleList.vue`, `VehicleForm.vue` | Feature 3 |
 | An empty create shows the field's required message and does not call the API. An empty edit shows **All fields must be filled.** and does not call the API. Length, date, and VIN failures come from the API and show in a `v-alert`. | `VehicleForm.vue`, `vehicle.validation.js` | Feature 3 |
@@ -42,6 +42,7 @@ They do **not** authorize new scope — implement only from `features/feature-*.
 | `fName` and `lName` must be strings. Empty strings are allowed. A missing or non-string name is rejected. | `400` `{ "message": "First and last name must be text." }` | Feature 2 |
 | Canceling edit or delete stays on the account page and does not call the API. | `Account.vue` | Feature 2 |
 | Deleting the account removes that user and their sessions. The browser then removes `localStorage` key `user` and opens `login`. | `DELETE /vehicles/me` returns `{ "message": "Account deleted." }` | Feature 2 |
+| An `admin` or `area_admin` can list every user and set one role: `user`, `admin`, `area_admin`, or `maintenance`. A requestor or maintenance user cannot open that page. | `GET /vehicles/users`, `PUT /vehicles/users/:id/role`, `Users.vue` | Feature 2 |
 | A new reservation is owned by the signed-in user, starts as `requested`, and has no vehicle. Body `status`, `requestorUserId`, and `vehicleId` are ignored. | `POST /vehicles/reservations` | Feature 8 |
 | The named driver must exist and have `status` `approved`. | `400` `{ "message": "Driver must be on the approved drivers list." }` | Feature 8 |
 | The destination must exist. `endAt` must be after `startAt`. `passengerCount` must be an integer ≥ 1. | `400` with the matching message from Feature 8 | Feature 8 |

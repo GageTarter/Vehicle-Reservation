@@ -67,7 +67,18 @@ export async function createReservation(overrides = {}) {
   const suffix = `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   const driverId =
     overrides.driverId ??
-    (await persist("driver", { name: `Driver ${suffix}`, status: "approved" })).id;
+    (
+      await persist("driver", {
+        name: `Driver ${suffix}`,
+        lastName: "Approved",
+        driverID: `ISS-${suffix}`,
+        licenseState: "OK",
+        licenseExp: "2027-09-23",
+        approvedDate: "2024-01-15",
+        area: "Athletics",
+        status: "approved",
+      })
+    ).id;
   const destinationId =
     overrides.destinationId ??
     (await persist("destination", { name: `City ${suffix}` })).id;
