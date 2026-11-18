@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu/nodeapps/2026/project4/t5/
-ExecStart=npm run start
+ExecStart=/usr/bin/npm run start
 Restart=on-failure
 
 [Install]
