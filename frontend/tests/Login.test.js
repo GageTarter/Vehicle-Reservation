@@ -6,12 +6,20 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { flushPromises } from "@vue/test-utils";
 import Login from "../src/views/Login.vue";
 import { mountWithPlugins, createTestRouter } from "./testUtils.js";
-import { requestGoogleIdToken } from "../src/config/googleIdentity.js";
+import { renderSignInButton } from "../src/config/googleIdentity.js";
 import authServices from "../src/services/authServices.js";
 
 vi.mock("../src/config/googleIdentity.js", () => ({
-  requestGoogleIdToken: vi.fn(),
+  renderSignInButton: vi.fn(),
 }));
+
+function showSignInButton(parent, onClick) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = "Sign in with Google";
+  button.addEventListener("click", onClick);
+  parent.appendChild(button);
+}
 
 vi.mock("../src/services/authServices.js", () => ({
   default: {
@@ -28,7 +36,9 @@ describe("Feature 1 — Google Authentication", () => {
 
   describe("US-1.1 — Sign in with Google (new account)", () => {
     it("User cancels the Google prompt", async () => {
-      requestGoogleIdToken.mockRejectedValue(Object.assign(new Error("cancelled"), { code: "cancelled" }));
+      renderSignInButton.mockImplementation((parent, { onCancel }) => {
+        showSignInButton(parent, () => onCancel());
+      });
       const router = await createTestRouter("/login");
       const { wrapper } = await mountWithPlugins(Login, { router });
 
@@ -42,7 +52,9 @@ describe("Feature 1 — Google Authentication", () => {
 
   describe("US-1.2 — Sign in with Google (existing account)", () => {
     it("Invalid Google ID token is rejected", async () => {
-      requestGoogleIdToken.mockResolvedValue("bad-token");
+      renderSignInButton.mockImplementation((parent, { onCredential }) => {
+        showSignInButton(parent, () => onCredential("bad-token"));
+      });
       authServices.googleSignIn.mockRejectedValue({
         response: { status: 401, data: { message: "Google sign-in failed." } },
       });

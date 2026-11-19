@@ -1,33 +1,39 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import authServices from "../services/authServices.js";
 import Utils from "../config/utils.js";
-import { requestGoogleIdToken } from "../config/googleIdentity.js";
+import { renderSignInButton } from "../config/googleIdentity.js";
 
 const router = useRouter();
+const buttonHost = ref(null);
 const loading = ref(false);
 const errorMessage = ref("");
 
-async function signInWithGoogle() {
+async function completeSignIn(idToken) {
   errorMessage.value = "";
   loading.value = true;
 
   try {
-    const idToken = await requestGoogleIdToken();
     const response = await authServices.googleSignIn(idToken);
     Utils.setStore("user", response.data);
     await router.push({ name: "home" });
   } catch (error) {
-    if (error?.code === "cancelled") {
-      return;
-    }
-
     errorMessage.value = error.response?.data?.message || "Google sign-in failed.";
   } finally {
     loading.value = false;
   }
 }
+
+onMounted(() => {
+  renderSignInButton(buttonHost.value, {
+    onCredential: completeSignIn,
+    onCancel: () => {},
+    onError: () => {
+      errorMessage.value = "Google sign-in failed.";
+    },
+  });
+});
 </script>
 
 <template>
@@ -38,15 +44,8 @@ async function signInWithGoogle() {
         <v-alert v-if="errorMessage" type="error" density="compact" class="mb-4 text-left">
           {{ errorMessage }}
         </v-alert>
-        <v-btn
-          color="primary"
-          variant="elevated"
-          class="oc-cta"
-          :loading="loading"
-          @click="signInWithGoogle"
-        >
-          Sign in with Google
-        </v-btn>
+        <v-progress-circular v-if="loading" indeterminate color="primary" />
+        <div v-show="!loading" ref="buttonHost" class="d-inline-block"></div>
       </v-col>
     </v-row>
   </v-container>
