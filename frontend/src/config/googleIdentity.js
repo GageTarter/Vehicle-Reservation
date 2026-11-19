@@ -1,12 +1,8 @@
 const SCRIPT_SRC = "https://accounts.google.com/gsi/client";
 
 let scriptPromise = null;
-let buttonParent = null;
-let pending = null;
-
-function cancelled() {
-  return Object.assign(new Error("cancelled"), { code: "cancelled" });
-}
+let initialized = false;
+let handlers = {};
 
 function loadGoogleScript() {
   if (window.google?.accounts?.id) {
@@ -48,41 +44,31 @@ function loadGoogleScript() {
   return scriptPromise;
 }
 
-function renderHiddenButton() {
-  if (buttonParent || !window.google?.accounts?.id) {
+function mountButton(parent, nextHandlers) {
+  if (!window.google?.accounts?.id || parent.childElementCount > 0) {
     return;
   }
 
-  window.google.accounts.id.initialize({
-    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-    auto_select: false,
-    callback: (response) => {
-      const current = pending;
-      pending = null;
+  handlers = nextHandlers;
 
-      if (!current) {
-        return;
-      }
+  if (!initialized) {
+    window.google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      auto_select: false,
+      use_fedcm_for_button: true,
+      callback: (response) => {
+        if (response?.credential) {
+          handlers.onCredential(response.credential);
+          return;
+        }
 
-      if (response?.credential) {
-        current.resolve(response.credential);
-        return;
-      }
+        handlers.onCancel?.();
+      },
+    });
+    initialized = true;
+  }
 
-      current.reject(cancelled());
-    },
-  });
-
-  buttonParent = document.createElement("div");
-  buttonParent.setAttribute("aria-hidden", "true");
-  buttonParent.style.position = "fixed";
-  buttonParent.style.top = "0";
-  buttonParent.style.left = "-1000px";
-  buttonParent.style.width = "240px";
-  buttonParent.style.height = "44px";
-  document.body.appendChild(buttonParent);
-
-  window.google.accounts.id.renderButton(buttonParent, {
+  window.google.accounts.id.renderButton(parent, {
     type: "standard",
     theme: "outline",
     size: "large",
@@ -91,61 +77,16 @@ function renderHiddenButton() {
   });
 }
 
-function clickChooser() {
-  return new Promise((resolve, reject) => {
-    const clickable =
-      buttonParent?.querySelector('[role="button"]') || buttonParent?.querySelector("iframe");
-
-    if (!clickable) {
-      reject(Object.assign(new Error("Google sign-in is not ready."), { code: "unavailable" }));
-      return;
-    }
-
-    pending = { resolve, reject };
-
-    let leftPage = false;
-    const cleanup = () => {
-      window.removeEventListener("blur", onBlur);
-      window.removeEventListener("focus", onFocus);
-    };
-    const onBlur = () => {
-      leftPage = true;
-    };
-    const onFocus = () => {
-      if (!leftPage) {
-        return;
-      }
-
-      window.setTimeout(() => {
-        if (!pending) {
-          cleanup();
-          return;
-        }
-
-        const current = pending;
-        pending = null;
-        cleanup();
-        current.reject(cancelled());
-      }, 500);
-    };
-
-    window.addEventListener("blur", onBlur);
-    window.addEventListener("focus", onFocus);
-    clickable.click();
-  });
-}
-
-if (typeof window !== "undefined") {
-  loadGoogleScript().then(renderHiddenButton).catch(() => {});
-}
-
-export function requestGoogleIdToken() {
-  if (window.google?.accounts?.id && buttonParent?.querySelector("iframe, [role='button']")) {
-    return clickChooser();
+export function renderSignInButton(parent, nextHandlers) {
+  if (!parent) {
+    return Promise.resolve();
   }
 
-  return loadGoogleScript().then(() => {
-    renderHiddenButton();
-    return clickChooser();
-  });
+  return loadGoogleScript()
+    .then(() => {
+      mountButton(parent, nextHandlers);
+    })
+    .catch((error) => {
+      nextHandlers.onError?.(error);
+    });
 }
