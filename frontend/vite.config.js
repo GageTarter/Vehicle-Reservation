@@ -9,7 +9,14 @@ export default () => {
   const baseURL = process.env.APP_ENV === "development" ? "/" : "/seiv2026/p4/t5/";
   return defineConfig({
     plugins: [vue(), vuetify({ autoImport: false })],
-    server: { host: "localhost", port: 8082 },
+    server: {
+      host: "localhost",
+      port: 8082,
+      strictPort: true,
+      headers: {
+        "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+      },
+    },
     base: baseURL,
   });
 };
